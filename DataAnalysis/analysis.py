@@ -17,7 +17,7 @@ class Analysis:
     def data_preview(self):
         """预览数据"""
         print(self.data.columns.values) # 列名数组
-        print(self.data.head(5)) # 预览数据结构
+        print(self.data.head(2)) # 预览数据结构
         print(self.data.shape) # 数据维度
         print(self.data.info()) # 数据基本信息
         print(self.data.describe()) # 数据描述
@@ -36,10 +36,10 @@ class Analysis:
 
     def duplicate(self):
         """去重"""
-        duplicate_count_before = self.data.duplicated().sum()
-        print(f'处理前：{duplicate_count_before}')
+        duplicate_count = self.data.duplicated().sum()
+        print(f'处理前：{duplicate_count}')
         self.data = self.data.drop_duplicates(keep='first')
-        print(self.data.shape[0])
+        print(f'处理后：{self.data.shape[0]}')
 
     def missing_process(self):
         """缺失值处理"""
@@ -123,5 +123,5 @@ if __name__ == "__main__":
     anlys = Analysis(path)
     # anlys.data_preview()
     anlys.duplicate()
-    anlys.missing_process()
-    anlys.feature_extraction()
+    # anlys.missing_process()
+    # anlys.feature_extraction()
