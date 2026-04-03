@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-class Analysis:
+class DataAnalysis:
     def __init__(self, path:str):
         # 加载数据 DataFrame
         self.path = path
-        self.data = pd.read_csv(os.path.join(self.path, 'lagou_data.csv'), encoding ='gbk').reset_index()
+        self.data = pd.read_csv(os.path.join(path, 'lagou_data.csv'), encoding ='gbk').reset_index()
         self.df = None
 
     def data_preview(self):
@@ -131,7 +131,7 @@ class Analysis:
 
 if __name__ == "__main__":
     path = 'data'
-    anlys = Analysis(path)
+    anlys = DataAnalysis(path)
     anlys.data_preview()
     anlys.duplicate()
     anlys.missing_process() 
