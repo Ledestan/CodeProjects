@@ -12,7 +12,7 @@ class ClusterAnalysis:
         self.path = path
         self.data = pd.read_csv(os.path.join(path, 'points80.txt'), encoding ='gbk', header=None, sep='\t')
 
-    def show_scatter(self, title='Scatter Plot', color=None):
+    def show_scatter(self, title='Scatter Plot', color='b'):
         """散点图"""
         plt.scatter(self.data.iloc[:, 0], self.data.iloc[:, 1], c=color)
         plt.xlabel('x')
@@ -20,7 +20,7 @@ class ClusterAnalysis:
         plt.title(title)
         plt.tight_layout()
         plt.show()
-        
+
     def elbow_method(self):
         """肘方法"""
         list_inertia = []
@@ -52,6 +52,7 @@ class ClusterAnalysis:
         plt.tight_layout()
         plt.show()
 
+        # K-Means 聚类效果评估
         print('\n' + '=' * 50 )
         best_k = list_silhouette_score.index(max(list_silhouette_score)) + 2
         print(f'最佳 K 值：{best_k}')
@@ -65,8 +66,13 @@ class ClusterAnalysis:
                     marker='*', c='r')
         self.show_scatter('K-Meams 聚类结果散点图', model.labels_)
 
+        # 模型评估
+        print('轮廓系数', metrics.silhouette_score(self.df, model.labels_))
+        print('戴维斯-布尔丁指数', metrics.davies_bouldin_score(self.df, model.labels_))
+        print('卡林斯基-哈拉巴斯指数', metrics.calinski_harabasz_score(self.df, model.labels_))
+
 if __name__ == "__main__":
-    path = 'ClusterAnalysis_20260402/data'
+    path = 'data'
     anlys = ClusterAnalysis(path)
     # anlys.show_scatter()
     # anlys.elbow_method()
