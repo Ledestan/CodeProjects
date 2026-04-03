@@ -28,7 +28,7 @@ class ClusterAnalysis:
             model.fit(self.df)
             list_inertia.append(model.inertia_)
         plt.plot(range(1, 11), list_inertia, 'o-')
-        plt.xlabel('K value')
+        plt.xlabel('K Value')
         plt.ylabel('SSE')
         plt.title('Elbow Method')
         plt.tight_layout()
