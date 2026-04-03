@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn import metrics
@@ -10,7 +11,8 @@ plt.rcParams['axes.unicode_minus'] = False
 class ClusterAnalysis:
     def __init__(self, path:str):
         self.path = path
-        self.data = pd.read_csv(os.path.join(path, 'points80.txt'), encoding ='gbk', header=None, sep='\t')
+        # self.data = pd.read_csv(os.path.join(path, 'points80.txt'), encoding ='gbk', header=None, sep='\t')
+        self.data = pd.read_csv(os.path.join(path, 'points788.txt'), encoding ='gbk', header=None, sep=',')
 
     def show_scatter(self, title='Scatter Plot', color='b'):
         """散点图"""
@@ -67,13 +69,13 @@ class ClusterAnalysis:
         self.show_scatter('K-Meams 聚类结果散点图', model.labels_)
 
         # 模型评估
-        print('轮廓系数', metrics.silhouette_score(self.df, model.labels_))
-        print('戴维斯-布尔丁指数', metrics.davies_bouldin_score(self.df, model.labels_))
-        print('卡林斯基-哈拉巴斯指数', metrics.calinski_harabasz_score(self.df, model.labels_))
+        print(f'轮廓系数：{metrics.silhouette_score(self.data, model.labels_)}')
+        print(f'戴维斯-布尔丁指数：{metrics.davies_bouldin_score(self.data, model.labels_)}')
+        print(f'卡林斯基-哈拉巴斯指数：{metrics.calinski_harabasz_score(self.data, model.labels_)}')
 
 if __name__ == "__main__":
     path = 'data'
     anlys = ClusterAnalysis(path)
-    # anlys.show_scatter()
-    # anlys.elbow_method()
+    anlys.show_scatter()
+    anlys.elbow_method()
     anlys.silhouette_coefficient()
