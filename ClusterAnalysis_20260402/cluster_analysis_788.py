@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN
 from sklearn.mixture import GaussianMixture
 
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
@@ -22,6 +22,14 @@ class ClusterAnalysis:
         plt.tight_layout()
         # plt.show()
 
+    def display(self):
+        plt.figure(figsize=(9, 3))
+        for i, method in enumerate([self.show_scatter, self.show_KMeans, self.show_GMM]):
+            plt.subplot(1, 3, i + 1)
+            method()
+        plt.tight_layout()
+        plt.show()
+
     def show_KMeans(self):
         model = KMeans(n_clusters=7, random_state=28)
         model.fit(self.data)
@@ -35,20 +43,20 @@ class ClusterAnalysis:
         self.show_scatter('GMM 聚类结果散点图', color=model.predict(self.data))
         plt.scatter(model.means_[:, 0], model.means_[:, 1], marker='*', s=50, c='r')
         # plt.show()
+    
+    def show_DBSCAN(self):
+        minPoints = list(range(1, 8))
+        plt.figure(figsize=(12, 6))
+        for i, min_samples in enumerate(minPoints):
+            model = DBSCAN(eps=0.5, min_samples=min_samples)
+            labels = model.fit_predict(self.data)
+            plt.subplot(2, 4, i + 1)
+            self.show_scatter(title=f'DBSCAN (min_samples={min_samples})', color=labels)
+        plt.tight_layout()
+        plt.show()
 
 if __name__ == "__main__":
     path = 'data'
     anlys = ClusterAnalysis(path)
-
-    plt.figure(figsize=(9, 3))
-    plt.subplot(1, 3, 1)
-    anlys.show_scatter()
-
-    plt.subplot(1, 3, 2)
-    anlys.show_KMeans()
-
-    plt.subplot(1, 3, 3)
-    anlys.show_GMM()
-
-    plt.tight_layout()
-    plt.show()
+    # anlys.display()
+    anlys.show_DBSCAN()
