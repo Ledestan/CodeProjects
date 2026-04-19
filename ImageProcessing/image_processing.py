@@ -1,3 +1,14 @@
+"""
+图像处理工具
+
+创建日期：2026-03-30
+需求文件：static\image.png
+
+依赖库：
+numpy>=2.2.6
+matplotlib>=3.10.8
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 
