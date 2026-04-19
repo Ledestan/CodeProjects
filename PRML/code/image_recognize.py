@@ -1,3 +1,14 @@
+"""
+图像识别工具
+
+创建日期：2026-03-06
+需求文件：static\input_images
+
+依赖库：
+opencv-python>=4.12.0.88
+matplotlib>=3.10.8
+"""
+
 import os
 import cv2
 import matplotlib.pyplot as plt

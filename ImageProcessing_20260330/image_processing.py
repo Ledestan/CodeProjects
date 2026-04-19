@@ -1,16 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import tkinter as tk
 
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 class ImageProcessing:
     def __init__(self, path:str):
+        """读取图像数据转换为 NumPy 数组"""
         self.image_orig = plt.imread(path)
         self.image_gray = None
 
     def transform(self):
+        """彩色图转换灰度图"""
         # float32 转 uint8
         self.image_orig = (self.image_orig * 255).astype(np.uint8)
 
@@ -22,6 +23,9 @@ class ImageProcessing:
         # 加权平均并转为 uint8
         image_gray = 0.299 * R + 0.587 * G + 0.114 * B
         self.image_gray = np.clip(image_gray, 0, 255).astype(np.uint8)
+
+    def show(self):
+        """图像展示"""
 
     def preview(self):
         """预览图像矩阵信息"""
@@ -55,26 +59,27 @@ class ImageProcessing:
         plt.tight_layout()
         plt.show()
 
-class Window:
-    def __init__(self, root):
-        self.root = root
-        self.root.title('Window')
-        self.root.geometry('800x600')
+    def symmetry(self):
+        """对称变换"""
 
-        # 创建主框架
-        self.main_frame = tk.Frame(root)
-        self.main_frame.pack(fill=tk.BOTH, expand=1)
-        
-        # 创建底部按钮框架
-        self.button_frame = tk.Frame(root)
-        self.button_frame.pack(side=tk.BOTTOM, fill=tk.X)
+    def zoom(self):
+        """缩放变换"""
+
+    def cut(self):
+        """剪切变换"""
+
+    def rotate(self):
+        """旋转变换"""
+
+    def translation(self):
+        """平移变换"""
+
+    def composite(self):
+        """复合变换"""
 
 if __name__ == "__main__":
     image_path = 'static/image.png'
     imgproc = ImageProcessing(image_path)
     imgproc.transform()
     imgproc.preview()
-
-    root = tk.Tk()
-    window = Window(root)
-    # root.mainloop()
+    

@@ -1,3 +1,15 @@
+"""
+聚类分析工具
+
+创建日期：2026-04-02
+需求文件：data\points80.txt
+
+依赖库：
+pandas>=3.0.1
+matplotlib>=3.10.8
+scikit-learn>=1.8.0
+"""
+
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -73,7 +85,7 @@ class ClusterAnalysis:
 
 if __name__ == "__main__":
     path = 'data'
-    anlys = ClusterAnalysis(path)
-    anlys.show_scatter()
-    anlys.elbow_method()
-    anlys.silhouette_coefficient()
+    ca = ClusterAnalysis(path)
+    ca.show_scatter()
+    ca.elbow_method()
+    ca.silhouette_coefficient()

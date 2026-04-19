@@ -1,3 +1,15 @@
+"""
+客户数据处理工具
+
+创建日期：2026-04-16
+需求文件：data/Mall_Customers
+
+依赖库：
+pandas>=3.0.1
+numpy>=2.2.6
+matplotlib>=3.10.8
+"""
+
 import os
 import pandas as pd
 import numpy as np

@@ -1,3 +1,16 @@
+"""
+聚类分析工具
+
+创建日期：2026-04-09
+需求文件：data\points788.txt
+
+依赖库：
+pandas>=3.0.1
+numpy>=2.2.6
+matplotlib>=3.10.8
+scikit-learn>=1.8.0
+"""
+
 import os
 import pandas as pd
 import numpy as np
@@ -84,7 +97,7 @@ class ClusterAnalysis:
 
 if __name__ == "__main__":
     path = 'data'
-    anlys = ClusterAnalysis(path)
-    # anlys.display()
-    anlys.plot_k_distance(4)
-    anlys.show_DBSCAN()
+    ca = ClusterAnalysis(path)
+    ca.display()
+    ca.plot_k_distance(4)
+    ca.show_DBSCAN()

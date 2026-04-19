@@ -1,3 +1,16 @@
+"""
+数据处理工具
+
+创建日期：2026-03-20
+需求文件：data\lagou_data.csv
+
+依赖库：
+pandas>=3.0.1
+numpy>=2.2.6
+seaborn>=0.13.2
+matplotlib>=3.10.8
+"""
+
 import os
 import pandas as pd
 import numpy as np
@@ -9,7 +22,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 class DataAnalysis:
     def __init__(self, path:str):
-        # 加载数据 DataFrame
+        """加载数据 DataFrame"""
         self.path = path
         self.data = pd.read_csv(os.path.join(path, 'lagou_data.csv'), encoding ='gbk').reset_index()
         self.df = None
@@ -66,9 +79,10 @@ class DataAnalysis:
         print(f'缺失值处理后label字段的缺失数量：{total_empty_count}')
 
         # 保存
-        self.df.to_csv(os.path.join(self.path, 'lagou_clean.csv'), encoding ='gbk')
+        # self.df.to_csv(os.path.join(self.path, 'lagou_clean.csv'), encoding ='gbk')
 
     def feature_extraction(self):
+        """特征提取"""
         # 盒图
         plt.figure(figsize=(10, 5))
         plt.subplot(1, 2, 1)
