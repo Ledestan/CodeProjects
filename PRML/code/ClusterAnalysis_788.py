@@ -2,7 +2,7 @@
 聚类分析工具
 
 创建日期：2026-04-09
-需求文件：data\points788.txt
+需求文件：data/points788.txt
 
 依赖库：
 pandas>=3.0.1
@@ -11,7 +11,6 @@ matplotlib>=3.10.8
 scikit-learn>=1.8.0
 """
 
-import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,8 +23,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 class ClusterAnalysis:
     def __init__(self, path:str):
-        self.path = path
-        self.data = pd.read_csv(os.path.join(path, 'points788.txt'), encoding ='gbk', header=None, sep=',')
+        self.data = pd.read_csv(path, encoding ='gbk', header=None, sep=',')
     
     def show_scatter(self, title='Scatter Plot', color='b'):
         """散点图"""
@@ -96,7 +94,7 @@ class ClusterAnalysis:
         return k_distances_sorted
 
 if __name__ == "__main__":
-    path = 'data'
+    path = 'data/points788.txt'
     ca = ClusterAnalysis(path)
     ca.display()
     ca.plot_k_distance(4)

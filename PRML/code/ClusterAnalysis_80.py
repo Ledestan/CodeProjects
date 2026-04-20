@@ -2,7 +2,7 @@
 聚类分析工具
 
 创建日期：2026-04-02
-需求文件：data\points80.txt
+需求文件：data/points80.txt
 
 依赖库：
 pandas>=3.0.1
@@ -10,7 +10,6 @@ matplotlib>=3.10.8
 scikit-learn>=1.8.0
 """
 
-import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
@@ -21,8 +20,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 class ClusterAnalysis:
     def __init__(self, path:str):
-        self.path = path
-        self.data = pd.read_csv(os.path.join(path, 'points80.txt'), encoding ='gbk', header=None, sep='\t')
+        self.data = pd.read_csv(path, encoding ='gbk', header=None, sep='\t')
 
     def show_scatter(self, title='Scatter Plot', color='b'):
         """散点图"""
@@ -84,7 +82,7 @@ class ClusterAnalysis:
         print(f'卡林斯基-哈拉巴斯指数：{metrics.calinski_harabasz_score(self.data, model.labels_)}')
 
 if __name__ == "__main__":
-    path = 'data'
+    path = 'data/points80.txt'
     ca = ClusterAnalysis(path)
     ca.show_scatter()
     ca.elbow_method()

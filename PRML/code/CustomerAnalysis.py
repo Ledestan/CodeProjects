@@ -2,7 +2,7 @@
 客户数据处理工具
 
 创建日期：2026-04-16
-需求文件：data/Mall_Customers
+需求文件：data/Mall_Customers.csv
 
 依赖库：
 pandas>=3.0.1

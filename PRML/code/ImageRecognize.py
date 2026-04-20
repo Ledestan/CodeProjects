@@ -2,7 +2,7 @@
 图像识别工具
 
 创建日期：2026-03-06
-需求文件：static\input_images
+需求文件：static/face_images
 
 依赖库：
 opencv-python>=4.12.0.88
@@ -18,9 +18,8 @@ plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 class ImageRecognize:
-    def __init__(self, input_path:str, output_path:str):
-        self.input_path = input_path
-        self.output_path = output_path
+    def __init__(self, path:str):
+        self.path = path
         self.image_paths = []
         self.images = []
         self.faces = []
@@ -49,9 +48,9 @@ class ImageRecognize:
     
     def read(self):
         """从目标路径读取图片"""
-        for img_name in os.listdir(self.input_path):
+        for img_name in os.listdir(self.path):
             if img_name.endswith(('.jpg', '.png', '.jpeg')):
-                self.image_paths.append(os.path.join(self.input_path, img_name))
+                self.image_paths.append(os.path.join(self.path, img_name))
 
     def transform(self):
         """转换图片并检测人脸"""
@@ -83,16 +82,6 @@ class ImageRecognize:
     def preview(self):
         """预览灰度图、直方图"""
         # 创建文件夹
-        os.makedirs(self.output_path, exist_ok=True)
-        gray_original_path = os.path.join(self.output_path, 'gray_original')
-        os.makedirs(gray_original_path, exist_ok=True)
-        gray_eq_path = os.path.join(self.output_path, 'gray_eq')
-        os.makedirs(gray_eq_path, exist_ok=True)
-        hist_original_path = os.path.join(self.output_path, 'hist_original')
-        os.makedirs(hist_original_path, exist_ok=True)
-        hist_eq_path = os.path.join(self.output_path, 'hist_eq')
-        os.makedirs(hist_eq_path, exist_ok=True)
-
         plt.figure(figsize=(15, 8))
         
         for i, img in enumerate(self.images):
@@ -102,7 +91,7 @@ class ImageRecognize:
             # 保存灰度图
             original_name = os.path.basename(self.image_paths[i])
             name, ext = os.path.splitext(original_name)
-            cv2.imwrite(os.path.join(gray_original_path, f'{name}_gray{ext}'), gray_img)
+            cv2.imwrite(os.path.join(self.path, f'{name}_gray{ext}'), gray_img)
             
             # 灰度图展示
             plt.subplot(len(self.images), 2, i * 2 + 1)
@@ -120,7 +109,7 @@ class ImageRecognize:
             plt.title(f'{os.path.basename(self.image_paths[i])} - 直方图')
 
             # 保存展示图
-            plt.savefig(os.path.join(hist_original_path, f'{name}_hist.png'), dpi=150, bbox_inches='tight')
+            plt.savefig(os.path.join(self.path, f'{name}_hist.png'), dpi=150, bbox_inches='tight')
 
         plt.tight_layout()
         plt.show()
@@ -138,7 +127,7 @@ class ImageRecognize:
             # 保存均衡化后的图像
             original_name = os.path.basename(self.image_paths[i])
             name, ext = os.path.splitext(original_name)
-            cv2.imwrite(os.path.join(gray_eq_path, f'{name}_equalized{ext}'), equalized_img)
+            cv2.imwrite(os.path.join(self.path, f'{name}_equalized{ext}'), equalized_img)
             
             # 均衡化灰度图展示
             plt.subplot(len(self.images), 2, i * 2 + 1)
@@ -156,15 +145,14 @@ class ImageRecognize:
             plt.title(f'{os.path.basename(self.image_paths[i])} - 直方图')
 
             # 保存均衡化展示图
-            plt.savefig(os.path.join(hist_eq_path, f'{name}_hist_eq.png'), dpi=150, bbox_inches='tight')
+            plt.savefig(os.path.join(self.path, f'{name}_hist_eq.png'), dpi=150, bbox_inches='tight')
         
         plt.tight_layout()
         plt.show()
 
 if __name__ == "__main__":
-    input_path = 'static/input_images'
-    output_path = 'static/output_images'
-    recog = ImageRecognize(input_path, output_path)
+    path = 'static/face_images'
+    recog = ImageRecognize(path)
     try:
         recog.read()
         recog.transform()
