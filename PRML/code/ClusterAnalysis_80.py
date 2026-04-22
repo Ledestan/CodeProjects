@@ -18,6 +18,7 @@ from sklearn import metrics
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
+
 class ClusterAnalysis:
     def __init__(self, path:str):
         self.data = pd.read_csv(path, encoding ='gbk', header=None, sep='\t')
@@ -80,6 +81,7 @@ class ClusterAnalysis:
         print(f'轮廓系数：{metrics.silhouette_score(self.data, model.labels_)}')
         print(f'戴维斯-布尔丁指数：{metrics.davies_bouldin_score(self.data, model.labels_)}')
         print(f'卡林斯基-哈拉巴斯指数：{metrics.calinski_harabasz_score(self.data, model.labels_)}')
+
 
 if __name__ == "__main__":
     path = 'data/points80.txt'

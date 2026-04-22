@@ -17,6 +17,7 @@ FACE_CASCADE_PATH = cv2.data.haarcascades + "haarcascade_frontalface_default.xml
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
+
 class ImageRecognize:
     def __init__(self, path:str):
         self.path = path
@@ -149,6 +150,7 @@ class ImageRecognize:
         
         plt.tight_layout()
         plt.show()
+
 
 if __name__ == "__main__":
     path = 'static/face_images'

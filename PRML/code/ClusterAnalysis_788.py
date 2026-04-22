@@ -21,6 +21,7 @@ from sklearn.neighbors import NearestNeighbors
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
+
 class ClusterAnalysis:
     def __init__(self, path:str):
         self.data = pd.read_csv(path, encoding ='gbk', header=None, sep=',')
@@ -92,6 +93,7 @@ class ClusterAnalysis:
 
         # print(f'建议的 eps 值：观察曲线肘部位置')
         return k_distances_sorted
+
 
 if __name__ == "__main__":
     path = 'data/points788.txt'
