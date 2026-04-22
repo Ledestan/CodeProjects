@@ -229,7 +229,7 @@ class DataAnalysis:
         plt.show()
 
         # 保存
-        # plt.savefig(f'特征与工资水平互信息得分Top{k}.png', dpi=300, bbox_inches='tight')
+        # plt.savefig(f'data/lagou_Top{k}.png', dpi=300, bbox_inches='tight')
 
         print('\n' + '=' * 50)
         print(f'特征与工资水平互信息得分（Top{k}）')
