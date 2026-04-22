@@ -187,11 +187,11 @@ class DataAnalysis:
 
         # 合并特征矩阵
         ordinal_encoded = self.df[[col + '_encoded' for col in ordinal_features]].values
-        X = np.hstack([nominal_encoded, ordinal_encoded])
+        x = np.hstack([nominal_encoded, ordinal_encoded])
         y = LabelEncoder().fit_transform(self.df['salary_range'])
 
         # 计算互信息得分
-        mi_scores = mutual_info_classif(X, y, random_state=42)
+        mi_scores = mutual_info_classif(x, y, random_state=42)
 
         # 构造特征名称列表
         ohe_feature_names = onehot.get_feature_names_out(nominal_features).tolist()
@@ -224,7 +224,7 @@ class DataAnalysis:
         plt.title(f'特征与工资水平（salary_range）的互信息得分（Top{k}）')
         plt.xlabel('互信息得分（越高影响力越强）')
         plt.ylabel('特征名称')
-        plt.xticks(np.arange(0, xmax + step, 0.02))
+        plt.xticks(np.arange(0, xmax + step, step))
         plt.tight_layout()
         plt.show()
 
@@ -233,7 +233,7 @@ class DataAnalysis:
 
         print('\n' + '=' * 50)
         print(f'特征与工资水平互信息得分（Top{k}）')
-        print(mi_df)
+        print(mi_df.round(3))
 
 
 if __name__ == "__main__":
