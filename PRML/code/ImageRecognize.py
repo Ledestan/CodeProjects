@@ -2,7 +2,7 @@
 图像识别工具
 
 创建日期：2026-03-06
-需求文件：static/face_images
+需求文件：data/face_images
 
 依赖库：
 opencv-python>=4.12.0.88
@@ -153,7 +153,7 @@ class ImageRecognize:
 
 
 if __name__ == "__main__":
-    path = 'static/face_images'
+    path = 'data/face_images'
     recog = ImageRecognize(path)
     try:
         recog.read()
