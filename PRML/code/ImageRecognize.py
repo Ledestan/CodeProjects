@@ -92,7 +92,7 @@ class ImageRecognize:
             # 保存灰度图
             original_name = os.path.basename(self.image_paths[i])
             name, ext = os.path.splitext(original_name)
-            cv2.imwrite(os.path.join(self.path, f'{name}_gray{ext}'), gray_img)
+            # cv2.imwrite(os.path.join(self.path, f'{name}_gray{ext}'), gray_img)
             
             # 灰度图展示
             plt.subplot(len(self.images), 2, i * 2 + 1)
@@ -110,7 +110,7 @@ class ImageRecognize:
             plt.title(f'{os.path.basename(self.image_paths[i])} - 直方图')
 
             # 保存展示图
-            plt.savefig(os.path.join(self.path, f'{name}_hist.png'), dpi=150, bbox_inches='tight')
+            # plt.savefig(os.path.join(self.path, f'{name}_hist.png'), dpi=150, bbox_inches='tight')
 
         plt.tight_layout()
         plt.show()
@@ -128,7 +128,7 @@ class ImageRecognize:
             # 保存均衡化后的图像
             original_name = os.path.basename(self.image_paths[i])
             name, ext = os.path.splitext(original_name)
-            cv2.imwrite(os.path.join(self.path, f'{name}_equalized{ext}'), equalized_img)
+            # cv2.imwrite(os.path.join(self.path, f'{name}_equalized{ext}'), equalized_img)
             
             # 均衡化灰度图展示
             plt.subplot(len(self.images), 2, i * 2 + 1)
@@ -146,7 +146,7 @@ class ImageRecognize:
             plt.title(f'{os.path.basename(self.image_paths[i])} - 直方图')
 
             # 保存均衡化展示图
-            plt.savefig(os.path.join(self.path, f'{name}_hist_eq.png'), dpi=150, bbox_inches='tight')
+            # plt.savefig(os.path.join(self.path, f'{name}_hist_eq.png'), dpi=150, bbox_inches='tight')
         
         plt.tight_layout()
         plt.show()
