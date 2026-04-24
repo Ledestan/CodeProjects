@@ -41,7 +41,6 @@ class DataAnalysis:
         """加载数据 DataFrame"""
         self.path = path
         self.data = pd.read_csv(os.path.join(path, 'lagou_data.csv'), encoding='gbk').reset_index()
-        self.df = None
 
     def data_preview(self):
         """数据预览"""
@@ -51,7 +50,8 @@ class DataAnalysis:
         print('数据结构预览：\n', self.data.head(2))
         print('\n' + '=' * 50)
         print(f'数据维度：{self.data.shape}')
-        print(f'数据基本信息：{self.data.info()}')
+        print(f'数据基本信息：')
+        self.data.info()
         print(f'数据描述：{self.data.describe()}')
 
         # 直方图
@@ -84,33 +84,33 @@ class DataAnalysis:
         missing_stats = pd.DataFrame({'缺失值数量': self.data.isnull().sum(),
                                       '缺失值比例': (self.data.isnull().sum() / self.data.shape[0] * 100).round(2)})
         print('缺失数据：\n', missing_stats)
-        self.df = self.data.drop(columns=['industryLables'])
-        print(f'清洗后：{self.df.shape}')
+        self.data = self.data.drop(columns=['industryLables'])
+        print(f'清洗后：{self.data.shape}')
 
-        total_empty_count = self.df['label'].isnull().sum()
+        total_empty_count = self.data['label'].isnull().sum()
         print(f'缺失值处理前label字段的缺失数量：{total_empty_count}')
 
-        self.df['label'] = self.df['label'].replace('\'""\'', np.nan)
-        total_empty_count = self.df['label'].isnull().sum()
+        self.data['label'] = self.data['label'].replace('\'""\'', np.nan)
+        total_empty_count = self.data['label'].isnull().sum()
         print(f'缺失值处理后label字段的缺失数量：{total_empty_count}')
 
         # 保存
-        # self.df.to_csv(os.path.join(self.path, 'lagou_clean.csv'), encoding ='gbk')
+        # self.data.to_csv(os.path.join(self.path, 'lagou_clean.csv'), encoding ='gbk')
 
     def feature_extraction(self):
         """特征提取"""
         # 盒图
         plt.figure(figsize=(10, 5))
         plt.subplot(1, 2, 1)
-        plt.boxplot(self.df['salary'])
+        plt.boxplot(self.data['salary'])
 
         plt.subplot(1, 2, 2)
-        plt.boxplot(self.df['salary'], vert=True)
+        plt.boxplot(self.data['salary'], vert=True)
         plt.show()
 
         # 连续型特征、离散型（分类）特征的提取
-        numerical_cols = self.df.select_dtypes(include=[np.number]).columns.tolist()
-        catgorical_cols = self.df.select_dtypes(include=['object', 'category', 'str']).columns.tolist()
+        numerical_cols = self.data.select_dtypes(include=[np.number]).columns.tolist()
+        catgorical_cols = self.data.select_dtypes(include=['object', 'category', 'str']).columns.tolist()
         print('\n' + '=' * 50)
         print(f'连续型特征数量：{len(numerical_cols)}')
         print(numerical_cols)
@@ -119,20 +119,20 @@ class DataAnalysis:
 
         # 离散点、异常点
         if numerical_cols:
-            numerical_stats = self.df[numerical_cols].describe().round(2)
+            numerical_stats = self.data[numerical_cols].describe().round(2)
             print('\n' + '=' * 50)
             print('统计摘要表：\n', numerical_stats)
 
             # 检查异常、利用IQR（四分位数极差）
             for col in numerical_cols:
-                q1 = self.df[col].quantile(0.25)
-                q3 = self.df[col].quantile(0.75)
+                q1 = self.data[col].quantile(0.25)
+                q3 = self.data[col].quantile(0.75)
                 iqr = q3 - q1
                 lower_bound = q1 - 1.5 * iqr
                 upper_bound = q3 + 1.5 * iqr
 
-                ouliers = self.df[(self.df[col] < lower_bound) | (self.df[col] > upper_bound)]
-                oulier_ratio = len(ouliers) / self.df.shape[0] * 100 if len(ouliers) else 0
+                ouliers = self.data[(self.data[col] < lower_bound) | (self.data[col] > upper_bound)]
+                oulier_ratio = len(ouliers) / self.data.shape[0] * 100 if len(ouliers) else 0
 
                 print('\n' + '=' * 50)
                 print(f'{col}')
@@ -141,54 +141,54 @@ class DataAnalysis:
                 print(f'异常值比例:{oulier_ratio}')
 
         # 离散型数据分析
-        sns.boxplot(x=self.df['city'], y=self.df['salary'])
+        sns.boxplot(x=self.data['city'], y=self.data['salary'])
         plt.show()
 
         # 处理 city 特征
-        city_counts_df = self.df['city'].value_counts().reset_index()
+        city_counts_df = self.data['city'].value_counts().reset_index()
         city_counts_df.columns = ['city', 'count']
         cities = city_counts_df[city_counts_df['count'] >= 30]['city'].tolist()
         print('\n' + '=' * 50)
         print(f'城市：{cities}')
 
-        for i, j in enumerate(self.df['city']):
+        for i, j in enumerate(self.data['city']):
             if j not in cities:
-                self.df.loc[i, 'city'] = '其它'
+                self.data.loc[i, 'city'] = '其它'
 
         # 整合预览
-        sns.boxplot(x=self.df['city'], y=self.df['salary'])
+        sns.boxplot(x=self.data['city'], y=self.data['salary'])
         plt.show()
 
     def mutual_info_analysis(self, k=10):
         """互信息分析：计算特征与薪资区间之间的互信息得分，并绘制TopK特征柱状图"""
         # 生成薪资区间
-        if 'salary' in self.df.columns:
+        if 'salary' in self.data.columns:
             salary_col = 'salary'
         else:
-            salary_col = self.df.columns[self.df.columns.str.contains('salary|薪资')][0]
-        self.df['salary_range'] = self.df[salary_col].apply(classify_salary)
+            salary_col = self.data.columns[self.data.columns.str.contains('salary|薪资')][0]
+        self.data['salary_range'] = self.data[salary_col].apply(classify_salary)
 
         print('\n' + '=' * 50)
         print(f'新增薪资区间列 salary_range，取值分布:')
-        print(self.df['salary_range'].value_counts())
+        print(self.data['salary_range'].value_counts())
 
         # 特征编码
         # 有序特征（LabelEncoder）
         ordinal_features = ['work_year', 'education', 'size_standard']
-        ordinal_features = [f for f in ordinal_features if f in self.df.columns]
+        ordinal_features = [f for f in ordinal_features if f in self.data.columns]
         for col in ordinal_features:
-            self.df[col + '_encoded'] = LabelEncoder().fit_transform(self.df[col])
+            self.data[col + '_encoded'] = LabelEncoder().fit_transform(self.data[col])
 
         # 无序特征（OneHotEncoder）
         nominal_features = ['industry', 'position_name', 'city', 'extracted_skill']
-        nominal_features = [f for f in nominal_features if f in self.df.columns]
+        nominal_features = [f for f in nominal_features if f in self.data.columns]
         onehot = OneHotEncoder(sparse_output=False, drop='first')
-        nominal_encoded = onehot.fit_transform(self.df[nominal_features])
+        nominal_encoded = onehot.fit_transform(self.data[nominal_features])
 
         # 合并特征矩阵
-        ordinal_encoded = self.df[[col + '_encoded' for col in ordinal_features]].values
+        ordinal_encoded = self.data[[col + '_encoded' for col in ordinal_features]].values
         x = np.hstack([nominal_encoded, ordinal_encoded])
-        y = LabelEncoder().fit_transform(self.df['salary_range'])
+        y = LabelEncoder().fit_transform(self.data['salary_range'])
 
         # 计算互信息得分
         mi_scores = mutual_info_classif(x, y, random_state=42)
@@ -230,7 +230,7 @@ class DataAnalysis:
 
         # 保存
         # plt.savefig(f'data/lagou_Top{k}.png', dpi=300, bbox_inches='tight')
-
+        
         print('\n' + '=' * 50)
         print(f'特征与工资水平互信息得分（Top{k}）')
         print(mi_df.round(3))
@@ -239,8 +239,8 @@ class DataAnalysis:
 if __name__ == "__main__":
     path = 'data'
     anlys = DataAnalysis(path)
-    # anlys.data_preview()
+    anlys.data_preview()
     anlys.duplicate()
     anlys.missing_process()
-    # anlys.feature_extraction()
+    anlys.feature_extraction()
     anlys.mutual_info_analysis()

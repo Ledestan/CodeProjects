@@ -6,6 +6,7 @@ PCA 数据集处理
 依赖库：
 numpy>=2.2.6
 matplotlib>=3.10.8
+scikit-learn>=1.8.0
 """
 
 import numpy as np
@@ -21,18 +22,17 @@ plt.rcParams['axes.unicode_minus'] = False
 
 def pca_iris():
     iris = load_iris()
-    x, y = iris.data, iris.target
+    X, y = iris.data, iris.target
     scaler = StandardScaler() # 初始化标准化器
-    x_scaler = scaler.fit_transform(x)
+    X_scaler = scaler.fit_transform(X)
     
     pca = PCA()
-    x_pca = pca.fit_transform(x_scaler)
+    X_pca = pca.fit_transform(X_scaler)
 
     target_name = ['山鸢尾', '变色鸢尾', '维吉尼亚鸢尾']
     plt.figure(figsize=(8, 4))
     for i, name in enumerate(target_name):
-        plt.scatter(x_pca[y == i, 0], x_pca[y == i, 1],
-                    s=8, alpha=0.8, label=name)
+        plt.scatter(X_pca[y == i, 0], X_pca[y == i, 1], s=8, alpha=0.8, label=name)
     plt.legend()
     plt.xlabel('PCA1', fontsize=10)
     plt.ylabel('PCA2', fontsize=10)
@@ -41,7 +41,6 @@ def pca_iris():
     plt.show()
 
     return pca
-
 
 def show_ratio(pca):
     var_exp = pca.explained_variance_ # 主成分方差

@@ -18,7 +18,28 @@ plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 
-class ImageRecognize:
+def detection(image, target_size):
+    # 加载检测器
+    face_cascade = cv2.CascadeClassifier(FACE_CASCADE_PATH)
+    # 转灰度图 
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # 检测人脸
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    # 无人脸返回 None
+    if len(faces) == 0:
+        return None
+    # 取面积最大的人脸
+    x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+    # 裁剪区域
+    face_roi = gray[y:y+h, x:x+w]
+    # 缩放到目标尺寸
+    face_resized = cv2.resize(face_roi, target_size)
+    # 归一化像素值
+    face_normalized = cv2.normalize(face_resized, None, 0, 255, cv2.NORM_MINMAX)
+    
+    return face_normalized
+
+class ImageRecognition:
     def __init__(self, path:str):
         self.path = path
         self.image_paths = []
@@ -26,26 +47,7 @@ class ImageRecognize:
         self.faces = []
         self.gray_images = []
 
-    def detection(self, image, target_size):
-        # 加载检测器
-        face_cascade = cv2.CascadeClassifier(FACE_CASCADE_PATH)
-        # 转灰度图 
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # 检测人脸
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-        # 无人脸返回 None
-        if len(faces) == 0:
-            return None
-        # 取面积最大的人脸
-        x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
-        # 裁剪区域
-        face_roi = gray[y:y+h, x:x+w]
-        # 缩放到目标尺寸
-        face_resized = cv2.resize(face_roi, target_size)
-        # 归一化像素值
-        face_normalized = cv2.normalize(face_resized, None, 0, 255, cv2.NORM_MINMAX)
-        
-        return face_normalized
+
     
     def read(self):
         """从目标路径读取图片"""
@@ -62,7 +64,7 @@ class ImageRecognize:
                 continue
             img = cv2.resize(img, (640, 480))
             self.images.append(img)
-            face = self.detection(img, (100, 100))
+            face = detection(img, (100, 100))
             if face is not None:
                 self.faces.append(face)
 
@@ -154,7 +156,7 @@ class ImageRecognize:
 
 if __name__ == "__main__":
     path = 'data/face_images'
-    recog = ImageRecognize(path)
+    recog = ImageRecognition(path)
     try:
         recog.read()
         recog.transform()
