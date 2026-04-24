@@ -138,7 +138,7 @@ class CustomerAnalysis:
 
             # 使用预计算距离矩阵计算轮廓系数
             score = metrics.silhouette_score(dist_mixed, labels, metric='precomputed')
-            print(f'K={i}，轮廓系数为：{score:.4f}')
+            print(f'K = {i}，轮廓系数为：{score:.4f}')
             list_silhouette_score.append(score)
         plt.xticks(range(2, 11, 1))
         plt.plot(range(2, 11), list_silhouette_score, 'o-')
@@ -149,7 +149,15 @@ class CustomerAnalysis:
         plt.tight_layout()
         plt.show()
 
-    def a(self):
+    def show_clusters(self):
+        """聚类"""
+        # K-Means
+        pass
+
+        # 层次聚类
+        pass
+
+        # DBSCAN
         pass
 
 
@@ -160,4 +168,5 @@ if __name__ == "__main__":
     # anlys.show_histograms()
     # anlys.show_scatter_matrix()
     anlys.data_preprocessing()
-    anlys.find_optimal_k()
+    # anlys.find_optimal_k()
+    anlys.show_clusters()
