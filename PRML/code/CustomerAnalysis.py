@@ -88,9 +88,7 @@ class CustomerAnalysis:
             male_data = self.data[self.data['Gender'] == 'Male'][col]
             female_data = self.data[self.data['Gender'] == 'Female'][col]
             box_data = [male_data, female_data]
-            bp = axes[i].boxplot(box_data, patch_artist=True, tick_labels=['Male', 'Female'],
-                                boxprops=dict(alpha=0.7),
-                                medianprops=dict(color='black'))
+            bp = axes[i].boxplot(box_data, patch_artist=True, tick_labels=['Male', 'Female'], boxprops=dict(alpha=0.7), medianprops=dict(color='black'))
             bp['boxes'][0].set_facecolor('#4682B4')
             bp['boxes'][1].set_facecolor('#FFC0CB')
             axes[i].set_title(col, fontsize=12)
@@ -109,7 +107,6 @@ class CustomerAnalysis:
             plot_kws={"alpha": 0.6, "s": 40, "edgecolor": "none"},
             diag_kws={"alpha": 0.6, "linewidth": 1.5}
         )
-
         g.add_legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., title="Gender")
         plt.subplots_adjust(top=0.95, right=0.85)
         plt.suptitle("Feature Distributions & Relationships", fontsize=16, y=0.98)
@@ -202,10 +199,8 @@ class CustomerAnalysis:
         # K 距离图
         plt.figure(figsize=(8, 6))
         plt.plot(range(len(k_distances)), k_distances, marker="o", linestyle="-", color="b")
-        
         plt.axhline(y=optimal_eps, color='r', linestyle='--', label=f'Optimal eps ≈ {optimal_eps:.2f}') # 在图上标记出肘部位置
         plt.scatter([elbow_idx], [optimal_eps], color='red', zorder=5) # 标记拐点
-        
         plt.title(f"K-Distance Graph (k={self.n_clusters})")
         plt.xlabel("Points sorted by distance")
         plt.ylabel(f"Distance to {self.n_clusters}th nearest neighbor")
@@ -290,8 +285,7 @@ class CustomerAnalysis:
             "Cluster": labels
         })
         plt.figure(figsize=(8,6))
-        sns.scatterplot(data=df_viz, x="Income", y="Score", hue="Cluster", style="Gender",
-                        palette="viridis", s=60, alpha=0.8)
+        sns.scatterplot(data=df_viz, x="Income", y="Score", hue="Cluster", style="Gender", palette="viridis", s=60, alpha=0.8)
         plt.title(title)
         plt.xlabel("Annual Income (标准化)")
         plt.ylabel("Spending Score (标准化)")
@@ -348,7 +342,7 @@ class CustomerAnalysis:
 if __name__ == "__main__":
     path = "data"
     anlys = CustomerAnalysis(path)
-    # anlys.data_preview() # 数据预览
+    anlys.data_preview() # 数据预览
     anlys.data_preprocessing() # 数据预处理
     anlys.find_optimal_k() # 确定最优 K 值
     anlys.show_clusters() # 聚类结果展示
