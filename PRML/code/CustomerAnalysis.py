@@ -23,17 +23,27 @@ from math import pi
 from kmodes.kprototypes import KPrototypes
 from scipy.spatial.distance import cdist
 from sklearn import metrics
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import AgglomerativeClustering, DBSCAN, OPTICS
+from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
-plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
-plt.rcParams["axes.unicode_minus"] = False
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams.update({
+    'axes.facecolor': (0, 0, 0, 0),  # 设置背景透明
+    'axes.edgecolor': 'black',       # 保留边框颜色
+    'figure.facecolor': 'white',     # 画布背景为白色
+    'legend.facecolor': 'white',     # 图例背景为白色
+})
 
 
 class CustomerAnalysis:
     def __init__(self, path:str):
         self.path = path
         self.data = pd.read_csv(os.path.join(path, "Mall_Customers.csv"), sep=",")
+        self.data.drop("CustomerID", axis=1, inplace=True)
+        self.data.columns = ["Gender", "Age", "Income", "Score"]
+        self.data_raw = self.data.copy() # 保留原始尺度数据用于可视化
         self.K_range = range(2, 11)
         self.n_clusters = None
         self.data_array = None # data array
@@ -43,6 +53,7 @@ class CustomerAnalysis:
         self.dist_cat = None # data 类别部分距离矩阵
         self.gamma = 0.5 # 性别特征权重
         self.dist_mixed = None # data 距离混合距离
+        self.scores = None # 聚类结果评估
 
     def data_preview(self):
         print("\n" + "=" * 50)
@@ -52,58 +63,60 @@ class CustomerAnalysis:
         print(f"描述性统计:\n{self.data.describe()}")
         print(self.data[["Gender"]].describe().T)
 
-        self.show_histograms()
+        cols = ['Age', 'Income', 'Score']
 
-    def show_histograms(self):
-        """展示 Age, Income, Score 直方图"""
+        # 展示 Age, Income, Score 直方图
         fig, axes = plt.subplots(1, 3, figsize=(12, 4))
-
-        # 绘制 Age
-        axes[0].hist(self.data["Age"], bins=10, edgecolor="black")
-        axes[0].set_title("Age", fontsize=14)
-        axes[0].set_xlabel("Age")
-        axes[0].set_ylabel("Count")
-
-        # 绘制 Income
-        axes[1].hist(self.data["Income"], bins=10, edgecolor="black")
-        axes[1].set_title("Income", fontsize=14)
-        axes[1].set_xlabel("Income")
-
-        # 绘制 Score
-        axes[2].hist(self.data["Score"], bins=10, edgecolor="black")
-        axes[2].set_title("Score", fontsize=14)
-        axes[2].set_xlabel("Score")
-
+        for i, col in enumerate(cols):
+            axes[i].hist(self.data[col], bins=10, edgecolor="black")
+            axes[i].set(title=col, xlabel=col, ylabel="Count" if i == 0 else None)
         plt.tight_layout()
         plt.show()
 
-        self.show_scatter_matrix()
+        # 盒图: 展示 Age, Income, Score 的整体分布及性别对比    
+        fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+        for i, col in enumerate(cols):
+            axes[i].boxplot(self.data[col], vert=True, patch_artist=True, boxprops=dict(facecolor='lightblue', alpha=0.7))
+            axes[i].set_title(col, fontsize=12)
+            axes[i].set_ylabel('Value')
+        plt.suptitle('Overall Distribution Boxplot (原始尺度)', fontsize=14)
+        plt.tight_layout()
+        plt.show()
 
-    def show_scatter_matrix(self):
-        """特征与性别的散点图矩阵"""
-        sns.set_theme(style="white", rc={"axes.facecolor": (0, 0, 0, 0)}) # 设置样式
-
-        # 创建 pairplot
+        fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+        for i, col in enumerate(cols):
+            male_data = self.data[self.data['Gender'] == 'Male'][col]
+            female_data = self.data[self.data['Gender'] == 'Female'][col]
+            box_data = [male_data, female_data]
+            bp = axes[i].boxplot(box_data, patch_artist=True, tick_labels=['Male', 'Female'],
+                                boxprops=dict(alpha=0.7),
+                                medianprops=dict(color='black'))
+            bp['boxes'][0].set_facecolor('#4682B4')
+            bp['boxes'][1].set_facecolor('#FFC0CB')
+            axes[i].set_title(col, fontsize=12)
+            axes[i].set_ylabel('Value')
+        plt.suptitle('Distribution by Gender (Boxplot)', fontsize=14)
+        plt.tight_layout()
+        plt.show()
+        
+        # 特征与性别的散点图矩阵
         g = sns.pairplot(
             self.data,
             vars=["Age", "Income", "Score"],
             hue="Gender",
             palette=["#4682B4", "#FFC0CB"],
             diag_kind="kde",
-            plot_kws={"alpha": 0.6, "s": 40, "edgecolor": "none"}, # 去掉点的边框, 更平滑
-            diag_kws={"alpha": 0.6, "linewidth": 1.5} # 对角线加粗
+            plot_kws={"alpha": 0.6, "s": 40, "edgecolor": "none"},
+            diag_kws={"alpha": 0.6, "linewidth": 1.5}
         )
 
-        g.add_legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., title="Gender") # 调整图例至表外
-        plt.subplots_adjust(top=0.95, right=0.85) # 调整整体边距
+        g.add_legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., title="Gender")
+        plt.subplots_adjust(top=0.95, right=0.85)
         plt.suptitle("Feature Distributions & Relationships", fontsize=16, y=0.98)
         plt.show()
 
     def data_preprocessing(self):
         """数据预处理"""
-        self.data.drop("CustomerID", axis=1, inplace=True) # 删除 ID 列
-        self.data.columns = ["Gender", "Age", "Income", "Score"] # 列重命名
-
         # 数据标准化
         cols = ["Age", "Income", "Score"]
         scaler = StandardScaler()
@@ -115,58 +128,35 @@ class CustomerAnalysis:
         self.X_num = self.data_array[:, 1:].astype(float) # 数值部分
         self.X_cat = self.data_array[:, 0] # 类别部分
 
-        # 计算混合距离矩阵
-        self.dist_num = cdist(self.X_num, self.X_num, metric="euclidean") # 数值部分: 欧氏距离
-        self.dist_cat = (self.X_cat[:, np.newaxis] != self.X_cat[np.newaxis, :]).astype(float) # 类别部分: 汉明距离
-
-        # 混合距离 = 数值距离 + gamma * 汉明距离
+        # 数值欧氏距离 + 类别汉明距离 -> 混合距离矩阵
+        self.dist_num = cdist(self.X_num, self.X_num, metric="euclidean")
+        self.dist_cat = (self.X_cat[:, np.newaxis] != self.X_cat[np.newaxis, :]).astype(float)
         self.dist_mixed = self.dist_num + self.gamma * self.dist_cat
 
     def find_optimal_k(self):
-        """确定最优聚类数 (K 值选择)"""
-        plt.figure(figsize=(8, 4))
-        
-        # 肘部法则
-        plt.subplot(1, 2, 1)
-        costs = []
+        """综合多种指标自动确定最佳 K 值"""
+        # K‑Prototypes 训练
+        costs, silhouette_scores = [], []
+        print("\n" + "=" * 50)
         for i in self.K_range:
-            model = KPrototypes(n_clusters=i, init="Cao", verbose=0)
+            model = KPrototypes(n_clusters=i, init="Cao", verbose=0,
+                                gamma=self.gamma, random_state=0)
             model.fit(self.data_array, categorical=[0])
             costs.append(model.cost_)
-        plt.xticks(self.K_range)
-        plt.plot(self.K_range, costs, "o-")
-        plt.xlabel("K Value")
-        plt.ylabel("Cost (混合误差)")
-        plt.title("Elbow Method (K-Prototypes Cost)")
-
-        # 轮廓系数
-        plt.subplot(1, 2, 2)
-        silhouette_scores = []
-        print("\n" + "=" * 50 )
-        for i in self.K_range:
-            # 训练 K-Prototypes
-            model = KPrototypes(n_clusters=i, init="Cao", verbose=0, gamma=self.gamma, random_state=0)
-            model.fit(self.data_array, categorical=[0])
-            labels = model.labels_
-
-            # 使用预计算距离矩阵计算轮廓系数
-            score = metrics.silhouette_score(self.dist_mixed, labels, metric="precomputed")
-            print(f"K={i}, 轮廓系数为: {score:.4f}")
+            score = metrics.silhouette_score(self.dist_mixed, model.labels_, metric="precomputed")
             silhouette_scores.append(score)
-        plt.xticks(range(2, 11, 1))
-        plt.plot(self.K_range, silhouette_scores, "o-")
-        plt.xlabel("K Value")
-        plt.ylabel("轮廓系数")
-        plt.title("Silhouette Coefficient")
-
+            print(f"K={i}, 簇内平方和={model.cost_:.4f}, 轮廓系数={score:.4f}")
+        
+        # 肘部法则和轮廓系数图展示
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+        ax1.plot(self.K_range, costs, "o-")
+        ax1.set(xticks=self.K_range, xlabel="K Value", ylabel="Cost (混合误差)", title="Elbow Method (K-Prototypes Cost)")
+        ax2.plot(self.K_range, silhouette_scores, "o-")
+        ax2.set(xticks=self.K_range, xlabel="K Value", ylabel="轮廓系数", title="Silhouette Coefficient")
         plt.tight_layout()
         plt.show()
 
-        self.determine_optimal_k(silhouette_scores, costs)
-
-    def determine_optimal_k(self, silhouette_scores, costs):
-        """综合多种指标自动确定最佳 K 值"""
-        # 强制转换为 NumPy 数组计算
+        # 转换为 NumPy 数组用于计算
         silhouette_scores = np.array(silhouette_scores)
         costs = np.array(costs)
 
@@ -193,10 +183,63 @@ class CustomerAnalysis:
         
         self.n_clusters = k_combined
 
+    def plot_k_distance(self):
+        """绘制 K 距离图并自动计算最优 eps 值"""
+        neighbors = NearestNeighbors(n_neighbors=self.n_clusters+1, metric='precomputed')
+        neighbors.fit(self.dist_mixed)  # 计算距离
+        distances, indices = neighbors.kneighbors(self.dist_mixed)
+        k_distances = np.sort(distances[:, -1])[::-1] # 提取每个点的第 k 个最近邻距离并降序排列
+        
+        
+        diffs = np.diff(k_distances) # 计算差分
+        window_size = 5  # 窗口大小 (数据集较小)
+        smoothed = np.convolve(diffs, np.ones(window_size)/window_size, mode='valid') # 滑动窗口平滑
+
+        # 找到最大差分点
+        elbow_idx = np.argmax(smoothed) + window_size // 2
+        optimal_eps = k_distances[elbow_idx]
+        
+        # K 距离图
+        plt.figure(figsize=(8, 6))
+        plt.plot(range(len(k_distances)), k_distances, marker="o", linestyle="-", color="b")
+        
+        plt.axhline(y=optimal_eps, color='r', linestyle='--', label=f'Optimal eps ≈ {optimal_eps:.2f}') # 在图上标记出肘部位置
+        plt.scatter([elbow_idx], [optimal_eps], color='red', zorder=5) # 标记拐点
+        
+        plt.title(f"K-Distance Graph (k={self.n_clusters})")
+        plt.xlabel("Points sorted by distance")
+        plt.ylabel(f"Distance to {self.n_clusters}th nearest neighbor")
+        plt.grid(True)
+        plt.legend()
+        plt.show()
+        
+        return optimal_eps
+
+    def evaluate(self, labels, name):
+        """评估函数"""
+        unique_labels = set(labels)
+        if len(unique_labels) < 2: # 总簇数不足 2 个
+            return name, None, len(unique_labels)
+        if -1 in unique_labels:
+            mask = labels != -1
+            if mask.sum() == 0:  # 全部为噪声
+                return name, None, 0
+            n_valid_clusters = len(set(labels[mask]))
+            if n_valid_clusters < 2: # 有效点太少或只聚成了1个簇, 无法计算轮廓系数
+                return name, None, n_valid_clusters
+            score = metrics.silhouette_score(self.dist_mixed[mask][:, mask], labels[mask], metric="precomputed")
+            n_clusters = len(unique_labels) - 1
+        else:
+            score = metrics.silhouette_score(self.dist_mixed, labels, metric="precomputed")
+            n_clusters = len(unique_labels)
+        return name, score, n_clusters
+
     def show_clusters(self):
         """执行 K-Prototypes 和层次聚类算法"""
         print("\n" + "=" * 50 )
         print(f"聚类数: {self.n_clusters}, gamma={self.gamma}")
+        eps_value = self.plot_k_distance()
+        print(f"DBSCAN 最优 eps 值: {eps_value}")
 
         # K-Prototypes
         kproto = KPrototypes(n_clusters=self.n_clusters, init="Cao", verbose=0, gamma=self.gamma, random_state=0)
@@ -207,21 +250,33 @@ class CustomerAnalysis:
         agg = AgglomerativeClustering(n_clusters=self.n_clusters, metric="precomputed", linkage="average")
         labels_agg = agg.fit_predict(self.dist_mixed)
 
-        # 评估函数
-        def evaluate(labels, name):
-            unique_labels = set(labels)
-            if -1 in unique_labels:
-                mask = labels != -1
-                score = metrics.silhouette_score(self.dist_mixed[mask][:, mask], labels[mask], metric="precomputed")
-                n_clusters = len(unique_labels) - 1
-            else:
-                score = metrics.silhouette_score(self.dist_mixed, labels, metric="precomputed")
-                n_clusters = len(unique_labels)
-            print(f"{name}, 轮廓系数: {score:.4f}, 簇数: {n_clusters}")
-        
-        evaluate(labels_kproto, "K-Prototypes")
-        evaluate(labels_agg, "层次聚类")
+        # DBSCAN
+        dbscan = DBSCAN(metric="precomputed", eps=eps_value, min_samples=5)
+        labels_dbscan = dbscan.fit_predict(self.dist_mixed)
 
+        # OPTICS
+        optics_sensitive = OPTICS(min_samples=5, metric='precomputed', xi=0.05, min_cluster_size=5)
+        labels_optics_sensitive = optics_sensitive.fit_predict(self.dist_mixed)
+
+        optics_balanced = OPTICS(min_samples=5, metric='precomputed', xi=0.1, min_cluster_size=15)
+        labels_optics_balanced = optics_balanced.fit_predict(self.dist_mixed)
+
+        optics_conservative = OPTICS(min_samples=5, metric='precomputed', xi=0.15, min_cluster_size=20)
+        labels_optics_conservative = optics_conservative.fit_predict(self.dist_mixed)
+        
+        self.scores = [
+            self.evaluate(labels_kproto, "K-Prototypes"),
+            self.evaluate(labels_agg, "层次聚类"),
+            self.evaluate(labels_dbscan, "DBSCAN"),
+            self.evaluate(labels_optics_sensitive, "OPTICS (Sensitive)"),
+            self.evaluate(labels_optics_balanced, "OPTICS (Balanced)"),
+            self.evaluate(labels_optics_conservative, "OPTICS (Conservative)")
+        ]
+
+        for name, score, n_clusters in self.scores:
+            score = f"{score:.4f}" if score is not None else "N/A"
+            print(f"{name}, 轮廓系数: {score}, 簇数: {n_clusters}")
+        
         self.plot_clusters_scatter(labels_kproto, title="K-Prototypes 聚类结果 (Income vs Score)")
         self.plot_clusters_scatter(labels_agg, title="层次聚类结果 (Income vs Score)")
         self.plot_radar_chart(labels_kproto, title="K-Prototypes 客户分群雷达图")
@@ -229,9 +284,9 @@ class CustomerAnalysis:
     def plot_clusters_scatter(self, labels, title="聚类结果"):
         """用 Income vs Score 展示聚类分布, 并标注性别"""
         df_viz = pd.DataFrame({
-            "Income": self.data["Income"].values,
-            "Score":  self.data["Score"].values,
-            "Gender": self.data["Gender"].values,
+            "Income": self.data_raw["Income"].values,
+            "Score":  self.data_raw["Score"].values,
+            "Gender": self.data_raw["Gender"].values,
             "Cluster": labels
         })
         plt.figure(figsize=(8,6))
@@ -249,10 +304,10 @@ class CustomerAnalysis:
         """绘制雷达图展示每簇的特征 (Age, Income, Score) + 女性百分比"""
         # 合并数据
         df_feat = pd.DataFrame({
-            "Age": self.data["Age"].values,
-            "Income": self.data["Income"].values,
-            "Score": self.data["Score"].values,
-            "Gender": self.data["Gender"].values,
+            "Age": self.data_raw["Age"].values,
+            "Income": self.data_raw["Income"].values,
+            "Score": self.data_raw["Score"].values,
+            "Gender": self.data_raw["Gender"].values,
             "Cluster": labels
         })
 
@@ -294,6 +349,6 @@ if __name__ == "__main__":
     path = "data"
     anlys = CustomerAnalysis(path)
     # anlys.data_preview() # 数据预览
-    anlys.data_preprocessing()
-    anlys.find_optimal_k()
-    anlys.show_clusters()
+    anlys.data_preprocessing() # 数据预处理
+    anlys.find_optimal_k() # 确定最优 K 值
+    anlys.show_clusters() # 聚类结果展示
