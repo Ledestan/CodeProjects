@@ -14,7 +14,6 @@ scipy>=1.17.1
 scikit-learn>=1.8.0
 """
 
-import os
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -40,7 +39,7 @@ plt.rcParams.update({
 class CustomerAnalysis:
     def __init__(self, path:str):
         self.path = path
-        self.data = pd.read_csv(os.path.join(path, "Mall_Customers.csv"), sep=",")
+        self.data = pd.read_csv(path, sep=",")
         self.data.drop("CustomerID", axis=1, inplace=True)
         self.data.columns = ["Gender", "Age", "Income", "Score"]
         self.data_raw = self.data.copy() # 保留原始尺度数据用于可视化
@@ -339,7 +338,7 @@ class CustomerAnalysis:
 
 
 if __name__ == "__main__":
-    path = "data"
+    path = "data/Mall_Customers.csv"
     anlys = CustomerAnalysis(path)
     anlys.data_preview() # 数据预览
     anlys.data_preprocessing() # 数据预处理
