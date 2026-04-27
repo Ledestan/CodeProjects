@@ -2,7 +2,7 @@
 PCA 数据集处理
 
 创建日期: 2026-04-23
-需求文件: data/orl_faces
+需求文件: Data/orl_faces
 
 依赖库:
 numpy>=2.2.6
@@ -33,6 +33,7 @@ def pca_face(path, img_size):
     pca.load_face_data()
     pca.data_processing()
     pca.show_PCA()
+
 
 class PCA_Iris:
     def __init__(self):
@@ -138,4 +139,4 @@ class PCA_face:
 
 if __name__ == "__main__":
     pca_iris()
-    pca_face("data/orl_faces", (64, 64))
+    pca_face("Data/orl_faces", (64, 64))

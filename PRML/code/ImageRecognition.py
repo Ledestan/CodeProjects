@@ -1,10 +1,10 @@
 """
 图像识别工具
 
-创建日期：2026-03-06
-需求文件：data/face_images
+创建日期: 2026-03-06
+需求文件: Data/face_images
 
-依赖库：
+依赖库:
 opencv-python>=4.12.0.88
 matplotlib>=3.10.8
 """
@@ -14,8 +14,8 @@ import cv2
 import matplotlib.pyplot as plt
 
 FACE_CASCADE_PATH = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
-plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+plt.rcParams["axes.unicode_minus"] = False
 
 
 def detection(image, target_size):
@@ -52,7 +52,7 @@ class ImageRecognition:
     def read(self):
         """从目标路径读取图片"""
         for img_name in os.listdir(self.path):
-            if img_name.endswith(('.jpg', '.png', '.jpeg')):
+            if img_name.endswith((".jpg", ".png", ".jpeg")):
                 self.image_paths.append(os.path.join(self.path, img_name))
 
     def transform(self):
@@ -76,7 +76,7 @@ class ImageRecognition:
             plt.subplot(3, 4, i + 1)
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             plt.imshow(img_rgb)
-            plt.axis('off')
+            plt.axis("off")
             plt.title(os.path.basename(self.image_paths[i]))
         
         plt.tight_layout()
@@ -94,25 +94,25 @@ class ImageRecognition:
             # 保存灰度图
             original_name = os.path.basename(self.image_paths[i])
             name, ext = os.path.splitext(original_name)
-            # cv2.imwrite(os.path.join(self.path, f'{name}_gray{ext}'), gray_img)
+            # cv2.imwrite(os.path.join(self.path, f"{name}_gray{ext}"), gray_img)
             
             # 灰度图展示
             plt.subplot(len(self.images), 2, i * 2 + 1)
-            plt.imshow(gray_img, cmap='gray')
-            plt.axis('off')
-            plt.title(f'{os.path.basename(self.image_paths[i])} - 灰度图')
+            plt.imshow(gray_img, cmap="gray")
+            plt.axis("off")
+            plt.title(f"{os.path.basename(self.image_paths[i])} - 灰度图")
 
             # 直方图展示
             plt.subplot(len(self.images), 2, i * 2 + 2)
-            plt.plot(hist, color='gray')
+            plt.plot(hist, color="gray")
             plt.xlim([0, 256])
             if i == 0:
-                plt.ylabel('像素数')
-            plt.xlabel('灰度级')
-            plt.title(f'{os.path.basename(self.image_paths[i])} - 直方图')
+                plt.ylabel("像素数")
+            plt.xlabel("灰度级")
+            plt.title(f"{os.path.basename(self.image_paths[i])} - 直方图")
 
             # 保存展示图
-            # plt.savefig(os.path.join(self.path, f'{name}_hist.png'), dpi=150, bbox_inches='tight')
+            # plt.savefig(os.path.join(self.path, f"{name}_hist.png"), dpi=150, bbox_inches="tight")
 
         plt.tight_layout()
         plt.show()
@@ -130,32 +130,32 @@ class ImageRecognition:
             # 保存均衡化后的图像
             original_name = os.path.basename(self.image_paths[i])
             name, ext = os.path.splitext(original_name)
-            # cv2.imwrite(os.path.join(self.path, f'{name}_equalized{ext}'), equalized_img)
+            # cv2.imwrite(os.path.join(self.path, f"{name}_equalized{ext}"), equalized_img)
             
             # 均衡化灰度图展示
             plt.subplot(len(self.images), 2, i * 2 + 1)
-            plt.imshow(equalized_img, cmap='gray')
-            plt.axis('off')
-            plt.title(f'{os.path.basename(self.image_paths[i])} - 灰度图')
+            plt.imshow(equalized_img, cmap="gray")
+            plt.axis("off")
+            plt.title(f"{os.path.basename(self.image_paths[i])} - 灰度图")
 
             # 均衡化直方图展示
             plt.subplot(len(self.images), 2, i * 2 + 2)
-            plt.plot(equalized_hist, color='gray')
+            plt.plot(equalized_hist, color="gray")
             plt.xlim([0, 256])
             if i == 0:
-                plt.ylabel('像素数')
-            plt.xlabel('灰度级')
-            plt.title(f'{os.path.basename(self.image_paths[i])} - 直方图')
+                plt.ylabel("像素数")
+            plt.xlabel("灰度级")
+            plt.title(f"{os.path.basename(self.image_paths[i])} - 直方图")
 
             # 保存均衡化展示图
-            # plt.savefig(os.path.join(self.path, f'{name}_hist_eq.png'), dpi=150, bbox_inches='tight')
+            # plt.savefig(os.path.join(self.path, f"{name}_hist_eq.png"), dpi=150, bbox_inches="tight")
         
         plt.tight_layout()
         plt.show()
 
 
 if __name__ == "__main__":
-    path = 'data/face_images'
+    path = "Data/face_images"
     recog = ImageRecognition(path)
     try:
         recog.read()

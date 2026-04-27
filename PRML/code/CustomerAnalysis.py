@@ -2,7 +2,7 @@
 客户数据处理工具
 
 创建日期: 2026-04-16
-需求文件: data/Mall_Customers.csv
+需求文件: Data/Mall_Customers.csv
 
 依赖库:
 pandas>=3.0.1
@@ -338,7 +338,7 @@ class CustomerAnalysis:
 
 
 if __name__ == "__main__":
-    path = "data/Mall_Customers.csv"
+    path = "Data/Mall_Customers.csv"
     anlys = CustomerAnalysis(path)
     anlys.data_preview() # 数据预览
     anlys.data_preprocessing() # 数据预处理
