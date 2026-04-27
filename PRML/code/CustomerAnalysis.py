@@ -30,10 +30,10 @@ from sklearn.preprocessing import StandardScaler
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams.update({
-    'axes.facecolor': (0, 0, 0, 0),  # 设置背景透明
-    'axes.edgecolor': 'black',       # 保留边框颜色
-    'figure.facecolor': 'white',     # 画布背景为白色
-    'legend.facecolor': 'white',     # 图例背景为白色
+    'axes.facecolor': (0, 0, 0, 0), # 设置背景透明
+    'axes.edgecolor': 'black', # 保留边框颜色
+    'figure.facecolor': 'white', # 画布背景为白色
+    'legend.facecolor': 'white', # 图例背景为白色
 })
 
 
@@ -145,7 +145,7 @@ class CustomerAnalysis:
             print(f"K={i}, 簇内平方和={model.cost_:.4f}, 轮廓系数={score:.4f}")
         
         # 肘部法则和轮廓系数图展示
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
         ax1.plot(self.K_range, costs, "o-")
         ax1.set(xticks=self.K_range, xlabel="K Value", ylabel="Cost (混合误差)", title="Elbow Method (K-Prototypes Cost)")
         ax2.plot(self.K_range, silhouette_scores, "o-")
@@ -186,7 +186,6 @@ class CustomerAnalysis:
         neighbors.fit(self.dist_mixed)  # 计算距离
         distances, indices = neighbors.kneighbors(self.dist_mixed)
         k_distances = np.sort(distances[:, -1])[::-1] # 提取每个点的第 k 个最近邻距离并降序排列
-        
         
         diffs = np.diff(k_distances) # 计算差分
         window_size = 5  # 窗口大小 (数据集较小)
@@ -230,7 +229,7 @@ class CustomerAnalysis:
         return name, score, n_clusters
 
     def show_clusters(self):
-        """执行 K-Prototypes 和层次聚类算法"""
+        """执行 K-Prototypes, 层次聚类, DBSCAN, OPTICS 算法"""
         print("\n" + "=" * 50 )
         print(f"聚类数: {self.n_clusters}, gamma={self.gamma}")
         eps_value = self.plot_k_distance()
