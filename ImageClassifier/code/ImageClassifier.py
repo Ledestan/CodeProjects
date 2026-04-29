@@ -1,5 +1,5 @@
 """
-图像识别
+图像分类器
 
 创建日期: 2026-04-22
 需求文件: data
@@ -22,7 +22,7 @@ plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
 plt.rcParams["axes.unicode_minus"] = False
 
 
-class ImageRecognition:
+class ImageClassifier:
     def __init__(self):
         pass
 
@@ -43,4 +43,4 @@ class ImageRecognition:
 
 
 if __name__ == "__main__":
-    recog = ImageRecognition()
+    recog = ImageClassifier()
