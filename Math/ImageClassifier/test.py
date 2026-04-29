@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from ImageClassifier import ImageClassifier
 
 
-class App:
+class Window:
     """图形界面应用程序"""
     def __init__(self, root, classifier):
         self.root = root
@@ -97,7 +97,7 @@ def main():
 
     # 创建 GUI 窗口
     root = tk.Tk()
-    app = App(root, clf)
+    app = Window(root, clf)
     root.mainloop()
 
 
