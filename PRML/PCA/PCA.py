@@ -2,7 +2,7 @@
 PCA 数据集处理
 
 创建日期: 2026-04-23
-需求文件: Data/orl_faces
+需求文件: data/orl_faces
 
 依赖库:
 numpy>=2.2.6
@@ -22,6 +22,7 @@ from sklearn.datasets import load_iris
 
 plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
 plt.rcParams["axes.unicode_minus"] = False
+
 
 def pca_iris():
     pca = PCA_Iris
@@ -137,6 +138,7 @@ class PCA_face:
         plt.tight_layout()
         plt.show()
 
+
 if __name__ == "__main__":
     pca_iris()
-    pca_face("Data/orl_faces", (64, 64))
+    pca_face("data/orl_faces", (64, 64))

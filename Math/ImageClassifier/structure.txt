@@ -1,0 +1,13 @@
+ImageClassifier/
+├── data/             # 图片数据集
+│   ├── train/        # 训练数据集
+│   │   ├── cat/
+│   │   └── dog/
+│   └── test/		  # 测试数据集 (不参与训练)
+│       ├── cat/
+│       └── dog/
+├── classifier.py     # 核心类 ImageClassifier
+├── train.py          # 训练脚本 (调用 ImageClassifier 类)
+├── test.py           # Tkinter 窗口类 Window + 启动 GUI
+└── models/           # 存放训练好的参数文件
+    └── params.npz    # 训练后保存的 w, b 参数 (np.savez 格式)

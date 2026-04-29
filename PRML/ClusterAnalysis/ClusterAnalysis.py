@@ -3,8 +3,8 @@
 
 创建日期: 2026-04-02
 需求文件:
-Data\points80.txt
-Data\points788.txt
+data\points80.txt
+data\points788.txt
 
 依赖库：
 pandas>=3.0.1
@@ -167,5 +167,5 @@ class ClusterAnalysis_788:
         plt.show()
 
 if __name__ == "__main__":
-    points_80("Data/points80.txt")
-    points_788("Data/points788.txt")
+    points_80("data/points80.txt")
+    points_788("data/points788.txt")

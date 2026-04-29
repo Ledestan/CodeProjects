@@ -2,7 +2,7 @@
 数据处理工具
 
 创建日期: 2026-03-20
-需求文件: Data/lagou_data.csv
+需求文件: data/lagou_data.csv
 
 依赖库:
 pandas>=3.0.1
@@ -237,8 +237,7 @@ class DataAnalysis:
 
 
 if __name__ == "__main__":
-    path = "Data"
-    anlys = DataAnalysis(path)
+    anlys = DataAnalysis("data")
     anlys.data_preview()
     anlys.duplicate()
     anlys.missing_process()

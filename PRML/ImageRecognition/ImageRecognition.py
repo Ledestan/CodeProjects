@@ -2,7 +2,7 @@
 图像识别工具
 
 创建日期: 2026-03-06
-需求文件: Data/face_images
+需求文件: data/face_images
 
 依赖库:
 opencv-python>=4.12.0.88
@@ -69,30 +69,21 @@ class ImageRecognition:
     def show(self):
         """展示图片"""
         plt.figure(figsize=(10, 5))
-
         for i, img in enumerate(self.images):
             plt.subplot(3, 4, i + 1)
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             plt.imshow(img_rgb)
             plt.axis("off")
             plt.title(os.path.basename(self.image_paths[i]))
-        
         plt.tight_layout()
         plt.show()
 
     def preview(self):
         """预览灰度图、直方图"""
-        # 创建文件夹
-        plt.figure(figsize=(15, 8))
-        
+        plt.figure(figsize=(16, 8))
         for i, img in enumerate(self.images):
             gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             hist = cv2.calcHist([gray_img], [0], None, [256], [0, 256])
-            
-            # 保存灰度图
-            original_name = os.path.basename(self.image_paths[i])
-            name, ext = os.path.splitext(original_name)
-            # cv2.imwrite(os.path.join(self.path, f"{name}_gray{ext}"), gray_img)
             
             # 灰度图展示
             plt.subplot(len(self.images), 2, i * 2 + 1)
@@ -109,14 +100,10 @@ class ImageRecognition:
             plt.xlabel("灰度级")
             plt.title(f"{os.path.basename(self.image_paths[i])} - 直方图")
 
-            # 保存展示图
-            # plt.savefig(os.path.join(self.path, f"{name}_hist.png"), dpi=150, bbox_inches="tight")
-
         plt.tight_layout()
         plt.show()
 
-        plt.figure(figsize=(15, 8))
-
+        plt.figure(figsize=(16, 8))
         for i, img in enumerate(self.images):
             gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             hist = cv2.calcHist([gray_img], [0], None, [256], [0, 256])
@@ -124,11 +111,6 @@ class ImageRecognition:
             # 直方图均衡化
             equalized_img = cv2.equalizeHist(gray_img)
             equalized_hist = cv2.calcHist([equalized_img], [0], None, [256], [0, 256])
-            
-            # 保存均衡化后的图像
-            original_name = os.path.basename(self.image_paths[i])
-            name, ext = os.path.splitext(original_name)
-            # cv2.imwrite(os.path.join(self.path, f"{name}_equalized{ext}"), equalized_img)
             
             # 均衡化灰度图展示
             plt.subplot(len(self.images), 2, i * 2 + 1)
@@ -145,20 +127,13 @@ class ImageRecognition:
             plt.xlabel("灰度级")
             plt.title(f"{os.path.basename(self.image_paths[i])} - 直方图")
 
-            # 保存均衡化展示图
-            # plt.savefig(os.path.join(self.path, f"{name}_hist_eq.png"), dpi=150, bbox_inches="tight")
-        
         plt.tight_layout()
         plt.show()
 
 
 if __name__ == "__main__":
-    path = "Data/face_images"
-    recog = ImageRecognition(path)
-    try:
-        recog.read()
-        recog.transform()
-        recog.show()
-        recog.preview()
-    except Exception as e:
-        print(e)
+    recog = ImageRecognition("data/face_images")
+    recog.read()
+    recog.transform()
+    recog.show()
+    recog.preview()
