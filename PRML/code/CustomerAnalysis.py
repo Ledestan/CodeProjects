@@ -26,13 +26,13 @@ from sklearn.cluster import AgglomerativeClustering, DBSCAN, OPTICS
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
-plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+plt.rcParams["axes.unicode_minus"] = False
 plt.rcParams.update({
-    'axes.facecolor': (0, 0, 0, 0), # 设置背景透明
-    'axes.edgecolor': 'black', # 保留边框颜色
-    'figure.facecolor': 'white', # 画布背景为白色
-    'legend.facecolor': 'white', # 图例背景为白色
+    "axes.facecolor": (0, 0, 0, 0), # 设置背景透明
+    "axes.edgecolor": "black", # 保留边框颜色
+    "figure.facecolor": "white", # 画布背景为白色
+    "legend.facecolor": "white", # 图例背景为白色
 })
 
 
@@ -62,7 +62,7 @@ class CustomerAnalysis:
         print(f"描述性统计:\n{self.data.describe()}")
         print(self.data[["Gender"]].describe().T)
 
-        cols = ['Age', 'Income', 'Score']
+        cols = ["Age", "Income", "Score"]
 
         # 展示 Age, Income, Score 直方图
         fig, axes = plt.subplots(1, 3, figsize=(12, 4))
@@ -75,24 +75,24 @@ class CustomerAnalysis:
         # 盒图: 展示 Age, Income, Score 的整体分布及性别对比    
         fig, axes = plt.subplots(1, 3, figsize=(12, 4))
         for i, col in enumerate(cols):
-            axes[i].boxplot(self.data[col], vert=True, patch_artist=True, boxprops=dict(facecolor='lightblue', alpha=0.7))
+            axes[i].boxplot(self.data[col], vert=True, patch_artist=True, boxprops=dict(facecolor="lightblue", alpha=0.7))
             axes[i].set_title(col, fontsize=12)
-            axes[i].set_ylabel('Value')
-        plt.suptitle('Overall Distribution Boxplot (原始尺度)', fontsize=14)
+            axes[i].set_ylabel("Value")
+        plt.suptitle("Overall Distribution Boxplot (原始尺度)", fontsize=14)
         plt.tight_layout()
         plt.show()
 
         fig, axes = plt.subplots(1, 3, figsize=(12, 4))
         for i, col in enumerate(cols):
-            male_data = self.data[self.data['Gender'] == 'Male'][col]
-            female_data = self.data[self.data['Gender'] == 'Female'][col]
+            male_data = self.data[self.data["Gender"] == "Male"][col]
+            female_data = self.data[self.data["Gender"] == "Female"][col]
             box_data = [male_data, female_data]
-            bp = axes[i].boxplot(box_data, patch_artist=True, tick_labels=['Male', 'Female'], boxprops=dict(alpha=0.7), medianprops=dict(color='black'))
-            bp['boxes'][0].set_facecolor('#4682B4')
-            bp['boxes'][1].set_facecolor('#FFC0CB')
+            bp = axes[i].boxplot(box_data, patch_artist=True, tick_labels=["Male", "Female"], boxprops=dict(alpha=0.7), medianprops=dict(color="black"))
+            bp["boxes"][0].set_facecolor("#4682B4")
+            bp["boxes"][1].set_facecolor("#FFC0CB")
             axes[i].set_title(col, fontsize=12)
-            axes[i].set_ylabel('Value')
-        plt.suptitle('Distribution by Gender (Boxplot)', fontsize=14)
+            axes[i].set_ylabel("Value")
+        plt.suptitle("Distribution by Gender (Boxplot)", fontsize=14)
         plt.tight_layout()
         plt.show()
         
@@ -181,14 +181,14 @@ class CustomerAnalysis:
 
     def plot_k_distance(self):
         """绘制 K 距离图并自动计算最优 eps 值"""
-        neighbors = NearestNeighbors(n_neighbors=self.n_clusters+1, metric='precomputed')
+        neighbors = NearestNeighbors(n_neighbors=self.n_clusters+1, metric="precomputed")
         neighbors.fit(self.dist_mixed)  # 计算距离
         distances, indices = neighbors.kneighbors(self.dist_mixed)
         k_distances = np.sort(distances[:, -1])[::-1] # 提取每个点的第 k 个最近邻距离并降序排列
         
         diffs = np.diff(k_distances) # 计算差分
         window_size = 5  # 窗口大小 (数据集较小)
-        smoothed = np.convolve(diffs, np.ones(window_size)/window_size, mode='valid') # 滑动窗口平滑
+        smoothed = np.convolve(diffs, np.ones(window_size)/window_size, mode="valid") # 滑动窗口平滑
 
         # 找到最大差分点
         elbow_idx = np.argmax(smoothed) + window_size // 2
@@ -197,8 +197,8 @@ class CustomerAnalysis:
         # K 距离图
         plt.figure(figsize=(8, 6))
         plt.plot(range(len(k_distances)), k_distances, marker="o", linestyle="-", color="b")
-        plt.axhline(y=optimal_eps, color='r', linestyle='--', label=f'Optimal eps ≈ {optimal_eps:.2f}') # 在图上标记出肘部位置
-        plt.scatter([elbow_idx], [optimal_eps], color='red', zorder=5) # 标记拐点
+        plt.axhline(y=optimal_eps, color="r", linestyle="--", label=f"Optimal eps ≈ {optimal_eps:.2f}") # 在图上标记出肘部位置
+        plt.scatter([elbow_idx], [optimal_eps], color="red", zorder=5) # 标记拐点
         plt.title(f"K-Distance Graph (k={self.n_clusters})")
         plt.xlabel("Points sorted by distance")
         plt.ylabel(f"Distance to {self.n_clusters}th nearest neighbor")
@@ -248,13 +248,13 @@ class CustomerAnalysis:
         labels_dbscan = dbscan.fit_predict(self.dist_mixed)
 
         # OPTICS
-        optics_sensitive = OPTICS(min_samples=5, metric='precomputed', xi=0.05, min_cluster_size=5)
+        optics_sensitive = OPTICS(min_samples=5, metric="precomputed", xi=0.05, min_cluster_size=5)
         labels_optics_sensitive = optics_sensitive.fit_predict(self.dist_mixed)
 
-        optics_balanced = OPTICS(min_samples=5, metric='precomputed', xi=0.1, min_cluster_size=15)
+        optics_balanced = OPTICS(min_samples=5, metric="precomputed", xi=0.1, min_cluster_size=15)
         labels_optics_balanced = optics_balanced.fit_predict(self.dist_mixed)
 
-        optics_conservative = OPTICS(min_samples=5, metric='precomputed', xi=0.15, min_cluster_size=20)
+        optics_conservative = OPTICS(min_samples=5, metric="precomputed", xi=0.15, min_cluster_size=20)
         labels_optics_conservative = optics_conservative.fit_predict(self.dist_mixed)
         
         self.scores = [

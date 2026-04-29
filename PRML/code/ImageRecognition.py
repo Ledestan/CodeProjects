@@ -47,8 +47,6 @@ class ImageRecognition:
         self.faces = []
         self.gray_images = []
 
-
-    
     def read(self):
         """从目标路径读取图片"""
         for img_name in os.listdir(self.path):
