@@ -1,8 +1,8 @@
 """
-客户数据处理工具
+客户数据分析工具
 
 创建日期: 2026-04-16
-需求文件: Data/Mall_Customers.csv
+需求文件: Data\Mall_Customers.csv
 
 依赖库:
 pandas>=3.0.1

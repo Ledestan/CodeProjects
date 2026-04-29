@@ -1,9 +1,10 @@
 """
-图像处理工具
+图像矩阵处理工具
 
-创建日期：2026-03-30
+创建日期: 2026-03-30
+需求文件: Data\image.png
 
-依赖库：
+依赖库:
 numpy>=2.2.6
 matplotlib>=3.10.8
 """
@@ -15,8 +16,8 @@ from tkinter import ttk, filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
-plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
+plt.rcParams["axes.unicode_minus"] = False
 
 
 class ImageProcessing:
@@ -29,7 +30,7 @@ class ImageProcessing:
             # 归一化到 uint8
             if self.image_orig.dtype == np.float32 or self.image_orig.dtype == np.float64:
                 self.image_orig = (self.image_orig * 255).astype(np.uint8)
-            # 垂直翻转，使数组第0行对应图像底部，与坐标系 origin='lower' 匹配
+            # 垂直翻转，使数组第0行对应图像底部，与坐标系 origin="lower" 匹配
             self.image_orig = np.flipud(self.image_orig)
             self.image_gray = None
             self.transform()  # 自动转为灰度图
@@ -64,27 +65,27 @@ class ImageProcessing:
             print("未加载图像")
             return
         # 彩色图像信息
-        print('彩色图，左上角 2 * 3 像素信息：')
+        print("彩色图，左上角 2 * 3 像素信息：")
         print(self.image_orig[:2, :3])
-        print(f'矩阵信息：{self.image_orig.shape}')
-        print(f'数据类型：{self.image_orig.dtype}')
+        print(f"矩阵信息：{self.image_orig.shape}")
+        print(f"数据类型：{self.image_orig.dtype}")
 
         # 灰度图像信息
-        print('灰度图，左上角 5 * 5 像素信息：')
+        print("灰度图，左上角 5 * 5 像素信息：")
         print(self.image_gray[:5, :5])
-        print(f'矩阵信息：{self.image_gray.shape}')
-        print(f'数据类型：{self.image_gray.dtype}')
+        print(f"矩阵信息：{self.image_gray.shape}")
+        print(f"数据类型：{self.image_gray.dtype}")
 
         # 显示图像
         plt.figure(figsize=(10, 4))
         plt.subplot(1, 2, 1)
         plt.imshow(self.image_orig)
-        plt.title('Original Image')
-        plt.axis('off')
+        plt.title("Original Image")
+        plt.axis("off")
         plt.subplot(1, 2, 2)
-        plt.imshow(self.image_gray, cmap='gray')
-        plt.title('Grayscale Image')
-        plt.axis('off')
+        plt.imshow(self.image_gray, cmap="gray")
+        plt.title("Grayscale Image")
+        plt.axis("off")
         plt.tight_layout()
         plt.show()
 
@@ -244,18 +245,18 @@ class Window:
         self.transform_var = tk.StringVar()
         self.transform_combo = ttk.Combobox(row2, textvariable=self.transform_var,
                                             state="readonly", width=20)
-        self.transform_combo['values'] = [
+        self.transform_combo["values"] = [
             "关于x轴对称", "关于y轴对称", "关于y=x对称", "关于y=-x对称", "关于原点对称",
             "缩放(等比例)", "水平收缩与拉伸", "垂直收缩与拉伸", "水平剪切", "垂直剪切",
             "旋转", "平移"
         ]
         self.transform_combo.pack(side=tk.LEFT, padx=5)
-        self.transform_combo.bind('<<ComboboxSelected>>', self._on_transform_select)
+        self.transform_combo.bind("<<ComboboxSelected>>", self._on_transform_select)
 
         # 参数输入框（默认禁用）
-        self.entry1 = tk.Entry(row2, width=8, state='disabled')
+        self.entry1 = tk.Entry(row2, width=8, state="disabled")
         self.entry1.pack(side=tk.LEFT, padx=2)
-        self.entry2 = tk.Entry(row2, width=8, state='disabled')
+        self.entry2 = tk.Entry(row2, width=8, state="disabled")
         self.entry2.pack(side=tk.LEFT, padx=2)
 
         tk.Button(row2, text="确认变换", command=self.apply_single_transform).pack(side=tk.LEFT, padx=10)
@@ -273,10 +274,10 @@ class Window:
         self.ax = self.fig.add_subplot(111)
         self.ax.set_xlim(-400, 400)
         self.ax.set_ylim(-400, 400)
-        self.ax.set_aspect('equal')
-        self.ax.grid(True, linestyle='--', alpha=0.7)
-        self.ax.axhline(0, color='black', linewidth=0.5)
-        self.ax.axvline(0, color='black', linewidth=0.5)
+        self.ax.set_aspect("equal")
+        self.ax.grid(True, linestyle="--", alpha=0.7)
+        self.ax.axhline(0, color="black", linewidth=0.5)
+        self.ax.axvline(0, color="black", linewidth=0.5)
         self.ax.set_title("图像显示区 (第一象限初始位置)")
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
@@ -285,16 +286,16 @@ class Window:
     def _on_transform_select(self, event=None):
         """根据选中的变换启用对应的参数输入框"""
         name = self.transform_var.get()
-        self.entry1.config(state='disabled')
-        self.entry2.config(state='disabled')
+        self.entry1.config(state="disabled")
+        self.entry2.config(state="disabled")
         self.entry1.delete(0, tk.END)
         self.entry2.delete(0, tk.END)
 
         if name in ["缩放(等比例)", "水平收缩与拉伸", "垂直收缩与拉伸", "水平剪切", "垂直剪切", "旋转"]:
-            self.entry1.config(state='normal')
+            self.entry1.config(state="normal")
         elif name == "平移":
-            self.entry1.config(state='normal')
-            self.entry2.config(state='normal')
+            self.entry1.config(state="normal")
+            self.entry2.config(state="normal")
 
     def _get_transform_matrix(self, name, param1=0.0, param2=0.0):
         """
@@ -370,18 +371,18 @@ class Window:
         self.ax.clear()
         self.ax.set_xlim(-400, 400)
         self.ax.set_ylim(-400, 400)
-        self.ax.set_aspect('equal')
-        self.ax.grid(True, linestyle='--', alpha=0.7)
-        self.ax.axhline(0, color='black', linewidth=0.5)
-        self.ax.axvline(0, color='black', linewidth=0.5)
+        self.ax.set_aspect("equal")
+        self.ax.grid(True, linestyle="--", alpha=0.7)
+        self.ax.axhline(0, color="black", linewidth=0.5)
+        self.ax.axvline(0, color="black", linewidth=0.5)
         self.ax.set_title("图像显示区")
 
         if extent is None:
             h, w = img.shape[:2]
             extent = [0, w, 0, h]
 
-        cmap = 'gray' if len(img.shape) == 2 else None
-        self.ax.imshow(img, extent=extent, cmap=cmap, origin='lower')
+        cmap = "gray" if len(img.shape) == 2 else None
+        self.ax.imshow(img, extent=extent, cmap=cmap, origin="lower")
         self.canvas.draw()
 
     # ---------- 单步变换 ----------
@@ -397,8 +398,8 @@ class Window:
             return
 
         try:
-            p1 = float(self.entry1.get()) if self.entry1['state'] == 'normal' else 0.0
-            p2 = float(self.entry2.get()) if self.entry2['state'] == 'normal' else 0.0
+            p1 = float(self.entry1.get()) if self.entry1["state"] == "normal" else 0.0
+            p2 = float(self.entry2.get()) if self.entry2["state"] == "normal" else 0.0
         except ValueError:
             print("参数输入错误，请输入数字")
             return
@@ -423,31 +424,31 @@ class Window:
         dialog.geometry("400x300")
 
         # 界面布局
-        tk.Label(dialog, text="第一/二类变换:").grid(row=0, column=0, padx=5, pady=5, sticky='e')
+        tk.Label(dialog, text="第一/二类变换:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
         combo_var = tk.StringVar()
         combo = ttk.Combobox(dialog, textvariable=combo_var, state="readonly", width=20)
-        combo['values'] = [
+        combo["values"] = [
             "关于x轴对称", "关于y轴对称", "关于y=x对称", "关于y=-x对称", "关于原点对称",
             "缩放(等比例)", "水平收缩与拉伸", "垂直收缩与拉伸", "水平剪切", "垂直剪切"
         ]
         combo.grid(row=0, column=1, padx=5, pady=5)
         combo.current(0)
 
-        tk.Label(dialog, text="参数 k (如需要):").grid(row=1, column=0, padx=5, pady=5, sticky='e')
+        tk.Label(dialog, text="参数 k (如需要):").grid(row=1, column=0, padx=5, pady=5, sticky="e")
         entry_k = tk.Entry(dialog, width=10)
-        entry_k.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        entry_k.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
-        tk.Label(dialog, text="旋转角度 (°):").grid(row=2, column=0, padx=5, pady=5, sticky='e')
+        tk.Label(dialog, text="旋转角度 (°):").grid(row=2, column=0, padx=5, pady=5, sticky="e")
         entry_angle = tk.Entry(dialog, width=10)
-        entry_angle.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        entry_angle.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
-        tk.Label(dialog, text="平移 dx:").grid(row=3, column=0, padx=5, pady=5, sticky='e')
+        tk.Label(dialog, text="平移 dx:").grid(row=3, column=0, padx=5, pady=5, sticky="e")
         entry_dx = tk.Entry(dialog, width=10)
-        entry_dx.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        entry_dx.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
-        tk.Label(dialog, text="平移 dy:").grid(row=4, column=0, padx=5, pady=5, sticky='e')
+        tk.Label(dialog, text="平移 dy:").grid(row=4, column=0, padx=5, pady=5, sticky="e")
         entry_dy = tk.Entry(dialog, width=10)
-        entry_dy.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        entry_dy.grid(row=4, column=1, padx=5, pady=5, sticky="w")
 
         def apply_composite():
             try:
