@@ -1,6 +1,5 @@
 """
-test.py 分类器图形测试界面
-启动后加载 Models/params.npz 中的参数, 用户可选择任意图片进行预测
+分类器图形测试界面
 """
 
 import os
@@ -8,6 +7,7 @@ import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
+sys.dont_write_bytecode = True
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from ImageClassifier import ImageClassifier
 
@@ -84,7 +84,7 @@ class Window:
 
 def main():
     # 加载模型参数
-    param_path = os.path.join('models', 'params.npz')
+    param_path = 'data/models/params.npz'
     if not os.path.exists(param_path):
         root = tk.Tk()
         root.withdraw()
