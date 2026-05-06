@@ -29,7 +29,7 @@ class ChessBoard:
 
     def draw_board(self, cell_size, screen):
         screen.fill((255, 127, 38))
-        board = pygame.image.load('Assets/board.png')
+        board = pygame.image.load('data/board.png')
         board = pygame.transform.scale(board, (cell_size * 9, cell_size * 10))
         screen.blit(board, (cell_size * 0.5, cell_size * 0.5))
         for y in range(10):
@@ -37,14 +37,14 @@ class ChessBoard:
                 if self.board[y][x]:
                     self.board[y][x].draw_piece(cell_size, screen)
         if self.win:
-            win = pygame.image.load(f'Assets/win.png')
+            win = pygame.image.load(f'data/win.png')
             win = pygame.transform.scale(win, (cell_size * 2.5, cell_size))
             screen.blit(win, (cell_size * 3.75, cell_size * 5))
         else:
             if self.current_player == 'r':
-                current_player = pygame.image.load(f'Assets/r_turn.png')
+                current_player = pygame.image.load(f'data/r_turn.png')
             else:
-                current_player = pygame.image.load(f'Assets/b_turn.png')
+                current_player = pygame.image.load(f'data/b_turn.png')
             current_player = pygame.transform.scale(current_player, (cell_size * 2.5, cell_size))
             screen.blit(current_player, (cell_size * 3.75, cell_size * 5))
 
@@ -77,6 +77,6 @@ class ChessBoard:
         self.selected_piece.pos = pos
         self.selected_piece.select = False
         self.selected_piece = None
-        pygame.mixer.music.load('Assets/move.mp3')
+        pygame.mixer.music.load('data/move.mp3')
         pygame.mixer.music.play()
         self.current_player = 'b' if self.current_player == 'r' else 'r'

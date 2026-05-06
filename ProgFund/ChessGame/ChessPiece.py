@@ -30,11 +30,11 @@ class ChessPiece:
 
     def draw_piece(self, cell_size, screen):
         pos = cell_size * (self.pos[0] + 0.5), cell_size * (self.pos[1] + 0.5)
-        image = pygame.image.load(f'Assets/{self.color}_{self.piece_type}.png')
+        image = pygame.image.load(f'data/{self.color}_{self.piece_type}.png')
         image = pygame.transform.scale(image, (cell_size, cell_size))
         screen.blit(image, pos)
         if self.select:
-            frame = pygame.image.load(f'Assets/{self.color}_selected.png')
+            frame = pygame.image.load(f'data/{self.color}_selected.png')
             frame = pygame.transform.scale(frame, (cell_size, cell_size))
             screen.blit(frame, pos)
 
