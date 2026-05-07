@@ -46,7 +46,7 @@ class ImageClassifier:
         # 特征标准化参数（训练时计算，预测时使用）
         self.feature_mean = None
         self.feature_std = None
- 
+
     # ==================== 数据加载与预处理 ====================
     def load_images(self, data_dir: str):
         """
