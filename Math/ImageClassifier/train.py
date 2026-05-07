@@ -23,8 +23,7 @@ def main():
 
     if X_train is None:
         # 缓存不存在，需要加载图片并提取特征
-        train_dir = "D:/Tingchu/Downloads/kagglecatsanddogs_5340/PetImages"
-        # train_dir = "data/train"
+        train_dir = "data/train"
         if not os.path.isdir(train_dir):
             print(f"错误：训练目录 '{train_dir}' 不存在。")
             return
