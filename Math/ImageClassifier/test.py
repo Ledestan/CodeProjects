@@ -84,7 +84,7 @@ class Window:
 
 def main():
     # 加载模型参数
-    param_path = 'data/models/params.npz'
+    param_path = "data/models/params.npz"
     if not os.path.exists(param_path):
         root = tk.Tk()
         root.withdraw()
