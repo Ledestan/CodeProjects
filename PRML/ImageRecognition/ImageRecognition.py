@@ -2,7 +2,7 @@
 图像识别工具
 
 创建日期: 2026-03-06
-需求文件: data/face_images
+需求文件: data
 
 依赖库:
 opencv-python>=4.12.0.88
@@ -38,6 +38,7 @@ def detection(image, target_size):
     face_normalized = cv2.normalize(face_resized, None, 0, 255, cv2.NORM_MINMAX)
     
     return face_normalized
+
 
 class ImageRecognition:
     def __init__(self, path:str):
@@ -132,7 +133,7 @@ class ImageRecognition:
 
 
 if __name__ == "__main__":
-    recog = ImageRecognition("data/face_images")
+    recog = ImageRecognition("data")
     recog.read()
     recog.transform()
     recog.show()

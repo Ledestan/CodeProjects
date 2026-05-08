@@ -88,11 +88,11 @@ class DataAnalysis:
         print(f"清洗后：{self.data.shape}")
 
         total_empty_count = self.data["label"].isnull().sum()
-        print(f"缺失值处理前label字段的缺失数量：{total_empty_count}")
+        print(f"缺失值处理前label字段的缺失数量: {total_empty_count}")
 
         self.data["label"] = self.data["label"].replace("\"""\"", np.nan)
         total_empty_count = self.data["label"].isnull().sum()
-        print(f"缺失值处理后label字段的缺失数量：{total_empty_count}")
+        print(f"缺失值处理后label字段的缺失数量: {total_empty_count}")
 
         # 保存
         # self.data.to_csv(os.path.join(self.path, "lagou_clean.csv"), encoding ="gbk")
@@ -160,7 +160,7 @@ class DataAnalysis:
         plt.show()
 
     def mutual_info_analysis(self, k=10):
-        """互信息分析：计算特征与薪资区间之间的互信息得分，并绘制TopK特征柱状图"""
+        """互信息分析: 计算特征与薪资区间之间的互信息得分, 并绘制 TopK 特征柱状图"""
         # 生成薪资区间
         if "salary" in self.data.columns:
             salary_col = "salary"
@@ -169,7 +169,7 @@ class DataAnalysis:
         self.data["salary_range"] = self.data[salary_col].apply(classify_salary)
 
         print("\n" + "=" * 50)
-        print(f"新增薪资区间列 salary_range，取值分布:")
+        print(f"新增薪资区间列 salary_range, 取值分布:")
         print(self.data["salary_range"].value_counts())
 
         # 特征编码
@@ -221,8 +221,8 @@ class DataAnalysis:
                 plt.text(score + 0.001, bar.get_y() + bar.get_height() / 2,
                          f"{score:.3f}", va="center", fontsize=10)
 
-        plt.title(f"特征与工资水平（salary_range）的互信息得分（Top{k}）")
-        plt.xlabel("互信息得分（越高影响力越强）")
+        plt.title(f"特征与工资水平 (salary_range) 的互信息得分 (Top{k})")
+        plt.xlabel("互信息得分 (越高影响力越强)")
         plt.ylabel("特征名称")
         plt.xticks(np.arange(0, xmax + step, step))
         plt.tight_layout()
@@ -232,7 +232,7 @@ class DataAnalysis:
         # plt.savefig(f"data/lagou_Top{k}.png", dpi=300, bbox_inches="tight")
         
         print("\n" + "=" * 50)
-        print(f"特征与工资水平互信息得分（Top{k}）")
+        print(f"特征与工资水平互信息得分 (Top{k})")
         print(mi_df.round(3))
 
 
