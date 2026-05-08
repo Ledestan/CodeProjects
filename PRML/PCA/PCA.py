@@ -98,7 +98,7 @@ class PCA_face:
         self.cumulative_var = None # 累计方差比
 
     def load_face_data(self):
-        """加载人脸数据集"""
+        """加载 ORL 人脸数据集"""
         X, Y = [], []
         # 遍历数据集文件夹
         for person_id in os.listdir(self.path):
