@@ -215,7 +215,7 @@ class PCA_face:
                 # 原图
                 ax1 = plt.subplot(3, 4, row * 4 + 1)
                 ax1.imshow(original_img, cmap='gray')
-                ax1.set_title(f'人物 - 原图', fontsize=12)
+                ax1.set_title(f'原图', fontsize=10)
                 ax1.axis('off')
 
                 # 重构图
@@ -223,14 +223,14 @@ class PCA_face:
                 recon_img = self.scaler.inverse_transform(recon_scaler).reshape(h, w)
                 ax2 = plt.subplot(3, 4, row * 4 + 2)
                 ax2.imshow(recon_img, cmap='gray')
-                ax2.set_title('重构', fontsize=12)
+                ax2.set_title('重构', fontsize=10)
                 ax2.axis('off')
 
                 # 差异图
                 diff_img = original_img - recon_img
                 ax3 = plt.subplot(3, 4, row * 4 + 3)
                 ax3.imshow(diff_img, cmap='RdBu', vmin=-50, vmax=50)
-                ax3.set_title('差异图 (红亮/蓝暗)', fontsize=12)
+                ax3.set_title('差异图 (红亮/蓝暗)', fontsize=10)
                 ax3.axis('off')
 
                 # 权重柱状图
@@ -243,17 +243,11 @@ class PCA_face:
                 ax4.set_title('投影权重', fontsize=12)
                 ax4.grid(True, alpha=0.3)
 
-            plt.suptitle(f'人物{person_id}：特征脸线性组合示意', fontsize=14)
+            plt.suptitle(f'人物{person_id}：特征脸线性组合示意', fontsize=12)
             plt.tight_layout()
             plt.show()
 
 
 if __name__ == "__main__":
-    # pca_iris()
-    # pca_face("data/orl_faces", (64, 64))
-    pca = PCA_face("data/orl_faces", (64, 64))
-    pca.load_face_data()
-    pca.data_processing()
-    # pca.show_PCA()
-    # pca.visualize_pca_face()
-    pca.visualize_eigenface_relationship()
+    pca_iris()
+    pca_face("data/orl_faces", (64, 64))
