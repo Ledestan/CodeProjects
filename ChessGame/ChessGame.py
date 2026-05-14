@@ -6,9 +6,12 @@
 pygame>=2.6.1
 """
 
-import pygame
 import sys
+import os
+import pygame
 
+sys.dont_write_bytecode = True
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from ChessBoard import ChessBoard
 
 

@@ -1,5 +1,9 @@
+import sys
+import os
 import pygame
 
+sys.dont_write_bytecode = True
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from ChessPiece import PieceFactory
 
 
