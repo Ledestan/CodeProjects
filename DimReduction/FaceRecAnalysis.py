@@ -120,14 +120,18 @@ class FaceRecAnalysis:
     def analyze_reconstruction_error(self):
         """重构误差分析"""
 
+
     def lda_analyze(self):
         """LDA 分析"""
+
 
     def mixed_analyze(self):
         """混合分析 PCA + LDA"""
 
+
     def comparative_analyze(self):
         """对比分析结果"""
+        
 
 
 if __name__ == "__main__":
