@@ -5,8 +5,8 @@ PCA 数据集处理
 需求文件: 无
 
 依赖库:
-numpy>=2.2.6
 matplotlib>=3.10.8
+numpy>=2.2.6
 scikit-learn>=1.8.0
 """
 

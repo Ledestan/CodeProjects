@@ -4,7 +4,7 @@
 启动时间: 2026-01-12
 
 依赖库:
-Flask>=3.1.2
+flask>=3.1.2
 numpy>=2.2.6
 opencv-python>=4.12.0.88
 pillow>=12.1.0

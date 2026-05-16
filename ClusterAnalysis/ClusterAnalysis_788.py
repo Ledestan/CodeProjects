@@ -5,9 +5,9 @@
 需求文件: data\points788.txt
 
 依赖库：
-pandas>=3.0.1
-numpy>=2.2.6
 matplotlib>=3.10.8
+numpy>=2.2.6
+pandas>=3.0.1
 scikit-learn>=1.8.0
 """
 

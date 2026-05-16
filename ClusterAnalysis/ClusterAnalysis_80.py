@@ -5,8 +5,8 @@
 需求文件: data\points80.txt
 
 依赖库：
-pandas>=3.0.1
 matplotlib>=3.10.8
+pandas>=3.0.1
 scikit-learn>=1.8.0
 """
 

@@ -5,8 +5,8 @@
 需求文件: Data\image.png
 
 依赖库:
-numpy>=2.2.6
 matplotlib>=3.10.8
+numpy>=2.2.6
 """
 
 import tkinter as tk

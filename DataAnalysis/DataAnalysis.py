@@ -5,10 +5,10 @@
 需求文件: data/lagou_data.csv
 
 依赖库:
-pandas>=3.0.1
-numpy>=2.2.6
-seaborn>=0.13.2
 matplotlib>=3.10.8
+numpy>=2.2.6
+pandas>=3.0.1
+seaborn>=0.13.2
 scikit-learn>=1.8.0
 """
 
