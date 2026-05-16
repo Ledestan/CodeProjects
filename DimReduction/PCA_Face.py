@@ -44,7 +44,7 @@ class PCA_Face:
             person_dir = os.path.join(self.path, person_id)
             if not os.path.isdir(person_dir):
                 continue
-            # 遍历 person_id 内所有图片，转成灰度图，统一尺寸，展平
+            # 遍历 person_id 内所有图片, 转成灰度图, 统一尺寸, 展平
             for img_name in os.listdir(person_dir):
                 img_path = os.path.join(person_dir, img_name)
                 img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
@@ -59,7 +59,7 @@ class PCA_Face:
         self.y = np.array(y)
 
     def data_processing(self):
-        """数据处理"""
+        """数据处理 + PCA 模型"""
         # 标准化处理
         self.scaler = StandardScaler()
         self.X_scaler = self.scaler.fit_transform(self.X)
