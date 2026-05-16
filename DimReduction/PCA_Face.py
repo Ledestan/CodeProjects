@@ -28,7 +28,7 @@ class PCA_Face:
         self.path = path
         self.img_size = img_size
         self.X = None
-        self.Y = None
+        self.y = None
         self.img_shape = None
         self.pca = None
         self.scaler = None
@@ -38,7 +38,7 @@ class PCA_Face:
 
     def load_face_data(self):
         """加载 ORL 人脸数据集"""
-        X, Y = [], []
+        X, y = [], []
         # 遍历数据集文件夹
         for person_id in os.listdir(self.path):
             person_dir = os.path.join(self.path, person_id)
@@ -54,9 +54,9 @@ class PCA_Face:
                 img = cv2.resize(img, self.img_size) # 统一尺寸
                 img_flatten = img.flatten() # 展平
                 X.append(img_flatten)
-                Y.append(int(person_id[1:]))
+                y.append(int(person_id[1:]))
         self.X = np.array(X, dtype=np.float32)
-        self.Y = np.array(Y)
+        self.y = np.array(y)
 
     def data_processing(self):
         """数据处理"""
@@ -105,7 +105,7 @@ class PCA_Face:
                 idx = sample_idx[i]
                 original_img = self.X[idx].reshape(h, w)
                 ax.imshow(original_img, cmap="gray")
-                name = self.Y[idx]
+                name = self.y[idx]
                 ax.set_title(f"原始 {name}")
             ax.set_xticks([])
             ax.set_yticks([])
@@ -120,7 +120,7 @@ class PCA_Face:
                 idx = sample_idx[i]
                 reconstructed_img = x_reconstructed_orig_scale[idx].reshape(h, w)
                 ax.imshow(reconstructed_img, cmap="gray")
-                name = self.Y[idx]
+                name = self.y[idx]
                 ax.set_title(f"重构 {name}")
             ax.set_xticks([])
             ax.set_yticks([])
@@ -134,11 +134,11 @@ class PCA_Face:
         """特征脸与原始人脸关系可视化"""
         h, w = self.img_size
         n_show_components = 5 # 只用前5个主成分重构
-        unique_people = np.unique(self.Y)
+        unique_people = np.unique(self.y)
         selected_people = np.random.choice(unique_people, size=3, replace=False)
 
         for person_id in selected_people:
-            person_all_idx = np.where(self.Y == person_id)[0]
+            person_all_idx = np.where(self.y == person_id)[0]
             sample_indices = person_all_idx[:3] # 每人取3张图
 
             plt.figure(figsize=(10, 6))
