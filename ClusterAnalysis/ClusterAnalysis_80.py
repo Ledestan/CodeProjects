@@ -10,8 +10,8 @@ matplotlib>=3.10.8
 scikit-learn>=1.8.0
 """
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 from sklearn import metrics
 from sklearn.cluster import KMeans
 

@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 import pygame
 
 sys.dont_write_bytecode = True

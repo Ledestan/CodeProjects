@@ -13,12 +13,13 @@ scikit-learn>=1.8.0
 """
 
 import os
-import pandas as pd
-import numpy as np
-import seaborn as sns
+
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+import numpy as np
+import pandas as pd
+import seaborn as sns
 from sklearn.feature_selection import mutual_info_classif
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]
 plt.rcParams["axes.unicode_minus"] = False

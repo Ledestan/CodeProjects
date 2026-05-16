@@ -3,9 +3,10 @@
 创建日期: 2025-12-05
 """
 
-import turtle as tk
 import random
+import turtle as tk
 import winsound
+
 
 class Classmates():
     def __init__(self, file_path):

@@ -10,12 +10,11 @@ matplotlib>=3.10.8
 scikit-learn>=1.8.0
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.datasets import load_iris
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-
-from sklearn.datasets import load_iris
 
 np.random.seed(0)
 plt.rcParams["font.sans-serif"] = ["Microsoft YaHei"]

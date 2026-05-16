@@ -10,6 +10,7 @@ matplotlib>=3.10.8
 """
 
 import os
+
 import cv2
 import matplotlib.pyplot as plt
 

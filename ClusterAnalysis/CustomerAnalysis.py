@@ -14,15 +14,16 @@ scipy>=1.17.1
 scikit-learn>=1.8.0
 """
 
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 from math import pi
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
 from kmodes.kprototypes import KPrototypes
 from scipy.spatial.distance import cdist
 from sklearn import metrics
-from sklearn.cluster import AgglomerativeClustering, DBSCAN, OPTICS
+from sklearn.cluster import DBSCAN, OPTICS, AgglomerativeClustering
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 

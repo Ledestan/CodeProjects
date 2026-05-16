@@ -9,10 +9,11 @@ numpy>=2.2.6
 matplotlib>=3.10.8
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import filedialog, ttk
+
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 

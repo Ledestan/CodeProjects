@@ -11,10 +11,10 @@ matplotlib>=3.10.8
 scikit-learn>=1.8.0
 """
 
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans, DBSCAN
+import numpy as np
+import pandas as pd
+from sklearn.cluster import DBSCAN, KMeans
 from sklearn.mixture import GaussianMixture
 from sklearn.neighbors import NearestNeighbors
 

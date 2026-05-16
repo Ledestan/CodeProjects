@@ -13,10 +13,10 @@ requests>=2.32.5
 
 
 import traceback
-from flask import Flask, request, jsonify, render_template
-from qa_engine import QASystem
-from image_recognizer import ImageRecognizer 
 
+from flask import Flask, jsonify, render_template, request
+from image_recognizer import ImageRecognizer
+from qa_engine import QASystem
 
 app = Flask(__name__)
 qa_system = QASystem()
