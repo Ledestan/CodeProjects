@@ -1,0 +1,401 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>项目列表 &mdash; CodeProjects 1.0.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=34088549"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/translations.js?v=540d3cec"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="prev" title="CodeProjects Documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CodeProjects
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">项目列表</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fop">FoP（编程基础）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#chessgame">ChessGame（中国象棋游戏）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rollcall">RollCall（点名系统）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#surveyanalysis">SurveyAnalysis（问卷分析）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#math">Math（数学处理）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#imageclassifier">ImageClassifier（图像分类器）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#imageprocessing">ImageProcessing（图像处理）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#prml">PRML（模式识别与机器学习）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clusteranalysis">ClusterAnalysis（聚类分析）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dataanalysis">DataAnalysis（数据分析）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#decisiontree">DecisionTree（决策树）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dimreduction">DimReduction（降维分析）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#imagerecognition">ImageRecognition（图像识别）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linearregression">LinearRegression（线性回归）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#randomforest">RandomForest（随机森林）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#practice">Practice（实践应用）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#industrialheritage">IndustrialHeritage（工业遗产保护系统）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sparknexus">SparkNexus（星火云枢 - 班级智能协同平台）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id2">环境与依赖</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id3">运行环境</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">核心依赖库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">安装命令</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id6">许可证与使用声明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#id7">作者</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CodeProjects</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">项目列表</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/projects/index.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>项目列表<a class="headerlink" href="#id1" title="链接到此标题。"></a></h1>
+<p>本仓库包含以下主要子项目，按功能模块组织：</p>
+<section id="fop">
+<h2>FoP（编程基础）<a class="headerlink" href="#fop" title="链接到此标题。"></a></h2>
+<section id="chessgame">
+<h3>ChessGame（中国象棋游戏）<a class="headerlink" href="#chessgame" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">FoP/ChessGame/ChessGame.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：实现了完整的中国象棋游戏，包含将、士、相、车、马、炮、兵等棋子的走法规则。通过 <code class="docutils literal notranslate"><span class="pre">ChessBoard.py</span></code> 管理棋盘绘制，<code class="docutils literal notranslate"><span class="pre">ChessPiece.py</span></code> 封装棋子策略。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>FoP/ChessGame
+python<span class="w"> </span>ChessGame.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="rollcall">
+<h3>RollCall（点名系统）<a class="headerlink" href="#rollcall" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">FoP/RollCall/RollCall.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：数字点名系统，用于随机抽取学生进行课堂签到。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>FoP/RollCall
+python<span class="w"> </span>RollCall.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="surveyanalysis">
+<h3>SurveyAnalysis（问卷分析）<a class="headerlink" href="#surveyanalysis" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">FoP/SurveyAnalysis/SurveyAnalysis.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：问卷调查数据分析工具。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>FoP/SurveyAnalysis
+python<span class="w"> </span>SurveyAnalysis.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="math">
+<h2>Math（数学处理）<a class="headerlink" href="#math" title="链接到此标题。"></a></h2>
+<section id="imageclassifier">
+<h3>ImageClassifier（图像分类器）<a class="headerlink" href="#imageclassifier" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">Math/ImageClassifier/train.py</span></code>, <code class="docutils literal notranslate"><span class="pre">Math/ImageClassifier/test.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：基于 LBP 特征提取与神经网络，实现猫狗图像分类功能。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>Math/ImageClassifier
+python<span class="w"> </span>train.py<span class="w">   </span><span class="c1"># 训练</span>
+python<span class="w"> </span>test.py<span class="w">    </span><span class="c1"># 测试</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="imageprocessing">
+<h3>ImageProcessing（图像处理）<a class="headerlink" href="#imageprocessing" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">Math/ImageProcessing/ImageProcessing.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：提供图像变换、SVD 压缩等图像处理工具。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>Math/ImageProcessing
+python<span class="w"> </span>ImageProcessing.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="prml">
+<h2>PRML（模式识别与机器学习）<a class="headerlink" href="#prml" title="链接到此标题。"></a></h2>
+<section id="clusteranalysis">
+<h3>ClusterAnalysis（聚类分析）<a class="headerlink" href="#clusteranalysis" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">PRML/ClusterAnalysis/ClusterAnalysis.py</span></code>, <code class="docutils literal notranslate"><span class="pre">PRML/ClusterAnalysis/CustomerAnalysis.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：支持 K-Means、GMM、DBSCAN 等多种聚类算法，包含肘部法则和轮廓系数评估，用于客户分析与数据分组。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>PRML/ClusterAnalysis
+python<span class="w"> </span>ClusterAnalysis.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="dataanalysis">
+<h3>DataAnalysis（数据分析）<a class="headerlink" href="#dataanalysis" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">PRML/DataAnalysis/DataAnalysis.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：薪资数据分析，涵盖数据预览、重复值/缺失值处理、特征提取及互信息分析。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>PRML/DataAnalysis
+python<span class="w"> </span>DataAnalysis.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="decisiontree">
+<h3>DecisionTree（决策树）<a class="headerlink" href="#decisiontree" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">PRML/DecisionTree/DecisionTree.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：基于周志华《机器学习》西瓜数据集，使用基尼系数（CART）构建决策树，对好瓜/坏瓜进行分类，并输出树结构与准确率。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>PRML/DecisionTree
+python<span class="w"> </span>DecisionTree.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="dimreduction">
+<h3>DimReduction（降维分析）<a class="headerlink" href="#dimreduction" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">PRML/DimReduction/PCA_Iris.py</span></code>, <code class="docutils literal notranslate"><span class="pre">PRML/DimReduction/PCA_Face.py</span></code>, <code class="docutils literal notranslate"><span class="pre">PRML/DimReduction/FaceRecAnalysis.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：实现了 PCA、LDA 等降维算法，应用于 Iris 数据集分析及人脸识别场景。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>PRML/DimReduction
+python<span class="w"> </span>PCA_Iris.py<span class="w">         </span><span class="c1"># 鸢尾花数据集</span>
+python<span class="w"> </span>PCA_Face.py<span class="w">         </span><span class="c1"># ORL 数据集</span>
+python<span class="w"> </span>FaceRecAnalysis.py<span class="w">  </span><span class="c1"># 人脸识别分析</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="imagerecognition">
+<h3>ImageRecognition（图像识别）<a class="headerlink" href="#imagerecognition" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">PRML/ImageRecognition/ImageRecognition.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：基于模板匹配与特征提取的图像识别工具。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>PRML/ImageRecognition
+python<span class="w"> </span>ImageRecognition.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="linearregression">
+<h3>LinearRegression（线性回归）<a class="headerlink" href="#linearregression" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">PRML/LinearRegression/LinearRegression.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：提供基于梯度下降和 scikit-learn 的线性回归实现，包含数据探索、模型评估、损失曲线可视化等工具。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>PRML/LinearRegression
+python<span class="w"> </span>LinearRegression.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="randomforest">
+<h3>RandomForest（随机森林）<a class="headerlink" href="#randomforest" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">PRML/RandomForest/RandomForest.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：基于 Kaggle 医疗预约数据集，预测患者是否按时赴约，分析人口统计与健康状况特征。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>PRML/RandomForest
+python<span class="w"> </span>RandomForest.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="practice">
+<h2>Practice（实践应用）<a class="headerlink" href="#practice" title="链接到此标题。"></a></h2>
+<section id="industrialheritage">
+<h3>IndustrialHeritage（工业遗产保护系统）<a class="headerlink" href="#industrialheritage" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">Practice/IndustrialHeritage/app.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：基于 Flask 的 Web 系统，集成图像识别模块与知识问答引擎，用于工业遗产保护与查询。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>Practice/IndustrialHeritage
+python<span class="w"> </span>app.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="sparknexus">
+<h3>SparkNexus（星火云枢 - 班级智能协同平台）<a class="headerlink" href="#sparknexus" title="链接到此标题。"></a></h3>
+<ul>
+<li><p><strong>入口文件</strong>：<code class="docutils literal notranslate"><span class="pre">Practice/SparkNexus/run.py</span></code></p></li>
+<li><p><strong>功能描述</strong>：班级管理 Web 应用，支持日程协同、报名签到、通知发布、多角色权限控制（管理员、教师、班委、学生等）。基于 Flask 开发。</p></li>
+<li><p><strong>运行方法</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>Practice/SparkNexus
+python<span class="w"> </span>run.py
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h1>环境与依赖<a class="headerlink" href="#id2" title="链接到此标题。"></a></h1>
+<section id="id3">
+<h2>运行环境<a class="headerlink" href="#id3" title="链接到此标题。"></a></h2>
+<ul class="simple">
+<li><p>Python 3.11</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>核心依赖库<a class="headerlink" href="#id4" title="链接到此标题。"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Flask</span><span class="o">&gt;=</span><span class="mf">3.1.2</span>
+<span class="n">Flask</span><span class="o">-</span><span class="n">Login</span><span class="o">&gt;=</span><span class="mf">0.6.3</span>
+<span class="n">Flask</span><span class="o">-</span><span class="n">Migrate</span><span class="o">&gt;=</span><span class="mf">4.1.0</span>
+<span class="n">Flask</span><span class="o">-</span><span class="n">SQLAlchemy</span><span class="o">&gt;=</span><span class="mf">3.1.1</span>
+<span class="n">Flask</span><span class="o">-</span><span class="n">WTF</span><span class="o">&gt;=</span><span class="mf">1.3.0</span>
+<span class="n">graphviz</span><span class="o">&gt;=</span><span class="mf">0.21</span>
+<span class="n">kmodes</span><span class="o">&gt;=</span><span class="mf">0.12.2</span>
+<span class="n">matplotlib</span><span class="o">&gt;=</span><span class="mf">3.10.9</span>
+<span class="n">numpy</span><span class="o">&gt;=</span><span class="mf">2.4.6</span>
+<span class="n">opencv_python</span><span class="o">&gt;=</span><span class="mf">4.12.0.88</span>
+<span class="n">pandas</span><span class="o">&gt;=</span><span class="mf">3.0.3</span>
+<span class="n">Pillow</span><span class="o">&gt;=</span><span class="mf">12.2.0</span>
+<span class="n">pygame</span><span class="o">&gt;=</span><span class="mf">2.6.1</span>
+<span class="n">python</span><span class="o">-</span><span class="n">dotenv</span><span class="o">&gt;=</span><span class="mf">1.2.2</span>
+<span class="n">Requests</span><span class="o">&gt;=</span><span class="mf">2.34.2</span>
+<span class="n">scikit_learn</span><span class="o">&gt;=</span><span class="mf">1.8.0</span>
+<span class="n">scipy</span><span class="o">&gt;=</span><span class="mf">1.17.1</span>
+<span class="n">seaborn</span><span class="o">&gt;=</span><span class="mf">0.13.2</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h2>安装命令<a class="headerlink" href="#id5" title="链接到此标题。"></a></h2>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> 一键安装：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h1>许可证与使用声明<a class="headerlink" href="#id6" title="链接到此标题。"></a></h1>
+<p>本项目采用 <strong>MIT 许可证</strong> 开源。</p>
+<p><strong>欢迎参考与学习</strong>
+你可以自由地使用、复制、修改和分发本项目的代码。无论是用于个人学习、学术研究还是商业用途，我都表示欢迎。</p>
+<p><strong>使用要求与免责声明</strong></p>
+<ul class="simple">
+<li><p><strong>保留声明</strong>：在分发软件副本时，请务必保留原始的版权声明和许可声明。</p></li>
+<li><p><strong>责任限制</strong>：代码按“原样”提供，不提供任何形式的明示或暗示担保。作者不对因使用本软件而产生的任何索赔、损害或其他责任负责。请在使用前自行评估风险。</p></li>
+</ul>
+</section>
+<section id="id7">
+<h1>作者<a class="headerlink" href="#id7" title="链接到此标题。"></a></h1>
+<p>Tingchu</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="../index.html" class="btn btn-neutral float-left" title="CodeProjects Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2026, Tingchu。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
