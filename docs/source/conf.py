@@ -1,6 +1,7 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+
+sys.path.insert(0, os.path.abspath("../.."))
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -10,32 +11,32 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'CodeProjects'
-copyright = '2026, Tingchu'
-author = 'Tingchu'
-release = '1.0.0'
+project = "CodeProjects"
+copyright = "2026, Tingchu"
+author = "Tingchu"
+release = "1.0.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "myst_parser",               # 支持 Markdown
-    "sphinxcontrib.mermaid",     # 支持 Mermaid 图表
-    "sphinx_copybutton",         # 复制按钮
+    "myst_parser",  # 支持 Markdown
+    "sphinxcontrib.mermaid",  # 支持 Mermaid 图表
+    "sphinx_copybutton",  # 复制按钮
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
-language = 'zh_CN'
+language = "zh_CN"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme"
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown',
+    ".rst": "restructuredtext",
+    ".md": "markdown",
 }
