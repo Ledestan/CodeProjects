@@ -118,7 +118,8 @@
 - **运行方法**：
   ```bash
   cd PRML/LinearRegression
-  python LinearRegression.py
+  python LinearRegression.py      # 线性回归
+  python RegressionPrediction.py  # 回归预测
   ```
 
 ### RandomForest（随机森林）
