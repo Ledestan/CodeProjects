@@ -1,0 +1,57 @@
+SparkNexus/                   # 项目根目录
+├── app/                       # 应用主包
+│   ├── __init__.py            # 应用工厂（create_app），注册蓝图、初始化扩展
+│   ├── config.py              # 配置类（开发/生产/测试）
+│   ├── models.py              # 所有数据库模型（User, Event, Registration 等）
+│   ├── decorators.py          # 自定义装饰器（权限校验等）
+│   ├── auth/                  # 认证蓝图（登录/注册/退出）
+│   │   ├── __init__.py        # 蓝图实例化
+│   │   ├── routes.py          # 视图函数
+│   │   └── forms.py           # WTForms 表单类
+│   ├── schedule/              # 日程蓝图（课表、活动、个人日程）
+│   │   ├── __init__.py
+│   │   ├── routes.py
+│   │   └── forms.py
+│   ├── registration/          # 报名签到蓝图
+│   │   ├── __init__.py
+│   │   ├── routes.py
+│   │   └── forms.py
+│   ├── notification/          # 通知蓝图
+│   │   ├── __init__.py
+│   │   ├── routes.py
+│   │   └── forms.py
+│   ├── templates/             # Jinja2 模板（按蓝图分子目录）
+│   │   ├── base.html          # 基模板（导航栏、消息闪现等）
+│   │   ├── index.html         # 首页仪表盘
+│   │   ├── auth/
+│   │   │   ├── login.html
+│   │   │   └── register.html
+│   │   ├── schedule/
+│   │   │   ├── view.html      # 课表查看
+│   │   │   ├── manage.html    # 课表调整（教师）
+│   │   │   ├── add.html       # 添加个人日程（学生）
+│   │   │   └── create_event.html  # 发布活动
+│   │   ├── registration/
+│   │   │   ├── create.html    # 发起报名/签到
+│   │   │   ├── list.html      # 活动列表
+│   │   │   └── detail.html    # 报名/签到操作页
+│   │   └── notification/
+│   │       ├── list.html      # 通知列表
+│   │       └── create.html    # 发布通知
+│   └── static/                # 静态资源
+│       ├── css/
+│       │   └── style.css
+│       ├── js/
+│       │   └── main.js
+│       └── images/
+├── migrations/                # Flask-Migrate 数据库迁移目录
+├── tests/                     # 单元测试（按蓝图分文件）
+│   ├── conftest.py            # 测试夹具
+│   ├── test_auth.py
+│   ├── test_schedule.py
+│   └── ...
+├── .env                       # 环境变量（SECRET_KEY、数据库地址等）
+├── .gitignore
+├── requirements.txt           # 依赖列表
+├── run.py                     # 应用启动入口
+└── README.md

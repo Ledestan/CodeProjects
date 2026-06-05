@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>创建报名/签到</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">{{ form.title.label }} {{ form.title(class="form-control") }}</div>
+    <div class="mb-3">{{ form.type.label }} {{ form.type(class="form-select") }}</div>
+    <div class="mb-3">{{ form.max_participants.label }} {{ form.max_participants(class="form-control") }}</div>
+    <div class="mb-3">{{ form.deadline.label }} {{ form.deadline(class="form-control", type="datetime-local") }}</div>
+    <div class="mb-3">{{ form.description.label }} {{ form.description(class="form-control") }}</div>
+    <div class="mb-3">{{ form.event_id.label }} {{ form.event_id(class="form-control", placeholder="输入关联活动ID") }}</div>
+    {{ form.submit(class="btn btn-success") }}
+</form>
+{% endblock %}

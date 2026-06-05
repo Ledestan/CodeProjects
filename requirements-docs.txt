@@ -1,0 +1,7 @@
+# 文档生成专用依赖 (仅用于构建项目文档)
+sphinx>=9.1.0                   # Sphinx 文档生成器核心，将源文件转换为 HTML/PDF 等格式
+sphinx-rtd-theme>=3.1.0         # Read the Docs 风格的主题，提供左侧导航与响应式布局
+myst-parser>=5.1.0              # MyST 解析器，使 Sphinx 支持 Markdown 语法（含扩展）
+sphinx-autobuild>=2025.8.25     # 监听源文件变化并自动重建文档，同时触发浏览器刷新
+sphinxcontrib-mermaid>=2.0.2    # 在文档中嵌入 Mermaid 流程图、时序图等图表
+sphinx-copybutton>=0.5.2        # 为代码块添加复制按钮，支持一键复制内容

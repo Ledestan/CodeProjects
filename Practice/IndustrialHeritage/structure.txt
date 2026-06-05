@@ -1,0 +1,19 @@
+Industrial-Heritage/
+├── app.py                  # Flask主程序
+├── qa_engine.py            # 问答系统核心
+├── image_recognizer.py     # 图像识别核心
+├── 
+├── data/
+│   ├── qa.json             # 问答知识库
+│   ├── heritage_info.json  # 遗产详细信息
+│   └── targets/            # 目标图片文件夹
+├── templates/              # HTML模板
+│   ├── index.html          # 首页
+│   ├── chat.html           # 问答页面
+│   ├── recognize.html      # 识别页面
+├── static/                 # 静态文件
+│   └── images
+└── instruction/
+    ├── information.txt     # 项目信息
+    ├── requirements.txt    # 依赖包列表
+    └── structure.txt       # 文件结构

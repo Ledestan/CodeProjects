@@ -1,0 +1,18 @@
+# 开发工具链 (仅维护者需要)
+pipreqs>=0.4.13     # 生成 requirements.txt
+                    # pipreqs . --encoding=utf8 --force
+isort>=8.0.1        # 代码排序
+                    # 排序单个文件: isort python.py
+                    # 排序整个目录: isort .
+black>=26.5.1       # 代码格式化
+                    # 格式化单个文件: black python.py
+                    # 格式化整个目录: black .
+                    # 只检查不修改(查看哪些文件不符合规范): black --check .
+                    # 查看会修改哪些地方但不实际改动: black --diff .
+pytest>=9.0.3       # 测试框架
+                    # 运行所有测试: pytest
+                    # 运行指定文件: pytest tests/test_decision_tree.py
+                    # 显示详细输出: pytest -v
+                    # 遇到第一个失败就停止: pytest -x
+                    # 只运行包含特定关键词的测试: pytest -k "iris"
+pre_commit>=4.6.0   # 预提交钩子（自动格式化/检查）

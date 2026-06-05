@@ -1,0 +1,239 @@
+# CodeProject
+
+Tingchu 的个人代码项目集合。
+
+本仓库汇总了我在机器学习、程序基础、数学处理等领域的实践代码，主要用于学习记录与技术复盘。
+
+---
+
+## 项目列表
+
+本仓库包含以下主要子项目，按功能模块组织：
+
+### FoP（编程基础）
+
+#### ChessGame（中国象棋游戏）
+
+- **入口文件**：`FoP/ChessGame/ChessGame.py`
+- **功能描述**：实现了完整的中国象棋游戏，包含将、士、相、车、马、炮、兵等棋子的走法规则。通过 `ChessBoard.py` 管理棋盘绘制，`ChessPiece.py` 封装棋子策略。
+
+#### RollCall（点名系统）
+
+- **入口文件**：`FoP/RollCall/RollCall.py`
+- **功能描述**：数字点名系统，用于随机抽取学生进行课堂签到。
+
+#### SurveyAnalysis（问卷分析）
+
+- **入口文件**：`FoP/SurveyAnalysis/SurveyAnalysis.py`
+- **功能描述**：问卷调查数据分析工具。
+
+### Math（数学处理）
+
+#### ImageClassifier（图像分类器）
+
+- **入口文件**：`Math/ImageClassifier/train.py`, `Math/ImageClassifier/test.py`
+- **功能描述**：基于 LBP 特征提取与神经网络，实现猫狗图像分类功能。
+
+#### ImageProcessing（图像处理）
+
+- **入口文件**：`Math/ImageProcessing/ImageProcessing.py`
+- **功能描述**：提供图像变换、SVD 压缩等图像处理工具。
+
+### PRML（模式识别与机器学习）
+
+#### ClusterAnalysis（聚类分析）
+
+- **入口文件**：`PRML/ClusterAnalysis/ClusterAnalysis.py`, `PRML/ClusterAnalysis/CustomerAnalysis.py`
+- **功能描述**：支持 K-Means、GMM、DBSCAN 等多种聚类算法，包含肘部法则和轮廓系数评估，用于客户分析与数据分组。
+
+#### DataAnalysis（数据分析）
+
+- **入口文件**：`PRML/DataAnalysis/DataAnalysis.py`
+- **功能描述**：薪资数据分析，涵盖数据预览、重复值/缺失值处理、特征提取及互信息分析。
+
+#### DecisionTree（决策树）
+
+- **入口文件**：`PRML/DecisionTree/DecisionTree.py`
+- **功能描述**：基于周志华《机器学习》西瓜数据集，使用基尼系数（CART）构建决策树，对好瓜/坏瓜进行分类，并输出树结构与准确率。
+
+#### DimReduction（降维分析）
+
+- **入口文件**：`PRML/DimReduction/PCA_Iris.py`, `PRML/DimReduction/PCA_Face.py`, `PRML/DimReduction/FaceRecAnalysis.py`
+- **功能描述**：实现了 PCA、LDA 等降维算法，应用于 Iris 数据集分析及人脸识别场景。
+
+#### ImageRecognition（图像识别）
+
+- **入口文件**：`PRML/ImageRecognition/ImageRecognition.py`
+- **功能描述**：基于模板匹配与特征提取的图像识别工具。
+
+#### LinearRegression（线性回归）
+
+- **入口文件**：`PRML/LinearRegression/LinearRegression.py`
+- **功能描述**：提供基于梯度下降和 scikit-learn 的线性回归实现，包含数据探索、模型评估、损失曲线可视化等工具。
+
+#### RandomForest（随机森林）
+
+- **入口文件**：`PRML/RandomForest/RandomForest.py`
+- **功能描述**：基于 Kaggle 医疗预约数据集，预测患者是否按时赴约，分析人口统计与健康状况特征。
+
+### Practice（实践应用）
+
+#### IndustrialHeritage（工业遗产保护系统）
+
+- **入口文件**：`Practice/IndustrialHeritage/app.py`
+- **功能描述**：基于 Flask 的 Web 系统，集成图像识别模块与知识问答引擎，用于工业遗产保护与查询。
+
+#### SparkNexus（星火云枢 - 班级智能协同平台）
+
+- **入口文件**：`Practice/SparkNexus/run.py`
+- **功能描述**：班级管理 Web 应用，支持日程协同、报名签到、通知发布、多角色权限控制（管理员、教师、班委、学生等）。基于 Flask 开发。
+
+---
+
+## 环境与依赖
+
+### 运行环境
+
+- Python 3.11
+
+### 核心依赖库
+
+- Flask>=3.1.2
+- Flask-Login>=0.6.3
+- Flask-Migrate>=4.1.0
+- Flask-SQLAlchemy>=3.1.1
+- Flask-WTF>=1.3.0
+- graphviz>=0.21
+- kmodes>=0.12.2
+- matplotlib>=3.10.9
+- numpy>=2.4.6
+- opencv_python>=4.12.0.88
+- pandas>=3.0.3
+- Pillow>=12.2.0
+- pygame>=2.6.1
+- python-dotenv>=1.2.2
+- Requests>=2.34.2
+- scikit_learn>=1.8.0
+- scipy>=1.17.1
+- seaborn>=0.13.2
+
+### 安装命令
+
+推荐使用 `requirements.txt` 一键安装（包含所有指定版本）：
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 快速开始
+
+### ChessGame
+
+```bash
+cd FoP/ChessGame
+python ChessGame.py
+```
+
+### RollCall
+
+```bash
+cd FoP/RollCall
+python RollCall.py
+```
+
+### SurveyAnalysis
+
+```bash
+cd FoP/SurveyAnalysis
+python SurveyAnalysis.py
+```
+
+### ImageClassifier
+
+```bash
+cd Math/ImageClassifier
+# 训练
+python train.py
+# 测试
+python test.py
+```
+
+### ImageProcessing
+
+```bash
+cd Math/ImageProcessing
+python ImageProcessing.py
+```
+
+### ClusterAnalysis
+
+```bash
+cd PRML/ClusterAnalysis
+python ClusterAnalysis.py
+```
+
+### DataAnalysis
+
+```bash
+cd PRML/DataAnalysis
+python DataAnalysis.py
+```
+
+### DecisionTree
+
+```bash
+cd PRML/DecisionTree
+python DecisionTree.py
+```
+
+### DimReduction
+
+```bash
+cd PRML/DimReduction
+python PCA_Iris.py   # 或其他入口文件
+```
+
+### ImageRecognition
+
+```bash
+cd PRML/ImageRecognition
+python ImageRecognition.py
+```
+
+### LinearRegression
+
+```bash
+cd PRML/LinearRegression
+python LinearRegression.py
+```
+
+### RandomForest
+
+```bash
+cd PRML/RandomForest
+python RandomForest.py
+```
+
+### IndustrialHeritage
+
+```bash
+cd Practice/IndustrialHeritage
+python app.py
+```
+
+### SparkNexus
+
+```bash
+cd Practice/SparkNexus
+python run.py
+```
+
+## 许可证
+
+MIT License
+
+## 作者
+
+Tingchu

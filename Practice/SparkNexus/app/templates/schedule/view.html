@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h2><i class="fas fa-calendar-alt text-primary me-2"></i>日程总览</h2>
+<div class="d-flex flex-wrap gap-2 mb-3">
+    {% if current_user.has_permission('teacher') %}
+    <a href="{{ url_for('schedule.manage') }}" class="btn btn-outline-secondary"><i class="fas fa-edit"></i> 课表调整</a>
+    {% endif %}
+    <a href="{{ url_for('schedule.add_personal') }}" class="btn btn-outline-primary"><i class="fas fa-plus-circle"></i> 添加个人日程</a>
+    {% if current_user.has_permission('leader') %}
+    <a href="{{ url_for('schedule.create_activity') }}" class="btn btn-outline-success"><i class="fas fa-calendar-plus"></i> 发布活动</a>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr><th>标题</th><th>类型</th><th>开始时间</th><th>结束时间</th><th>可见性</th><th>创建者</th></tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td><strong>{{ event.title }}</strong></td>
+                    <td><span class="badge bg-secondary">{{ event.type }}</span></td>
+                    <td>{{ event.start_time.strftime('%m-%d %H:%M') }}</td>
+                    <td>{{ event.end_time.strftime('%m-%d %H:%M') if event.end_time }}</td>
+                    <td>{{ event.visibility }}</td>
+                    <td>{{ event.creator.username }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted">暂无日程。</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% import "_pagination.html" as pagi %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="fas fa-bell text-info me-2"></i>通知列表</h2>
+    {% if current_user.has_permission('leader') %}
+    <a href="{{ url_for('notification.create') }}" class="btn btn-primary">发布通知</a>
+    {% endif %}
+</div>
+
+<div class="btn-group mb-4">
+    <a href="{{ url_for('notification.list_all') }}" class="btn btn-outline-secondary {% if not type_filter %}active{% endif %}"><i class="fas fa-list"></i> 全部</a>
+    <a href="{{ url_for('notification.list_all', type='daily') }}" class="btn btn-outline-secondary {% if type_filter=='daily' %}active{% endif %}"><i class="fas fa-comment-dots"></i> 日常</a>
+    <a href="{{ url_for('notification.list_all', type='homework') }}" class="btn btn-outline-secondary {% if type_filter=='homework' %}active{% endif %}"><i class="fas fa-book"></i> 作业</a>
+    <a href="{{ url_for('notification.list_all', type='activity') }}" class="btn btn-outline-secondary {% if type_filter=='activity' %}active{% endif %}"><i class="fas fa-running"></i> 活动</a>
+</div>
+
+{% if announcements.items %}
+<div class="row">
+    {% for ann in announcements.items %}
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge bg-info float-end">{{ ann.type }}</span>
+                <h5 class="card-title">{{ ann.title }}</h5>
+                <p class="card-text text-muted">{{ ann.content[:100] }}...</p>
+                <p class="card-text"><small class="text-muted">{{ ann.created_at.strftime('%Y-%m-%d %H:%M') }} · {{ ann.sender.username }}</small></p>
+                <a href="{{ url_for('notification.detail', id=ann.id) }}" class="btn btn-sm btn-outline-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{{ pagi.render_pagination(announcements, 'notification.list_all') }}
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="fas fa-inbox fa-3x mb-3"></i>
+    <p>暂无通知。</p>
+</div>
+{% endif %}
+{% endblock %}

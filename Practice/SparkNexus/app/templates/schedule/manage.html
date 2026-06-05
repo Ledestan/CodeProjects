@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2><i class="fas fa-tasks text-primary me-2"></i>课表管理</h2>
+<button class="btn btn-primary mb-3" onclick="addCourse()"><i class="fas fa-plus"></i> 添加课程</button>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr><th>课程</th><th>时间</th><th>操作</th></tr>
+            </thead>
+            <tbody id="course-table">
+                {% for e in events %}
+                <tr id="row-{{ e.id }}">
+                    <td>{{ e.title }}</td>
+                    <td>{{ e.start_time }} ~ {{ e.end_time }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editEvent({{ e.id }})"><i class="fas fa-pen"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteEvent({{ e.id }})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+function deleteEvent(id) {
+    if(confirm('确定删除？')) {
+        fetch(`/schedule/api/events/${id}`, {method:'DELETE'}).then(() => location.reload());
+    }
+}
+function addCourse() {
+    const title = prompt('课程名称：');
+    const start = prompt('开始时间 (YYYY-MM-DD HH:MM)：');
+    const end = prompt('结束时间 (YYYY-MM-DD HH:MM)：');
+    if (title && start && end) {
+        fetch('/schedule/api/events', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({title, start, end})
+        }).then(() => location.reload());
+    }
+}
+function editEvent(id) {
+    alert('编辑功能待扩展（可弹出模态框）');
+}
+</script>
+{% endblock %}

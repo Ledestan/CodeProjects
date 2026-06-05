@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星火云枢 - Spark Nexus</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding-top: 0px;
+            background-color: #ffffff;
+        }
+        main.container {
+            margin-top: 56px;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .navbar-nav .nav-link {
+            font-size: 1.05rem;
+        }
+        .card { box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05); border: none; }
+        .btn-primary { background-color: #4e73df; border-color: #4e73df; }
+        .btn-primary:hover { background-color: #2e59d9; }
+        .btn-success { background-color: #1cc88a; border-color: #1cc88a; }
+        .btn-info { background-color: #36b9cc; border-color: #36b9cc; }
+        .badge.bg-pink { background-color: #e83e8c; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background-color: #1a1a1a !important;">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">
+                <i class="fas fa-fire"></i> 星火云枢
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('schedule.view') }}"><i class="fas fa-calendar-alt"></i> 日程</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('registration.list') }}"><i class="fas fa-check-square"></i> 报名</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('notification.list_all') }}"><i class="fas fa-bell"></i> 通知</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+
+                    <!-- 管理员专属：管理下拉菜单 -->
+                    {% if current_user.has_permission('admin') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cogs"></i> 管理
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.manage_users') }}"><i class="fas fa-users-cog"></i> 用户管理</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    <!-- 用户下拉菜单 -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> {{ current_user.username }} ({{ current_user.role }})
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-id-card"></i> 个人中心</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> 退出</a></li>
+                        </ul>
+                    </li>
+
+                    {% else %}
+                    <!-- 未登录：只显示登录按钮 -->
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt"></i> 登录</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div id="flash-message" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+            {% for msg in messages %}
+            <p class="mb-0"><i class="fas fa-info-circle me-2"></i>{{ msg }}</p>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            var flashMsg = document.getElementById('flash-message');
+            if (flashMsg) {
+                setTimeout(function() {
+                    var alert = new bootstrap.Alert(flashMsg);
+                    alert.close();
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
