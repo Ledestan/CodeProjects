@@ -59,7 +59,7 @@ class CustomerAnalysis:
 
     def data_preview(self):
         print("\n" + "=" * 50)
-        print(f"数据基本信息:")
+        print(f"数据基本信息: ")
         self.data.info()
         print("\n" + "=" * 50)
         print(f"描述性统计:\n{self.data.describe()}")
