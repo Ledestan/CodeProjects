@@ -53,7 +53,7 @@ class RegressionPrediction:
         plt.tight_layout()
         plt.show()
 
-        # 绘制所有特征与目标变量的相关系数热力图（带数值）
+        # 绘制所有特征与目标变量的相关系数热力图
         corr = self.data.corr()
         mask = np.tril(np.ones_like(corr, dtype=bool))  # 下三角掩码
         fig, ax = plt.subplots(figsize=(8, 6))
@@ -225,7 +225,7 @@ class RegressionPrediction:
         best_loss = float("inf")
         best_params = {"alpha": None, "n_iter": None}
 
-        # 网格搜索：遍历所有参数组合
+        # 网格搜索: 遍历所有参数组合
         for alpha in alphas:
             for n_iter in iter_list:
                 # 在当前参数下训练, 获得最终的损失值
@@ -344,7 +344,7 @@ class RegressionPrediction:
 
     def run_cross_validation(self, k=5, alpha=0.01, n_iter=500):
         """k折交叉验证, 输出平均 MSE"""
-        # 准备完整数据集：已归一化 + 偏置列
+        # 准备完整数据集: 已归一化 + 偏置列
         X_full = self.add_bias_column(self.X_norm)
         y_full = self.y_raw.values
         # 创建 KFold 对象
