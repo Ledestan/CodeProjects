@@ -73,7 +73,15 @@ class RegressionPrediction:
                     value = corr.iloc[i, j]
                     # 根据背景色亮度决定文字颜色 (提高可读性)
                     color = "white" if abs(value) > 0.5 else "black"
-                    ax.text(j, i, f"{value:.2f}", ha="center", va="center", color=color, fontsize=8)
+                    ax.text(
+                        j,
+                        i,
+                        f"{value:.2f}",
+                        ha="center",
+                        va="center",
+                        color=color,
+                        fontsize=8,
+                    )
 
         plt.tight_layout()
         plt.show()
@@ -364,12 +372,12 @@ class RegressionPrediction:
 
 if __name__ == "__main__":
     reg = RegressionPrediction("data/boston.csv")
-    reg.explore_data()
-    reg.prepare_data()
-    reg.baseline()
-    reg.tune_hyperparameters()
-    reg.run_sgd()
-    reg.run_regularization()
-    reg.run_feature_selection()
-    reg.run_pca()
-    reg.run_cross_validation()
+    reg.explore_data()  # 数据探索与可视化
+    reg.prepare_data()  # 数据预处理
+    reg.baseline()  # 基线 BGD
+    reg.tune_hyperparameters()  # 超参数调优
+    reg.run_sgd()  # SGD 对比
+    reg.run_regularization()  # L2 正则化
+    reg.run_feature_selection()  # 特征选择
+    reg.run_pca()  # PCA 降维
+    reg.run_cross_validation()  # 交叉验证
