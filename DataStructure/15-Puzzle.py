@@ -232,7 +232,6 @@ def simulate(start: Board, path: List[int]):
 
 
 def main():
-    board = []
     print("请输入棋盘, 按行优先顺序, 空格用0表示(16个数字, 空格分隔):")
     nums = list(map(int, input().split()))
     if len(nums) != 16:
