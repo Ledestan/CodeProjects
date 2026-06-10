@@ -21,8 +21,8 @@ plt.rcParams["axes.unicode_minus"] = False
 
 class RandomForest:
     def __init__(self, path: str):
-        pass
-
+        self.data = pd.read_csv(path, sep=",", head=0)
+        
 
 if __name__ == "__main__":
     rf = RandomForest("data/healthcare_noshows.csv")
