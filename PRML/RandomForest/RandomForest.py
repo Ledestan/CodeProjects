@@ -11,23 +11,29 @@ pandas>=3.0.1
 scikit-learn>=1.8.0
 """
 
-import time
-import warnings
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (classification_report, confusion_matrix, f1_score,
-                             precision_recall_curve, precision_score,
-                             recall_score, roc_auc_score, roc_curve)
-from sklearn.model_selection import (GridSearchCV, RandomizedSearchCV,
-                                     StratifiedKFold, train_test_split)
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    precision_recall_curve,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+    roc_curve,
+)
+from sklearn.model_selection import (
+    GridSearchCV,
+    RandomizedSearchCV,
+    StratifiedKFold,
+    train_test_split,
+)
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils.class_weight import compute_class_weight
-
-warnings.filterwarnings("ignore")
 
 plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
@@ -52,9 +58,7 @@ class RandomForest:
         self.neighbourhood_freq_map = None
         self.neighbourhood_rare_threshold = 10  # 低频社区合并阈值
 
-        # 训练好的模型
-        self.model = None
-        self.best_params = None
+        self.model = None # 训练好的随机森林模型
 
         # 评估结果
         self.metrics = {}
@@ -127,7 +131,7 @@ class RandomForest:
         self.data["Showed_up"] = (
             self.data["Showed_up"].astype(str).str.upper().str.strip()
         )
-        self.data["Showed_up"] = self.data["Showed_up"].map({"FALSE": 1, "TRUE": 0})
+        self.data["Showed_up"] = self.data["Showed_up"].map({"FALSE": 0, "TRUE": 1})
 
     def split_data(self):
         """分层划分训练集和测试集"""
@@ -139,9 +143,9 @@ class RandomForest:
         )
 
         print("\n" + "=" * 50)
-        print(f"训练集大小: {self.X_train.shape}, 测试集大小: {self.X_test.shape}")
-        print(f"训练集失约率: {1 - self.y_train.mean():.2%}")
-        print(f"测试集失约率: {1 - self.y_test.mean():.2%}")
+        print(f"随机森林 - 训练集大小: {self.X_train.shape}, 测试集大小: {self.X_test.shape}")
+        print(f"训练集失约率: {self.y_train.mean():.2%}")
+        print(f"测试集失约率: {self.y_test.mean():.2%}")
 
     def _feature_engineering(self, X, fit):
         """
@@ -202,7 +206,7 @@ class RandomForest:
 
         return df
 
-    def train(self, n_iter_search=20, cv_folds=5):
+    def train(self):
         """训练随机森林模型, 包含超参数随机搜索"""
         # 在训练集上拟合特征工程, 并更新训练集和测试集
         # 对训练集进行特征工程 (fit=True)
@@ -229,24 +233,21 @@ class RandomForest:
             random_state=0, class_weight=class_weight_dict, n_jobs=-1
         )
 
-        # 超参数搜索空间
-        param_dist = {
-            "n_estimators": [100, 200, 300],
-            "max_depth": [10, 15, 20, 25, None],
-            "min_samples_split": [2, 5, 10],
-            "min_samples_leaf": [1, 2, 4],
-            "max_features": ["sqrt", "log2", 0.3, 0.5],
+        # 超参数网格搜索(验证固定)
+        param_grid = {
+            "n_estimators": [300],
+            "max_depth": [12],
+            "min_samples_split": [10],
+            "min_samples_leaf": [3],
+            "max_features": [0.3],
         }
 
-        # 随机搜索 + 分层交叉验证
-        cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=0)
-        random_search = RandomizedSearchCV(
-            rf_base,
-            param_distributions=param_dist,
-            n_iter=n_iter_search,
-            cv=cv,
+        # 网格搜索 + 五折交叉验证
+        random_search = GridSearchCV(
+            estimator=rf_base,
+            param_grid=param_grid,
+            cv=5,
             scoring="roc_auc",
-            random_state=0,
             n_jobs=-1,
             verbose=1,
         )
@@ -254,9 +255,6 @@ class RandomForest:
         random_search.fit(self.X_train, self.y_train)
 
         self.model = random_search.best_estimator_
-        self.best_params = random_search.best_params_
-
-        print(f"最佳参数: {self.best_params}")
         print(f"最佳交叉验证 AUC: {random_search.best_score_:.4f}")
 
     def evaluate(self):
@@ -272,9 +270,9 @@ class RandomForest:
 
         # 计算指标(针对失约类, 即 class 0)
         auc = roc_auc_score(self.y_test, self.y_prob)
-        recall_lost = recall_score(self.y_test, y_pred_default, pos_label=0)
-        precision_lost = precision_score(self.y_test, y_pred_default, pos_label=0)
-        f1_lost = f1_score(self.y_test, y_pred_default, pos_label=0)
+        recall_lost = recall_score(self.y_test, y_pred_default)
+        precision_lost = precision_score(self.y_test, y_pred_default)
+        f1_lost = f1_score(self.y_test, y_pred_default)
 
         # 保存指标
         self.metrics = {
@@ -293,7 +291,10 @@ class RandomForest:
         print("\n分类报告:")
         print(
             classification_report(
-                self.y_test, y_pred_default, target_names=["失约", "如约"]
+                self.y_test, y_pred_default,
+                labels=[0, 1],
+                target_names=["失约", "如约"],
+                zero_division=0
             )
         )
 
@@ -304,7 +305,7 @@ class RandomForest:
 
         # 寻找最佳阈值 (最大化召回率的同时保证精确率不低于 0.3)
         precisions, recalls, thresholds = precision_recall_curve(
-            self.y_test, self.y_prob, pos_label=0
+            self.y_test, self.y_prob
         )
         best_thr = 0.5
         best_recall = recall_lost
@@ -322,8 +323,8 @@ class RandomForest:
 
         # 使用最优阈值重新预测
         y_pred_opt = (self.y_prob >= best_thr).astype(int)
-        recall_opt = recall_score(self.y_test, y_pred_opt, pos_label=0)
-        precision_opt = precision_score(self.y_test, y_pred_opt, pos_label=0)
+        recall_opt = recall_score(self.y_test, y_pred_opt)
+        precision_opt = precision_score(self.y_test, y_pred_opt)
         self.metrics.update(
             {
                 "optimal_threshold": best_thr,
@@ -337,20 +338,20 @@ class RandomForest:
         fig, axes = plt.subplots(1, 2, figsize=(12, 6))
 
         # ROC 曲线
-        fpr, tpr, _ = roc_curve(self.y_test, self.y_prob, pos_label=0)  # 以失约类为正
+        fpr, tpr, _ = roc_curve(self.y_test, self.y_prob)  # 以失约类为正
         axes[0].plot(fpr, tpr, label=f'ROC (AUC={self.metrics["auc"]:.4f})')
         axes[0].plot([0, 1], [0, 1], "k--")
         axes[0].set_xlabel("False Positive Rate")
         axes[0].set_ylabel("True Positive Rate (Recall)")
-        axes[0].set_title("ROC Curve (失约类为正)")
+        axes[0].set_title("RandomForest ROC Curve (失约类为正)")
         axes[0].legend()
 
         # PR 曲线
-        prec, rec, _ = precision_recall_curve(self.y_test, self.y_prob, pos_label=0)
+        prec, rec, _ = precision_recall_curve(self.y_test, self.y_prob)
         axes[1].plot(rec, prec, label="PR Curve")
         axes[1].set_xlabel("Recall")
         axes[1].set_ylabel("Precision")
-        axes[1].set_title("Precision-Recall Curve (失约类)")
+        axes[1].set_title("RandomForest Precision-Recall Curve (失约类)")
         axes[1].axhline(y=0.3, color="r", linestyle="--", label="Min Precision (0.3)")
         axes[1].legend()
 
@@ -390,16 +391,10 @@ class LogisticRegressionModel:
         self.neighbourhood_freq_map = None  # 社区频率映射(特征工程用)
         self.neighbourhood_rare_threshold = 10  # 低频社区合并阈值
         self.model = None  # 训练好的逻辑回归模型
-        self.best_params = None  # 最佳超参数
         self.scaler = StandardScaler()  # 特征标准化器(逻辑回归必需)
         self.metrics = {}  # 评估指标字典
         self.optimal_threshold = 0.5  # 业务最优阈值
         self.feature_names = None  # 特征名称列表
-
-    def data_explore(self):
-        """探索性数据分析"""
-        self.rf.data = self.data
-        self.rf.data_explore()
 
     def clean_data(self):
         """数据清洗"""
@@ -418,8 +413,8 @@ class LogisticRegressionModel:
         print(
             f"逻辑回归 - 训练集大小: {self.X_train.shape}, 测试集大小: {self.X_test.shape}"
         )
-        print(f"训练集失约率: {1 - self.y_train.mean():.2%}")
-        print(f"测试集失约率: {1 - self.y_test.mean():.2%}")
+        print(f"训练集失约率: {self.y_train.mean():.2%}")
+        print(f"测试集失约率: {self.y_test.mean():.2%}")
 
     def _feature_engineering(self, X, fit):
         """特征工程"""
@@ -486,12 +481,9 @@ class LogisticRegressionModel:
 
         # 超参数网格搜索
         param_grid = {
-            "C": [0.01, 0.1, 1, 10, 100],  # 正则化强度的倒数,越小正则化越强
-            "penalty": ["l2"],  # L2 正则化(岭回归)
-            "solver": [
-                "lbfgs",
-                "liblinear",
-            ],  # 求解器: lbfgs 适合较小数据集, liblinear 支持 L1
+            "C": [100],  # 正则化强度的倒数,越小正则化越强
+            "l1_ratio": [0],  # L2 正则化(岭回归)
+            "solver": ["lbfgs"],  # 求解器: lbfgs 适合较小数据集
         }
         # 基础逻辑回归模型: 自动处理类别不平衡, 最大迭代次数 1000 保证收敛
         lr_base = LogisticRegression(
@@ -504,21 +496,19 @@ class LogisticRegressionModel:
         grid_search.fit(self.X_train, self.y_train)
 
         self.model = grid_search.best_estimator_
-        self.best_params = grid_search.best_params_
-        print(f"逻辑回归最佳参数: {self.best_params}")
         print(f"最佳交叉验证 AUC: {grid_search.best_score_:.4f}")
 
     def evaluate(self):
         """在测试集上评估逻辑回归模型, 输出指标、混淆矩阵, 并寻找业务最优阈值"""
-        # 预测概率(第二列: 正类概率, 正类对应标签 1: 如约)
+        # 预测概率(正类概率, 对应标签 0: 如约)
         self.y_prob = self.model.predict_proba(self.X_test)[:, 1]
         y_pred_default = (self.y_prob >= 0.5).astype(int)
 
-        # 计算指标(重点关注失约类, pos_label=0)
+        # 计算指标(重点关注失约类)
         auc = roc_auc_score(self.y_test, self.y_prob)
-        recall_lost = recall_score(self.y_test, y_pred_default, pos_label=0)
-        precision_lost = precision_score(self.y_test, y_pred_default, pos_label=0)
-        f1_lost = f1_score(self.y_test, y_pred_default, pos_label=0)
+        recall_lost = recall_score(self.y_test, y_pred_default)
+        precision_lost = precision_score(self.y_test, y_pred_default)
+        f1_lost = f1_score(self.y_test, y_pred_default)
 
         self.metrics = {
             "auc": auc,
@@ -536,7 +526,10 @@ class LogisticRegressionModel:
         print("\n分类报告:")
         print(
             classification_report(
-                self.y_test, y_pred_default, target_names=["失约", "如约"]
+                self.y_test, y_pred_default,
+                labels=[0, 1],
+                target_names=["失约", "如约"],
+                zero_division=0
             )
         )
 
@@ -547,7 +540,7 @@ class LogisticRegressionModel:
 
         # 业务导向最优阈值: 在精确率不低于 0.3 的条件下最大化召回率
         precisions, recalls, thresholds = precision_recall_curve(
-            self.y_test, self.y_prob, pos_label=0
+            self.y_test, self.y_prob
         )
         best_thr = 0.5
         best_recall = recall_lost
@@ -568,20 +561,20 @@ class LogisticRegressionModel:
         fig, axes = plt.subplots(1, 2, figsize=(12, 6))
 
         # ROC 曲线(以失约类为正例)
-        fpr, tpr, _ = roc_curve(self.y_test, self.y_prob, pos_label=0)
+        fpr, tpr, _ = roc_curve(self.y_test, self.y_prob)
         axes[0].plot(fpr, tpr, label=f'ROC (AUC={self.metrics["auc"]:.4f})')
         axes[0].plot([0, 1], [0, 1], "k--")
         axes[0].set_xlabel("False Positive Rate")
         axes[0].set_ylabel("True Positive Rate (Recall)")
-        axes[0].set_title("逻辑回归 ROC Curve (失约类为正)")
+        axes[0].set_title("LogisticRegression ROC Curve (失约类为正)")
         axes[0].legend()
 
         # PR 曲线(以失约类为正例)
-        prec, rec, _ = precision_recall_curve(self.y_test, self.y_prob, pos_label=0)
+        prec, rec, _ = precision_recall_curve(self.y_test, self.y_prob)
         axes[1].plot(rec, prec, label="PR Curve")
         axes[1].set_xlabel("Recall")
         axes[1].set_ylabel("Precision")
-        axes[1].set_title("逻辑回归 Precision-Recall Curve (失约类)")
+        axes[1].set_title("LogisticRegression Precision-Recall Curve (失约类)")
         axes[1].axhline(y=0.3, color="r", linestyle="--", label="Min Precision (0.3)")
         axes[1].legend()
 
@@ -592,17 +585,16 @@ class LogisticRegressionModel:
 if __name__ == "__main__":
     path = "data/healthcare_noshows.csv"
 
-    # rf = RandomForest(path)
-    # rf.data_explore()  # 探索数据
-    # rf.clean_data()  # 数据清洗
-    # rf.split_data()  # 划分数据集
-    # rf.train(n_iter_search=10, cv_folds=5)# 划分数据集
-    # rf.evaluate()  # 评估模型
-    # rf.plot_curves()  # 绘制曲线
-    # rf.plot_feature_importance()  # 绘制特征重要性
+    rf = RandomForest(path)
+    rf.data_explore()  # 探索数据
+    rf.clean_data()  # 数据清洗
+    rf.split_data()  # 划分数据集
+    rf.train()  # 划分数据集
+    rf.evaluate()  # 评估模型
+    rf.plot_curves()  # 绘制曲线
+    rf.plot_feature_importance()  # 绘制特征重要性
 
     lr = LogisticRegressionModel(path)
-    lr.data_explore()  # 探索数据
     lr.clean_data()  # 数据清洗
     lr.split_data()  # 划分数据集
     lr.train()  # 划分数据集
