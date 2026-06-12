@@ -1,3 +1,8 @@
+/*
+项目名称: 队列管理
+创建日期: 2026-06-12
+*/
+
 #include <iostream>
 #include <queue>
 #include <string>

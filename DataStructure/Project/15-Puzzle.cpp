@@ -1,3 +1,8 @@
+/*
+项目名称: 十五数码
+创建日期: 2026-06-08
+*/
+
 #include <iostream>
 #include <algorithm>
 #include <array>
@@ -9,7 +14,9 @@
 #include <queue>
 #include <map>
 
-using Board = std::array<int, 16>; // 棋盘状态
+using namespace std;
+
+using Board = array<int, 16>; // 棋盘状态
 
 // 移动方向
 enum class Move
@@ -23,14 +30,14 @@ enum class Move
 constexpr Board GOAL = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0}; // 目标状态
 
 // 每个数字在目标棋盘中的行和列(0-based), 用于快速计算距离
-constexpr std::array<int, 16> TARGET_ROW = {
+constexpr array<int, 16> TARGET_ROW = {
     -1,         // 0 不用
     0, 0, 0, 0, // 1~4
     1, 1, 1, 1, // 5~8
     2, 2, 2, 2, // 9~12
     3, 3, 3     // 13~15
 };
-constexpr std::array<int, 16> TARGET_COL = {
+constexpr array<int, 16> TARGET_COL = {
     -1,         // 0 不用
     0, 1, 2, 3, // 1~4
     0, 1, 2, 3, // 5~8
@@ -53,7 +60,7 @@ struct Node
     int g;                        // 已走步数
     int h;                        // 启发式估计值
     int blank;                    // 空格位置 (0~15)
-    std::shared_ptr<Node> parent; // 父节点
+    shared_ptr<Node> parent; // 父节点
     Move move_from_parent;        // 从父节点如何移动得到当前状态
 
     // 估价总分
@@ -66,19 +73,19 @@ void print_board(const Board &b)
     for (int i = 0; i < 16; ++i)
     {
         if (b[i] == 0)
-            std::cout << "   "; // 空格用空白表示
+            cout << "   "; // 空格用空白表示
         else
-            std::cout << std::setw(2) << b[i] << ' ';
+            cout << setw(2) << b[i] << ' ';
         if (i % 4 == 3)
-            std::cout << "\n";
+            cout << "\n";
     }
-    std::cout << "\n";
+    cout << "\n";
 }
 
 // 根据当前空格位置, 生成所有合法移动后的后继棋盘
-std::vector<Successor> get_successors(const Board &state, int blank)
+vector<Successor> get_successors(const Board &state, int blank)
 {
-    std::vector<Successor> result;
+    vector<Successor> result;
     int row = blank / 4;
     int col = blank % 4;
 
@@ -87,7 +94,7 @@ std::vector<Successor> get_successors(const Board &state, int blank)
     {
         Board next = state;
         int target = blank - 4;
-        std::swap(next[blank], next[target]);
+        swap(next[blank], next[target]);
         result.push_back({next, target, Move::UP});
     }
     // 下移
@@ -95,7 +102,7 @@ std::vector<Successor> get_successors(const Board &state, int blank)
     {
         Board next = state;
         int target = blank + 4;
-        std::swap(next[blank], next[target]);
+        swap(next[blank], next[target]);
         result.push_back({next, target, Move::DOWN});
     }
     // 左移
@@ -103,7 +110,7 @@ std::vector<Successor> get_successors(const Board &state, int blank)
     {
         Board next = state;
         int target = blank - 1;
-        std::swap(next[blank], next[target]);
+        swap(next[blank], next[target]);
         result.push_back({next, target, Move::LEFT});
     }
     // 右移
@@ -111,14 +118,14 @@ std::vector<Successor> get_successors(const Board &state, int blank)
     {
         Board next = state;
         int target = blank + 1;
-        std::swap(next[blank], next[target]);
+        swap(next[blank], next[target]);
         result.push_back({next, target, Move::RIGHT});
     }
     return result;
 }
 
 // 移动方向转字符串
-std::string move_to_str(Move m)
+string move_to_str(Move m)
 {
     switch (m)
     {
@@ -152,8 +159,8 @@ bool is_solvable(const Board &state)
         }
     }
     // 找到空格行号
-    int blank_idx = static_cast<int>(std::distance(
-        state.begin(), std::find(state.begin(), state.end(), 0)));
+    int blank_idx = static_cast<int>(distance(
+        state.begin(), find(state.begin(), state.end(), 0)));
     int blank_row = blank_idx / 4;
 
     // 逆序数奇偶性 != 空格行号奇偶性
@@ -173,7 +180,7 @@ int manhattan(const Board &state)
         int cur_col = i % 4;
         int goal_row = TARGET_ROW[val];
         int goal_col = TARGET_COL[val];
-        dist += std::abs(cur_row - goal_row) + std::abs(cur_col - goal_col);
+        dist += abs(cur_row - goal_row) + abs(cur_col - goal_col);
     }
     return dist;
 }
@@ -181,7 +188,7 @@ int manhattan(const Board &state)
 // 优先队列比较: f值小的优先(小根堆)
 struct CompareNode
 {
-    bool operator()(const std::shared_ptr<Node> &a, const std::shared_ptr<Node> &b) const
+    bool operator()(const shared_ptr<Node> &a, const shared_ptr<Node> &b) const
     {
         return a->f() > b->f();
     }
@@ -190,10 +197,10 @@ struct CompareNode
 // 查找空格位置的辅助函数
 int find_blank(const Board &state)
 {
-    return static_cast<int>(std::distance(state.begin(), std::find(state.begin(), state.end(), 0)));
+    return static_cast<int>(distance(state.begin(), find(state.begin(), state.end(), 0)));
 }
 
-std::vector<Move> solve(const Board &start_state)
+vector<Move> solve(const Board &start_state)
 {
     // 可解性检查
     if (!is_solvable(start_state))
@@ -202,14 +209,14 @@ std::vector<Move> solve(const Board &start_state)
     }
 
     // 初始化优先队列和关闭列表
-    std::priority_queue<std::shared_ptr<Node>,
-                        std::vector<std::shared_ptr<Node>>,
+    priority_queue<shared_ptr<Node>,
+                        vector<shared_ptr<Node>>,
                         CompareNode>
         open_set;
-    std::map<Board, int> closed; // 状态 -> 最小 g 值
+    map<Board, int> closed; // 状态 -> 最小 g 值
 
     int start_blank = find_blank(start_state);
-    auto start_node = std::make_shared<Node>();
+    auto start_node = make_shared<Node>();
     start_node->state = start_state;
     start_node->g = 0;
     start_node->h = manhattan(start_state);
@@ -230,14 +237,14 @@ std::vector<Move> solve(const Board &start_state)
         if (current->state == GOAL)
         {
             // 重建路径
-            std::vector<Move> path;
+            vector<Move> path;
             auto node = current;
             while (node->parent != nullptr)
             {
                 path.push_back(node->move_from_parent);
                 node = node->parent;
             }
-            std::reverse(path.begin(), path.end());
+            reverse(path.begin(), path.end());
             return path;
         }
 
@@ -262,7 +269,7 @@ std::vector<Move> solve(const Board &start_state)
                 continue; // 已有更优路径到达此状态
             }
             // 创建子节点
-            auto child = std::make_shared<Node>();
+            auto child = make_shared<Node>();
             child->state = succ.state;
             child->g = new_g;
             child->h = manhattan(succ.state);
@@ -276,14 +283,14 @@ std::vector<Move> solve(const Board &start_state)
     return {}; // 因为已预先检查可解性, 理论上不会到这里
 }
 
-void simulate(const Board &start, const std::vector<Move> &path)
+void simulate(const Board &start, const vector<Move> &path)
 {
     Board cur = start;
     int blank = find_blank(cur);
     print_board(cur);
     for (size_t i = 0; i < path.size(); ++i)
     {
-        std::cout << "Move " << i + 1 << ": " << move_to_str(path[i]) << "\n";
+        cout << "Move " << i + 1 << ": " << move_to_str(path[i]) << "\n";
         auto succs = get_successors(cur, blank);
         for (auto &s : succs)
         {
@@ -298,45 +305,45 @@ void simulate(const Board &start, const std::vector<Move> &path)
     }
     if (cur == GOAL)
     {
-        std::cout << "成功复原!\n";
+        cout << "成功复原!\n";
     }
     else
     {
-        std::cout << "错误: 未到达目标.\n";
+        cout << "错误: 未到达目标.\n";
     }
 }
 
 int main()
 {
     Board input;
-    std::cout << "请输入棋盘, 按行优先顺序, 空格用0表示(16个数字, 空格分隔):\n";
+    cout << "请输入棋盘, 按行优先顺序, 空格用0表示(16个数字, 空格分隔):\n";
     for (int i = 0; i < 16; ++i)
     {
-        std::cin >> input[i];
+        cin >> input[i];
     }
 
     if (!is_solvable(input))
     {
-        std::cout << "这个棋盘无解.\n";
+        cout << "这个棋盘无解.\n";
         return 0;
     }
 
-    std::cout << "求解中...\n";
+    cout << "求解中...\n";
     auto path = solve(input);
     if (path.empty())
     {
-        std::cout << "求解失败.\n"; // 理论上不应该发生
+        cout << "求解失败.\n"; // 理论上不应该发生
         return 1;
     }
 
-    std::cout << "找到解, 共 " << path.size() << " 步:\n";
+    cout << "找到解, 共 " << path.size() << " 步:\n";
     for (size_t i = 0; i < path.size(); ++i)
     {
-        std::cout << i + 1 << ": " << move_to_str(path[i]) << '\n';
+        cout << i + 1 << ": " << move_to_str(path[i]) << '\n';
     }
 
     // 模拟验证
-    std::cout << "\n模拟过程:\n";
+    cout << "\n模拟过程:\n";
     simulate(input, path);
 
     return 0;
