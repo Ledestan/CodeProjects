@@ -31,6 +31,7 @@ private:
     vector<vector<Edge>> adj;            // 邻接表
     unordered_map<string, int> nameToId; // 节点名称 -> 索引
     vector<string> idToName;             // 索引 -> 节点名称
+    vector<int> popularity;              // 每个节点的热度值
 
 public:
     // 添加节点, 返回索引
@@ -41,7 +42,8 @@ public:
         int id = idToName.size();
         nameToId[name] = id;
         idToName.push_back(name);
-        adj.push_back({}); // 为新节点开辟邻接表
+        adj.push_back({});       // 为新节点开辟邻接表
+        popularity.push_back(0); // 初始化热度为 0
         return id;
     }
 
@@ -71,6 +73,24 @@ public:
 
     // 获取某个节点的邻接边
     const vector<Edge> &getNeighbors(int id) const { return adj[id]; }
+
+    // 增加某个节点的热度
+    void increasePopularity(int id, int delta = 1)
+    {
+        if (id >= 0 && id < (int)popularity.size())
+            popularity[id] += delta;
+    }
+
+    // 获取某个节点的热度
+    int getPopularity(int id) const
+    {
+        if (id >= 0 && id < (int)popularity.size())
+            return popularity[id];
+        return 0;
+    }
+
+    // 获取所有节点的热度
+    const vector<int> &getAllPopularity() const { return popularity; }
 };
 
 // 读取 csv 文件, 初始化地图
@@ -326,6 +346,69 @@ int kruskal(const Graph &graph, vector<tuple<string, string, int>> &mstEdges)
     return totalWeight;
 }
 
+void showPopularityRanking(const Graph &graph)
+{
+    int n = graph.getNodeCount();
+    if (n == 0)
+    {
+        cout << "暂无地点数据." << endl;
+        return;
+    }
+
+    // 收集 (热度, 节点ID, 名称)
+    vector<tuple<int, int, string>> items;
+    for (int i = 0; i < n; ++i)
+    {
+        items.emplace_back(graph.getPopularity(i), i, graph.getName(i));
+    }
+
+    // 排序: 热度降序, 热度相同时按名称升序
+    sort(items.begin(), items.end(),
+         [](const tuple<int, int, string> &a, const tuple<int, int, string> &b)
+         {
+             if (get<0>(a) != get<0>(b))
+                 return get<0>(a) > get<0>(b);
+             return get<2>(a) < get<2>(b);
+         });
+
+    cout << "地点热度排行榜" << endl;
+    cout << "排名\t热度\t地点名称" << endl;
+    int rank = 1;
+    for (const auto &item : items)
+    {
+        int pop = get<0>(item);
+        string name = get<2>(item);
+        cout << rank++ << "\t" << pop << "\t" << name << endl;
+    }
+}
+
+void showLocationDetail(const Graph &g, const string &name)
+{
+    int id = g.getIndex(name); // 哈希查找
+    if (id == -1)
+    {
+        cout << "错误: 地点 '" << name << "' 不存在!" << endl;
+        return;
+    }
+
+    cout << "\n地点: " << g.getName(id) << endl;
+    cout << "热度: " << g.getPopularity(id) << endl;
+
+    cout << "相邻地点：" << endl;
+    const auto &neighbors = g.getNeighbors(id);
+    if (neighbors.empty())
+    {
+        cout << "  (无连接道路)" << endl;
+    }
+    else
+    {
+        for (const Edge &e : neighbors)
+        {
+            cout << "  - " << g.getName(e.to) << " (" << e.weight << "米)" << endl;
+        }
+    }
+}
+
 int main()
 {
     Graph campus;
@@ -337,8 +420,10 @@ int main()
     while (true)
     {
         cout << "\n校园导航系统" << endl;
-        cout << "1: 最短路径导航 (Dijkstra)" << endl;
-        cout << "2: 最小生成树道路规划 (Kruskal)" << endl;
+        cout << "1: 最短路径导航" << endl;
+        cout << "2: 最小生成树道路规划" << endl;
+        cout << "3: 查看地点热度排行榜" << endl;
+        cout << "4: 查询地点详细信息" << endl;
         cout << "0: 退出" << endl;
         cout << "请选择操作: ";
         cin >> choice;
@@ -377,6 +462,8 @@ int main()
                     if (i != path.size() - 1)
                         cout << " -> ";
                 }
+                campus.increasePopularity(endId);
+                cout << " (已为终点增加1点热度)";
                 cout << endl;
             }
         }
@@ -398,6 +485,17 @@ int main()
                          << " : " << get<2>(edge) << " 米" << endl;
                 }
             }
+        }
+        else if (choice == 3)
+        {
+            showPopularityRanking(campus);
+        }
+        else if (choice == 4)
+        {
+            string name;
+            cout << "请输入地点名称：";
+            cin >> name;
+            showLocationDetail(campus, name);
         }
         else if (choice == 0)
         {
