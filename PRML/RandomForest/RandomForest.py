@@ -189,7 +189,7 @@ class RandomForest:
         df["age_group_code"] = df["age_group"].map(age_map)
         df.drop("age_group", axis=1, inplace=True)
 
-        # 交互特征:Date.diff * SMS_received
+        # 交互特征: Date.diff * SMS_received
         df["diff_sms_interact"] = df["Date.diff"] * df["SMS_received"]
 
         return df
