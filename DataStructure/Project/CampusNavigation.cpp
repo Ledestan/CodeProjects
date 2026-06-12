@@ -395,18 +395,18 @@ int main()
                 for (const auto &edge : mstEdges)
                 {
                     cout << "  " << get<0>(edge) << " —— " << get<1>(edge)
-                         << " : " << get<2>(edge) << " 米\n";
+                         << " : " << get<2>(edge) << " 米" << endl;
                 }
             }
         }
         else if (choice == 0)
         {
-            cout << "感谢使用, 再见!\n";
+            cout << "感谢使用, 再见!" << endl;
             return 0;
         }
         else
         {
-            cout << "无效选择, 请重新输入.\n";
+            cout << "无效选择, 请重新输入." << endl;
         }
     }
 
