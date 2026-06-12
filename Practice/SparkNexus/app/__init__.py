@@ -30,7 +30,6 @@ def create_app(config_class=Config):
 
     # 显式导入 models 模块，确保所有模型类被 SQLAlchemy 识别
     from . import models  # 注册 Event、Registration 等模型
-
     # 注册蓝图
     from .auth import auth_bp
 

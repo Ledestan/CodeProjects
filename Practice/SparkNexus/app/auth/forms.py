@@ -3,14 +3,8 @@ import sys
 sys.dont_write_bytecode = True
 
 from flask_wtf import FlaskForm
-from wtforms import (
-    BooleanField,
-    HiddenField,
-    PasswordField,
-    SelectField,
-    StringField,
-    SubmitField,
-)
+from wtforms import (BooleanField, HiddenField, PasswordField, SelectField,
+                     StringField, SubmitField)
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Optional
 
 

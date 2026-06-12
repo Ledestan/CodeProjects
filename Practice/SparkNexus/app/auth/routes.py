@@ -9,13 +9,8 @@ from .. import db
 from ..decorators import require_roles
 from ..models import Role, User
 from . import auth_bp
-from .forms import (
-    AdminResetPasswordForm,
-    ChangePasswordForm,
-    EditUserRoleForm,
-    LoginForm,
-    RegistrationForm,
-)
+from .forms import (AdminResetPasswordForm, ChangePasswordForm,
+                    EditUserRoleForm, LoginForm, RegistrationForm)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])

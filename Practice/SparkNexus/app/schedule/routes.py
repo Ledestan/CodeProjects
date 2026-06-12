@@ -4,7 +4,8 @@ sys.dont_write_bytecode = True
 
 from datetime import datetime
 
-from flask import abort, flash, jsonify, redirect, render_template, request, url_for
+from flask import (abort, flash, jsonify, redirect, render_template, request,
+                   url_for)
 from flask_login import current_user, login_required
 
 from ..decorators import require_roles

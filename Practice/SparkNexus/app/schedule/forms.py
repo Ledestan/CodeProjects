@@ -3,7 +3,8 @@ import sys
 sys.dont_write_bytecode = True
 
 from flask_wtf import FlaskForm
-from wtforms import DateTimeField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import (DateTimeField, SelectField, StringField, SubmitField,
+                     TextAreaField)
 from wtforms.validators import DataRequired
 
 
