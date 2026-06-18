@@ -1,8 +1,7 @@
 """
-聚类分析工具
-
+项目名称: 聚类分析
 创建日期: 2026-04-02
-需求文件: data
+需求文件: data/Points80.csv, data/Points788.csv
 
 依赖库：
 matplotlib>=3.10.8
@@ -24,8 +23,8 @@ plt.rcParams["axes.unicode_minus"] = False
 
 
 class ClusterAnalysis:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, path):
+        self.data = pd.read_csv(path, header=None, sep=",")
         self.n_clusters = None
         self.eps = None
 
@@ -158,10 +157,10 @@ class ClusterAnalysis:
 
 
 if __name__ == "__main__":
-    if input("Input not null: points80.txt, if null: points788.txt\n"):
-        ca = ClusterAnalysis(pd.read_csv("data/points80.txt", header=None, sep="\t"))
+    if input("Input not null: Points80.csv, if null: Points788.csv\n"):
+        ca = ClusterAnalysis("data/Points80.csv")
     else:
-        ca = ClusterAnalysis(pd.read_csv("data/points788.txt", header=None, sep=","))
+        ca = ClusterAnalysis("data/Points788.csv")
     ca.show_scatter()
     ca.elbow_method()
     ca.silhouette_coefficient()

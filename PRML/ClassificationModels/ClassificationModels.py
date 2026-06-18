@@ -1,7 +1,6 @@
 """
-项目名称: 随机森林
+项目名称: 分类模型
 创建日期: 2026-05-28
-
 需求文件: data/healthcare_noshows.csv
 
 依赖库:
@@ -46,7 +45,7 @@ class RandomForest:
         self.neighbourhood_freq_map = None
         self.neighbourhood_rare_threshold = 10  # 低频社区合并阈值
 
-        self.model = None # 训练好的随机森林模型
+        self.model = None  # 训练好的随机森林模型
 
         # 评估结果
         self.metrics = {}
@@ -131,7 +130,9 @@ class RandomForest:
         )
 
         print("\n" + "=" * 50)
-        print(f"随机森林 - 训练集大小: {self.X_train.shape}, 测试集大小: {self.X_test.shape}")
+        print(
+            f"随机森林 - 训练集大小: {self.X_train.shape}, 测试集大小: {self.X_test.shape}"
+        )
         print(f"训练集失约率: {self.y_train.mean():.2%}")
         print(f"测试集失约率: {self.y_test.mean():.2%}")
 
@@ -279,10 +280,11 @@ class RandomForest:
         print("\n分类报告:")
         print(
             classification_report(
-                self.y_test, y_pred_default,
+                self.y_test,
+                y_pred_default,
                 labels=[0, 1],
                 target_names=["失约", "如约"],
-                zero_division=0
+                zero_division=0,
             )
         )
 
@@ -514,10 +516,11 @@ class LogisticRegressionModel:
         print("\n分类报告:")
         print(
             classification_report(
-                self.y_test, y_pred_default,
+                self.y_test,
+                y_pred_default,
                 labels=[0, 1],
                 target_names=["失约", "如约"],
-                zero_division=0
+                zero_division=0,
             )
         )
 

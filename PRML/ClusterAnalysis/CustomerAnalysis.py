@@ -1,8 +1,7 @@
 """
-客户数据分析工具
-
+项目名称: 客户数据聚类分析
 创建日期: 2026-04-16
-需求文件: data\Mall_Customers.csv
+需求文件: data\MallCustomers.csv
 
 依赖库:
 matplotlib>=3.10.8
@@ -427,7 +426,7 @@ class CustomerAnalysis:
 
 
 if __name__ == "__main__":
-    anlys = CustomerAnalysis("data/Mall_Customers.csv")
+    anlys = CustomerAnalysis("data/MallCustomers.csv")
     anlys.data_preview()  # 数据预览
     anlys.data_preprocessing()  # 数据预处理
     anlys.find_optimal_k()  # 确定最优 K 值

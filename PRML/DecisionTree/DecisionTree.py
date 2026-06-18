@@ -1,8 +1,7 @@
 """
 项目名称: 决策树
 创建日期: 2026-05-21
-
-需求文件: data
+需求文件: data/watermelon2.csv, data/watermelon3.csv
 
 依赖库:
 matplotlib>=3.10.9

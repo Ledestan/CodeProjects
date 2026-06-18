@@ -1,3 +1,8 @@
+"""
+项目名称: 星火云枢班级智能协同平台
+启动日期: 2026-06-02
+"""
+
 import sys
 
 sys.dont_write_bytecode = True

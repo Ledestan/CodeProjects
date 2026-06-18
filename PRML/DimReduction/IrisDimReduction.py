@@ -1,6 +1,5 @@
 """
-PCA Iris 数据集处理
-
+项目名称: Iris 降维
 创建日期: 2026-04-23
 需求文件: 无
 
@@ -21,7 +20,7 @@ plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
 
 
-class PCA_Iris:
+class IrisDimReduction:
     def __init__(self):
         self.pca = PCA()
 
@@ -77,6 +76,6 @@ class PCA_Iris:
 
 
 if __name__ == "__main__":
-    pca = PCA_Iris
+    pca = IrisDimReduction()
     pca.data_processing()
     pca.show_ratio()

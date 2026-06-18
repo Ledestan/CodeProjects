@@ -1,4 +1,4 @@
-SparkNexus/                   # 项目根目录
+SparkNexus/                    # 项目根目录
 ├── app/                       # 应用主包
 │   ├── __init__.py            # 应用工厂（create_app），注册蓝图、初始化扩展
 │   ├── config.py              # 配置类（开发/生产/测试）

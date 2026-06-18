@@ -1,6 +1,5 @@
 """
-PCA ORL 数据集处理
-
+项目名称: ORL 降维
 创建日期: 2026-04-24
 需求文件: data
 
@@ -24,7 +23,7 @@ plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
 
 
-class PCA_Face:
+class FaceDimReduction:
     def __init__(self, path, img_size):
         self.path = path
         self.img_size = img_size
@@ -199,7 +198,7 @@ class PCA_Face:
 
 
 if __name__ == "__main__":
-    pca = PCA_Face("data", (64, 64))
+    pca = FaceDimReduction("data", (64, 64))
     pca.load_face_data()
     pca.data_processing()
     pca.show_PCA()
