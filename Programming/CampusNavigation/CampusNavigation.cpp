@@ -411,7 +411,7 @@ void showLocationDetail(const Graph &g, const string &name)
 int main()
 {
     Graph campus;
-    initCampusMap(campus, "CampusMap.csv");
+    initCampusMap(campus, "data/CampusMap.csv");
     cout << "节点数: " << campus.getNodeCount() << endl;
     printGraph(campus);
 
