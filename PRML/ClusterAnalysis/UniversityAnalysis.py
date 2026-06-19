@@ -300,8 +300,8 @@ class UniversityAnalysis:
 
 
 if __name__ == "__main__":
-    analyzer = UniversityAnalysis("data/University.csv")
-    analyzer.data_preview()
-    analyzer.data_preprocessing()
-    analyzer.find_optimal_k()
-    analyzer.show_clusters()
+    analysis = UniversityAnalysis("data/University.csv")
+    analysis.data_preview()
+    analysis.data_preprocessing()
+    analysis.find_optimal_k()
+    analysis.show_clusters()
