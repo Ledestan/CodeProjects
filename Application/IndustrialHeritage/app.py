@@ -7,7 +7,6 @@
 flask>=3.1.2
 numpy>=2.2.6
 opencv-python>=4.12.0.88
-pillow>=12.1.0
 requests>=2.32.5
 """
 
