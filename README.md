@@ -255,10 +255,11 @@ pip install -r requirements.txt
   python -m pip install --upgrade pip
   ```
 
-  安装项目依赖
+- 安装项目依赖
   ``bash
   python -m pip install -r requirements.txt
   ```
+  
   > 清华镜像源：
   > ```bash
   > python -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
