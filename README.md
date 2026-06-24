@@ -189,7 +189,7 @@
 
 基于 Flask 框架的完整 Web 应用项目，注重工程化与功能集成。
 
-### IndustrialHeritage（工业遗产保护系统）
+### IndustrialHeritage（工业遗产数字活化）
 
 - **入口文件**：`Application/IndustrialHeritage/app.py`
 - **功能描述**：集成图像识别模块与知识问答引擎，用于工业遗产信息查询与保护。
@@ -199,7 +199,7 @@
   python app.py
   ```
 
-### SparkNexus（星火云枢：班级智能协同平台）
+### SparkNexus（星火云枢班级智能协同平台）
 
 - **入口文件**：`Application/SparkNexus/run.py`
 - **功能描述**：班级管理 Web 应用，支持日程协同、报名签到、通知发布及多角色权限控制（管理员、教师、班委、学生）。
