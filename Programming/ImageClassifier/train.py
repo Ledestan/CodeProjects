@@ -1,7 +1,3 @@
-"""
-分类器训练脚本
-"""
-
 import os
 import sys
 
@@ -13,6 +9,7 @@ from ImageClassifier import ImageClassifier
 
 
 def main():
+    """分类器训练脚本"""
     # 初始化分类器
     clf = ImageClassifier()
 
