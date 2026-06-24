@@ -1,12 +1,116 @@
 # 项目列表
 
-本仓库汇总了在程序基础、数据结构、机器学习、Web应用等领域的实践代码，主要用于学习记录与技术复盘。所有项目按功能模块划分为三大目录：**Programming（程序设计）**、**PRML（模式识别与机器学习）** 与 **Application（应用实践）**。
+本仓库汇总了在学习中的实践代码，主要用于学习记录与技术复盘。
 
 ---
 
-## Programming（编程基础与算法实践）
+## Application（应用实践）
 
-基础算法、数据结构、趣味小游戏及图像处理入门项目。
+### IndustrialHeritage（工业遗产数字活化）
+
+- **入口文件**：`Application/IndustrialHeritage/app.py`
+- **功能描述**：集成图像识别模块与知识问答引擎，用于工业遗产信息查询与保护。
+- **运行方法**：
+  ```bash
+  cd Application/IndustrialHeritage
+  python app.py
+  ```
+
+### SparkNexus（星火云枢班级智能协同平台）
+
+- **入口文件**：`Application/SparkNexus/run.py`
+- **功能描述**：班级管理 Web 应用，支持日程协同、报名签到、通知发布及多角色权限控制（管理员、教师、班委、学生）。
+- **运行方法**：
+  ```bash
+  cd Application/SparkNexus
+  python run.py
+  ```
+
+---
+
+## PRML（模式识别与机器学习）
+
+### ClassificationModels（分类模型）
+
+- **入口文件**：`PRML/ClassificationModels/ClassificationModels.py`
+- **功能描述**：基于 Kaggle 医疗预约数据集，使用随机森林、逻辑回归预测患者是否按时赴约。
+- **运行方法**：
+  ```bash
+  cd PRML/ClassificationModels
+  python ClassificationModels.py
+  ```
+
+### ClusterAnalysis（聚类分析）
+
+- **入口文件**：`PRML/ClusterAnalysis/ClusterAnalysis.py`（主程序）
+- **附属文件**：`CustomerAnalysis.py`、`UniversityAnalysis.py`
+- **功能描述**：支持 K-Means、GMM、DBSCAN 等聚类算法，包含肘部法则和轮廓系数评估。
+- **运行方法**：
+  ```bash
+  cd PRML/ClusterAnalysis
+  python ClusterAnalysis.py
+  ```
+
+### DataExploration（数据探索）
+
+- **入口文件**：`PRML/DataExploration/DataExploration.py`
+- **功能描述**：薪资数据分析，涵盖数据预览、缺失值处理、特征提取及互信息分析。
+- **运行方法**：
+  ```bash
+  cd PRML/DataExploration
+  python DataExploration.py
+  ```
+
+### DecisionTree（决策树）
+
+- **入口文件**：`PRML/DecisionTree/DecisionTree.py`
+- **功能描述**：基于西瓜数据集，使用基尼系数（CART）构建决策树，输出树结构与准确率。
+- **运行方法**：
+  ```bash
+  cd PRML/DecisionTree
+  python DecisionTree.py
+  ```
+
+### DimReduction（降维分析）
+
+- **入口文件**：
+  - `PRML/DimReduction/IrisDimReduction.py`（鸢尾花 PCA）
+  - `PRML/DimReduction/FaceDimReduction.py`（ORL 人脸 PCA）
+  - `PRML/DimReduction/FaceRecAnalysis.py`（人脸识别综合分析）
+- **功能描述**：实现 PCA、LDA 等降维算法，应用于 Iris 数据集及人脸识别场景。
+- **运行方法**：
+  ```bash
+  cd PRML/DimReduction
+  python IrisDimReduction.py
+  python FaceDimReduction.py
+  python FaceRecAnalysis.py
+  ```
+
+### ImageRecognition（图像识别）
+
+- **入口文件**：`PRML/ImageRecognition/ImageRecognition.py`
+- **功能描述**：基于模板匹配与特征提取的图像识别工具。
+- **运行方法**：
+  ```bash
+  cd PRML/ImageRecognition
+  python ImageRecognition.py
+  ```
+
+### LinearRegression（线性回归）
+
+- **入口文件**：`PRML/LinearRegression/LinearRegression.py`
+- **附属文件**：`RegressionPrediction.py`
+- **功能描述**：提供基于梯度下降和 scikit-learn 的线性回归实现，含损失曲线可视化。
+- **运行方法**：
+  ```bash
+  cd PRML/LinearRegression
+  python LinearRegression.py
+  python RegressionPrediction.py
+  ```
+
+---
+
+## Programming（程序设计）
 
 ### ChessGame（中国象棋游戏）
 
@@ -101,121 +205,11 @@
 
 ---
 
-## PRML（模式识别与机器学习）
-
-基于《Pattern Recognition and Machine Learning》及周志华《机器学习》的理论实践，涵盖回归、分类、聚类、降维等经典算法。
-
-### ClassificationModels（分类模型）
-
-- **入口文件**：`PRML/ClassificationModels/ClassificationModels.py`
-- **功能描述**：基于 Kaggle 医疗预约数据集，使用随机森林、逻辑回归预测患者是否按时赴约。
-- **运行方法**：
-  ```bash
-  cd PRML/ClassificationModels
-  python ClassificationModels.py
-  ```
-
-### ClusterAnalysis（聚类分析）
-
-- **入口文件**：`PRML/ClusterAnalysis/ClusterAnalysis.py`（主程序）
-- **附属文件**：`CustomerAnalysis.py`、`UniversityAnalysis.py`
-- **功能描述**：支持 K-Means、GMM、DBSCAN 等聚类算法，包含肘部法则和轮廓系数评估。
-- **运行方法**：
-  ```bash
-  cd PRML/ClusterAnalysis
-  python ClusterAnalysis.py
-  ```
-
-### DataExploration（数据探索）
-
-- **入口文件**：`PRML/DataExploration/DataExploration.py`
-- **功能描述**：薪资数据分析，涵盖数据预览、缺失值处理、特征提取及互信息分析。
-- **运行方法**：
-  ```bash
-  cd PRML/DataExploration
-  python DataExploration.py
-  ```
-
-### DecisionTree（决策树）
-
-- **入口文件**：`PRML/DecisionTree/DecisionTree.py`
-- **功能描述**：基于西瓜数据集，使用基尼系数（CART）构建决策树，输出树结构与准确率。
-- **运行方法**：
-  ```bash
-  cd PRML/DecisionTree
-  python DecisionTree.py
-  ```
-
-### DimReduction（降维分析）
-
-- **入口文件**：
-  - `PRML/DimReduction/IrisDimReduction.py`（鸢尾花 PCA）
-  - `PRML/DimReduction/FaceDimReduction.py`（ORL 人脸 PCA）
-  - `PRML/DimReduction/FaceRecAnalysis.py`（人脸识别综合分析）
-- **功能描述**：实现 PCA、LDA 等降维算法，应用于 Iris 数据集及人脸识别场景。
-- **运行方法**：
-  ```bash
-  cd PRML/DimReduction
-  python IrisDimReduction.py
-  python FaceDimReduction.py
-  python FaceRecAnalysis.py
-  ```
-
-### ImageRecognition（图像识别）
-
-- **入口文件**：`PRML/ImageRecognition/ImageRecognition.py`
-- **功能描述**：基于模板匹配与特征提取的图像识别工具。
-- **运行方法**：
-  ```bash
-  cd PRML/ImageRecognition
-  python ImageRecognition.py
-  ```
-
-### LinearRegression（线性回归）
-
-- **入口文件**：`PRML/LinearRegression/LinearRegression.py`
-- **附属文件**：`RegressionPrediction.py`
-- **功能描述**：提供基于梯度下降和 scikit-learn 的线性回归实现，含损失曲线可视化。
-- **运行方法**：
-  ```bash
-  cd PRML/LinearRegression
-  python LinearRegression.py
-  python RegressionPrediction.py
-  ```
-
----
-
-## Application（应用实践）
-
-基于 Flask 框架的完整 Web 应用项目，注重工程化与功能集成。
-
-### IndustrialHeritage（工业遗产数字活化）
-
-- **入口文件**：`Application/IndustrialHeritage/app.py`
-- **功能描述**：集成图像识别模块与知识问答引擎，用于工业遗产信息查询与保护。
-- **运行方法**：
-  ```bash
-  cd Application/IndustrialHeritage
-  python app.py
-  ```
-
-### SparkNexus（星火云枢班级智能协同平台）
-
-- **入口文件**：`Application/SparkNexus/run.py`
-- **功能描述**：班级管理 Web 应用，支持日程协同、报名签到、通知发布及多角色权限控制（管理员、教师、班委、学生）。
-- **运行方法**：
-  ```bash
-  cd Application/SparkNexus
-  python run.py
-  ```
-
----
-
 ## 环境与依赖
 
 ### 运行环境
 
-- Python 3.11
+- Python 编译器
 - C++ 编译器
 
 ### 安装命令
@@ -225,6 +219,57 @@
 ```bash
 pip install -r requirements.txt
 ```
+
+### 项目环境初始化流程
+
+本项目使用 Python 和 pip 管理依赖。以下步骤按顺序执行即可搭建开发环境。
+
+- 生成初始依赖清单（需提前全局安装 `pipreqs`）
+  ```bash
+  pipreqs . --encoding=utf8 --force
+  ```
+
+- 创建 Python 隔离虚拟环境
+  ```bash
+  python -m venv .venv
+  ```
+
+- 激活虚拟环境
+  > Windows 用户 (cmd)
+  ```bash
+  .venv\Scripts\activate
+  ```
+
+  > Linux/Mac 用户
+  ```bash
+  source .venv/bin/activate`
+  ```
+
+- 检查环境是否干净
+  ```bash
+  python -m pip freeze
+  ```
+
+- 升级 pip 到最新版本
+  ```bash
+  python -m pip install --upgrade pip
+  ```
+
+  安装项目依赖
+  ``bash
+  python -m pip install -r requirements.txt
+  ```
+  > 清华镜像源：
+  > ```bash
+  > python -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+  > ```
+
+- 导出当前环境所有包的精确版本（覆盖原 requirements.txt）
+  ```bash
+  python -m pip freeze > requirements.txt
+  ```
+
+> **提示**：若安装过程中遇到依赖冲突，可调整 `requirements.txt` 中的版本范围后重试安装。
 
 ---
 
