@@ -1,7 +1,3 @@
-"""
-分类器图形测试界面
-"""
-
 import os
 import sys
 import tkinter as tk
@@ -89,6 +85,7 @@ class Window:
 
 
 def main():
+    """分类器图形测试界面"""
     # 加载模型参数
     param_path = "data/models/params.npz"
     if not os.path.exists(param_path):

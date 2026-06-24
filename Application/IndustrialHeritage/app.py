@@ -1,19 +1,16 @@
 """
 团队名称: 数溯工忆
-项目名称: 工业遗产数字活化：AI+AR技术赋能实践
-启动时间: 2026-01-12
-
-依赖库:
-flask>=3.1.2
-numpy>=2.2.6
-opencv-python>=4.12.0.88
-pillow>=12.1.0
-requests>=2.32.5
+项目名称: 工业遗产数字活化
+创建时间: 2026-01-12
 """
 
+import sys
 import traceback
 
+sys.dont_write_bytecode = True
+
 from flask import Flask, jsonify, render_template, request
+
 from image_recognizer import ImageRecognizer
 from qa_engine import QASystem
 
