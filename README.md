@@ -218,29 +218,6 @@
 - Python 3.11
 - C++ 编译器
 
-### 核心 Python 依赖库
-
-```
-Flask>=3.1.2
-Flask-Login>=0.6.3
-Flask-Migrate>=4.1.0
-Flask-SQLAlchemy>=3.1.1
-Flask-WTF>=1.3.0
-graphviz>=0.21
-kmodes>=0.12.2
-matplotlib>=3.10.9
-numpy>=2.4.6
-opencv_python>=4.12.0.88
-pandas>=3.0.3
-Pillow>=12.2.0
-pygame>=2.6.1
-python-dotenv>=1.2.2
-Requests>=2.34.2
-scikit_learn>=1.8.0
-scipy>=1.17.1
-seaborn>=0.13.2
-```
-
 ### 安装命令
 
 使用根目录下的 `requirements.txt` 一键安装所有 Python 依赖：
