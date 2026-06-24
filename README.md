@@ -209,20 +209,12 @@
 
 ### 运行环境
 
-- Python 编译器
-- C++ 编译器
-
-### 安装命令
-
-使用根目录下的 `requirements.txt` 一键安装所有 Python 依赖：
-
-```bash
-pip install -r requirements.txt
-```
+- Python
+- C++
 
 ### 项目环境初始化流程
 
-本项目使用 Python 和 pip 管理依赖。以下步骤按顺序执行即可搭建开发环境。
+本项目使用 Python 和 pip 管理依赖。
 
 - 生成初始依赖清单（需提前全局安装 `pipreqs`）
   ```bash
