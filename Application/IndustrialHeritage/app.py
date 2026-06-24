@@ -11,9 +11,13 @@ pillow>=12.1.0
 requests>=2.32.5
 """
 
+import sys
 import traceback
 
+sys.dont_write_bytecode = True
+
 from flask import Flask, jsonify, render_template, request
+
 from image_recognizer import ImageRecognizer
 from qa_engine import QASystem
 
