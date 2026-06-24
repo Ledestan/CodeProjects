@@ -256,10 +256,10 @@ pip install -r requirements.txt
   ```
 
 - 安装项目依赖
-  ``bash
+  ```bash
   python -m pip install -r requirements.txt
   ```
-  
+
   > 清华镜像源：
   > ```bash
   > python -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
