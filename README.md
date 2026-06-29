@@ -1,6 +1,6 @@
 # 项目列表
 
-本仓库汇总了在学习中的实践代码，主要用于学习记录与技术复盘。
+本仓库汇总了在学习中的实践代码，基于 Python 与 C++ 编写，主要用于学习记录与技术复盘。
 
 ---
 
@@ -16,13 +16,22 @@
   python app.py
   ```
 
-### SparkNexus（星火云枢班级智能协同平台）
+### SparkNexus（星火云枢：班级智能协同平台）
 
 - **入口文件**：`Application/SparkNexus/run.py`
 - **功能描述**：班级管理 Web 应用，支持日程协同、报名签到、通知发布及多角色权限控制（管理员、教师、班委、学生）。
 - **运行方法**：
   ```bash
   cd Application/SparkNexus
+  python run.py
+  ```
+
+### TripScape（行旅识景：世界著名地标智能识别）
+- **入口文件**：`Application/TripScape/run.py`
+- **功能描述**：集地标图像识别、AI智能问答、足迹打卡图鉴、动态热力图和成就激励于一体的交互平台。用户上传照片即可识别地标并获取百科信息，输入问题可获得流式AI回答，打卡收集地标卡牌，并在地图上可视化旅行足迹。
+- **运行方法**：
+  ```bash
+  cd Application/TripScape
   python run.py
   ```
 
@@ -202,74 +211,6 @@
 - **入口文件**：`Programming/Template/DoublyLinkedList.py` 与 `LinkedList.py`
 - **功能描述**：手写链表（单链表/双链表）模板，供其他项目复用或参考。
 - **运行方法**：无独立运行入口，作为模块导入使用。
-
----
-
-## 环境与依赖
-
-### 运行环境
-
-- Python
-- C++
-
-### 项目环境初始化流程
-
-本项目使用 Python 和 pip 管理依赖。
-
-- 生成初始依赖清单（需提前全局安装 `pipreqs`）
-
-  ```bash
-  pipreqs . --encoding=utf8 --force
-  ```
-- 创建 Python 隔离虚拟环境
-
-  ```bash
-  python -m venv .venv
-  ```
-- 激活虚拟环境
-
-  > Windows 用户 (cmd)
-  >
-
-  ```bash
-  .venv\Scripts\activate
-  ```
-
-  > Linux/Mac 用户
-  >
-
-  ```bash
-  source .venv/bin/activate`
-  ```
-- 检查环境是否干净
-
-  ```bash
-  python -m pip freeze
-  ```
-- 升级 pip 到最新版本
-
-  ```bash
-  python -m pip install --upgrade pip
-  ```
-- 安装项目依赖
-
-  ```bash
-  python -m pip install -r requirements.txt
-  ```
-
-  > 清华镜像源：
-  >
-  > ```bash
-  > python -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
-  > ```
-  >
-- 导出当前环境所有包的精确版本（覆盖原 requirements.txt）
-
-  ```bash
-  python -m pip freeze > requirements.txt
-  ```
-
-> **提示**：若安装过程中遇到依赖冲突，可调整 `requirements.txt` 中的版本范围后重试安装。
 
 ---
 
