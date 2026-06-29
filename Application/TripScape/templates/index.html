@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行旅识景 · 世界著名地标智能识别</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f7f8fa;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #1f2a3a;
+        }
+
+        .navbar {
+            flex-shrink: 0;
+            padding: 16px 32px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2a3a;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .navbar-brand .sub {
+            font-size: 14px;
+            font-weight: 400;
+            color: #6a7a8e;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #5a6a7e;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #0066ff;
+        }
+
+        .main-container {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 0 20px;
+        }
+
+        .chat-wrapper {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .message-flow {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 0 16px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            scroll-behavior: smooth;
+        }
+
+        .message-flow::-webkit-scrollbar {
+            width: 4px;
+        }
+        .message-flow::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .message-flow::-webkit-scrollbar-thumb {
+            background: #d0d7e3;
+            border-radius: 10px;
+        }
+
+        .message {
+            max-width: 92%;
+            padding: 12px 18px;
+            border-radius: 16px;
+            line-height: 1.6;
+            font-size: 15px;
+            word-break: break-word;
+            animation: fadeInUp 0.25s ease;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: #0066ff;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: white;
+            color: #1f2a3a;
+            border: 1px solid #e9edf4;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .message .source-tag {
+            display: inline-block;
+            font-size: 11px;
+            margin-top: 8px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: #f0f2f5;
+            color: #6a7a8e;
+        }
+
+        .message .source-tag.local {
+            background: #e6f0ff;
+            color: #0066ff;
+        }
+
+        .message .source-tag.api {
+            background: #f0f2f5;
+            color: #6a7a8e;
+        }
+
+        .message img.result-img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid #e9edf4;
+        }
+
+        .confidence-wrap {
+            margin-top: 12px;
+            background: #f0f2f5;
+            border-radius: 8px;
+            height: 8px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #ffb347, #0066ff);
+            transition: width 0.6s ease;
+        }
+
+        .confidence-label {
+            font-size: 13px;
+            color: #4a5a6e;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .welcome-placeholder {
+            text-align: center;
+            color: #8a9aae;
+            padding: 60px 20px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .welcome-placeholder h2 {
+            font-size: 26px;
+            font-weight: 500;
+            color: #1f2a3a;
+            margin-bottom: 8px;
+        }
+
+        .input-area {
+            flex-shrink: 0;
+            padding: 16px 0 24px 0;
+            background: transparent;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            background: white;
+            border: 1px solid #dce1ea;
+            border-radius: 16px;
+            padding: 8px 12px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #0066ff;
+            box-shadow: 0 4px 16px rgba(0, 102, 255, 0.12);
+        }
+
+        .input-wrapper textarea {
+            flex: 1;
+            border: none;
+            outline: none;
+            resize: none;
+            font-size: 15px;
+            line-height: 1.5;
+            padding: 6px 4px;
+            max-height: 120px;
+            font-family: inherit;
+            background: transparent;
+            color: #1f2a3a;
+        }
+
+        .input-wrapper textarea::placeholder {
+            color: #aab6c8;
+        }
+
+        .input-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .input-actions button,
+        .input-actions label {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #6a7a8e;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .input-actions label:hover {
+            background: #f0f2f5;
+            color: #1f2a3a;
+        }
+
+        .input-actions button.send-btn {
+            background: #0066ff;
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .input-actions button.send-btn:hover {
+            background: #0052cc;
+        }
+
+        .input-actions button.send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .file-attach-badge {
+            display: none;
+            font-size: 12px;
+            background: #eef2f7;
+            padding: 2px 12px 2px 8px;
+            border-radius: 30px;
+            align-items: center;
+            gap: 6px;
+            color: #1f2a3a;
+            margin-right: 4px;
+            white-space: nowrap;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-attach-badge.show {
+            display: inline-flex;
+        }
+
+        .file-attach-badge .remove-file {
+            cursor: pointer;
+            font-size: 14px;
+            color: #8a9aae;
+        }
+
+        .file-attach-badge .remove-file:hover {
+            color: #e74c3c;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .navbar-brand {
+                font-size: 18px;
+                flex-wrap: wrap;
+            }
+            .navbar-brand .sub {
+                font-size: 12px;
+                display: block;
+                margin-left: 0;
+            }
+            .nav-links {
+                font-size: 13px;
+                gap: 14px;
+            }
+            .message {
+                max-width: 96%;
+                font-size: 14px;
+                padding: 10px 14px;
+            }
+            .input-wrapper {
+                padding: 6px 10px;
+            }
+            .input-wrapper textarea {
+                font-size: 14px;
+            }
+            .welcome-placeholder h2 {
+                font-size: 22px;
+            }
+            .input-actions button,
+            .input-actions label {
+                padding: 4px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="navbar-brand">
+            行旅识景
+            <span class="sub">世界著名地标智能识别</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" style="font-weight:500; color:#0066ff;">主页</a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="chat-wrapper">
+
+            <div class="message-flow" id="messageFlow">
+                <div class="welcome-placeholder" id="welcomePlaceholder">
+                    <h2>行旅识景 · 地标智慧识别</h2>
+                    <p>输入问题了解世界著名景点，或上传图片智能识别地标</p>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper" id="inputWrapper">
+                    <textarea id="textInput" rows="1" placeholder="输入问题或拖拽图片…"></textarea>
+
+                    <div class="input-actions">
+                        <span class="file-attach-badge" id="fileBadge">
+                            <span id="fileName">image.jpg</span>
+                            <span class="remove-file" id="removeFileBtn">×</span>
+                        </span>
+
+                        <label for="fileUpload">图片</label>
+                        <input type="file" id="fileUpload" accept="image/png,image/jpeg,image/jpg" style="display:none;">
+
+                        <button class="send-btn" id="sendBtn">发送</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const messageFlow = document.getElementById('messageFlow');
+        const welcomePlaceholder = document.getElementById('welcomePlaceholder');
+        const textInput = document.getElementById('textInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileBadge = document.getElementById('fileBadge');
+        const fileName = document.getElementById('fileName');
+        const removeFileBtn = document.getElementById('removeFileBtn');
+
+        let selectedFile = null;
+
+        function addMessage(content, type, extra = null) {
+            if (welcomePlaceholder) {
+                welcomePlaceholder.style.display = 'none';
+            }
+
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+
+            if (type === 'bot' && extra) {
+                div.innerHTML = content;
+
+                if (extra.annotated_image) {
+                    const img = document.createElement('img');
+                    img.className = 'result-img';
+                    img.src = `data:image/jpeg;base64,${extra.annotated_image}`;
+                    img.alt = '识别结果标注图';
+                    div.appendChild(img);
+                }
+
+                if (extra.confidence !== undefined && extra.confidence !== null) {
+                    const percent = Math.round(extra.confidence * 100);
+                    const wrap = document.createElement('div');
+                    wrap.className = 'confidence-wrap';
+                    const fill = document.createElement('div');
+                    fill.className = 'confidence-fill';
+                    fill.style.width = `${Math.min(percent, 100)}%`;
+                    wrap.appendChild(fill);
+                    div.appendChild(wrap);
+
+                    const label = document.createElement('div');
+                    label.className = 'confidence-label';
+                    label.innerHTML = `<span>识别可信度</span><span>${percent}%</span>`;
+                    div.appendChild(label);
+                }
+
+                if (extra.source) {
+                    const tag = document.createElement('div');
+                    tag.className = `source-tag ${extra.source}`;
+                    tag.textContent = extra.source === 'local' ? '本地知识库' : 'AI 生成';
+                    div.appendChild(tag);
+                }
+            } else {
+                div.innerHTML = content;
+            }
+
+            messageFlow.appendChild(div);
+            messageFlow.scrollTop = messageFlow.scrollHeight;
+        }
+
+        // ---------- 真实后端 API 调用 ----------
+        function callChatAPI(question) {
+            return fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => ({
+                answer: data.answer || '未收到有效回答',
+                source: data.source || 'api'
+            }))
+            .catch(error => {
+                console.error('问答请求失败:', error);
+                return {
+                    answer: '网络请求失败，请检查后端服务是否运行。',
+                    source: 'api'
+                };
+            });
+        }
+
+        function callRecognizeAPI(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            return fetch('/api/recognize', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    return {
+                        success: true,
+                        name: data.name,
+                        year: data.year,
+                        location: data.location,
+                        description: data.description,
+                        confidence: data.confidence,
+                        annotated_image: data.annotated_image
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: data.message || '识别失败'
+                    };
+                }
+            })
+            .catch(error => {
+                console.error('识别请求失败:', error);
+                return {
+                    success: false,
+                    message: '网络请求失败，请检查后端服务。'
+                };
+            });
+        }
+
+        // ---------- 核心发送逻辑 ----------
+        async function handleSend() {
+            const text = textInput.value.trim();
+            const file = selectedFile;
+
+            if (!text && !file) return;
+
+            let displayContent = '';
+            if (text) displayContent += text;
+            if (file) {
+                if (displayContent) displayContent += ` [图片 ${file.name}]`;
+                else displayContent = `[图片] ${file.name}`;
+            }
+            addMessage(displayContent, 'user');
+
+            textInput.value = '';
+            textInput.style.height = 'auto';
+            clearSelectedFile();
+
+            sendBtn.disabled = true;
+
+            try {
+                let botReply = '';
+                let extraData = {};
+
+                if (file) {
+                    const result = await callRecognizeAPI(file);
+                    if (result.success) {
+                        botReply = `识别成功：${result.name}\n\n${result.year}\n${result.location}\n\n${result.description}`;
+                        extraData = {
+                            annotated_image: result.annotated_image || null,
+                            confidence: result.confidence || null,
+                            source: 'local'
+                        };
+                    } else {
+                        botReply = `识别失败：${result.message || '请重试。'}`;
+                        extraData = { source: 'local' };
+                    }
+                } else if (text) {
+                    const result = await callChatAPI(text);
+                    botReply = result.answer;
+                    extraData = { source: result.source };
+                }
+
+                addMessage(botReply, 'bot', extraData);
+
+            } catch (err) {
+                addMessage(`请求出错：${err.message || '请检查网络连接'}`, 'bot', { source: 'local' });
+            } finally {
+                sendBtn.disabled = false;
+                textInput.focus();
+            }
+        }
+
+        function clearSelectedFile() {
+            selectedFile = null;
+            fileUpload.value = '';
+            fileBadge.classList.remove('show');
+            fileName.textContent = '';
+        }
+
+        // ---------- 事件绑定 ----------
+        sendBtn.addEventListener('click', handleSend);
+
+        textInput.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                handleSend();
+            }
+            setTimeout(() => {
+                textInput.style.height = 'auto';
+                textInput.style.height = textInput.scrollHeight + 'px';
+            }, 0);
+        });
+
+        fileUpload.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                if (!file.type.startsWith('image/')) {
+                    alert('请上传图片文件（JPG / PNG）');
+                    fileUpload.value = '';
+                    return;
+                }
+                selectedFile = file;
+                fileName.textContent = file.name.length > 20 ? file.name.slice(0, 18) + '…' : file.name;
+                fileBadge.classList.add('show');
+                textInput.focus();
+            }
+        });
+
+        removeFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearSelectedFile();
+            textInput.focus();
+        });
+
+        const dropZone = document.getElementById('inputWrapper');
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropZone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#0066ff';
+                dropZone.style.boxShadow = '0 4px 20px rgba(0,102,255,0.2)';
+            });
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+            dropZone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#dce1ea';
+                dropZone.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.04)';
+            });
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                selectedFile = files[0];
+                fileName.textContent = files[0].name.length > 20 ? files[0].name.slice(0, 18) + '…' : files[0].name;
+                fileBadge.classList.add('show');
+                const dt = new DataTransfer();
+                dt.items.add(files[0]);
+                fileUpload.files = dt.files;
+                textInput.focus();
+            } else {
+                alert('请拖拽图片文件');
+            }
+        });
+
+        textInput.addEventListener('input', () => {
+            textInput.style.height = 'auto';
+            textInput.style.height = textInput.scrollHeight + 'px';
+        });
+
+        window.addEventListener('load', () => {
+            textInput.focus();
+        });
+    </script>
+
+</body>
+</html>
