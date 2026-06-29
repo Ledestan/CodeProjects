@@ -1,0 +1,5 @@
+# 依赖文件夹
+venv/            # Python 虚拟环境
+__pycache__/     # Python 缓存
+Application\TripScape\data\train
+Application\TripScape\data\valid
