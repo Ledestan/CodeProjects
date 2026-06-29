@@ -1,4 +1,7 @@
-# 依赖文件夹
+# ========== IDE / 编辑器 ==========
+.vscode/settings.json
+
+# ========== 依赖文件夹 ==========
 .venv/            # Python 虚拟环境
 __pycache__/     # Python 缓存
 

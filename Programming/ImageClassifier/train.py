@@ -14,7 +14,7 @@ def main():
     clf = ImageClassifier()
 
     # 缓存文件路径
-    cache_file = "data/models/train_features.npz"
+    cache_file = "models/train_features.npz"
 
     # 尝试从缓存加载特征
     X_train, y_train = clf.load_features(cache_file)
@@ -53,7 +53,7 @@ def main():
     )
 
     # 保存最优参数
-    param_path = "data/models/params.npz"
+    param_path = "models/params.npz"
     clf.save_params(param_path)
 
     # 输出总结
