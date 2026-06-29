@@ -1,24 +1,23 @@
--- 切换到目标数据库
-USE landmark_db;
+-- 删除旧表（如果存在）
+DROP TABLE IF EXISTS heritage_items;
+DROP TABLE IF EXISTS knowledge_base;
 
--- 删除旧表
--- TRUNCATE TABLE *;
-
--- 验证查询所有已插入的数据
--- SELECT * FROM *;
+-- 验证插入数据
+SELECT * FROM heritage_items;
+SELECT * FROM knowledge_base;
 
 -- 创建地标信息表
 CREATE TABLE heritage_items (
-    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
-    target_id VARCHAR(50) UNIQUE NOT NULL COMMENT '地标唯一标识',
-    name VARCHAR(100) NOT NULL COMMENT '地标中文名称',
-    year VARCHAR(50) COMMENT '建造年代或时期',
-    description TEXT COMMENT '详细描述',
-    location VARCHAR(200) COMMENT '地理位置',
-    current_status VARCHAR(200) COMMENT '当前保护状态或用途',
-    image_path VARCHAR(255) COMMENT '模板图片文件名',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='世界著名地标信息表';
+    id INTEGER PRIMARY KEY AUTOINCREMENT,  -- 主键，自增
+    target_id VARCHAR(50) UNIQUE NOT NULL, -- 地标唯一标识
+    name VARCHAR(100) NOT NULL,            -- 地标中文名称
+    year VARCHAR(50),                      -- 建造年代或时期
+    description TEXT,                      -- 详细描述
+    location VARCHAR(200),                 -- 地理位置
+    current_status VARCHAR(200),           -- 当前保护状态或用途
+    image_path VARCHAR(255),               -- 模板图片文件名
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 记录创建时间
+);
 
 -- 插入地标数据
 INSERT INTO heritage_items (target_id, name, year, description, location, current_status, image_path) VALUES
@@ -105,14 +104,14 @@ INSERT INTO heritage_items (target_id, name, year, description, location, curren
 );
 
 -- 创建问答知识库表
-CREATE TABLE IF NOT EXISTS `knowledge_base` (
-    `id` INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
-    `question` VARCHAR(255) NOT NULL COMMENT '典型问题',
-    `keywords` TEXT COMMENT '逗号分隔的关键词',
-    `answer` TEXT NOT NULL COMMENT '答案内容',
-    `enabled` TINYINT(1) DEFAULT 1 COMMENT '是否启用',
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问答知识库表';
+CREATE TABLE knowledge_base (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question VARCHAR(255) NOT NULL,        -- 典型问题
+    keywords TEXT,                         -- 逗号分隔的关键词
+    answer TEXT NOT NULL,                  -- 答案内容
+    enabled INTEGER DEFAULT 1,             -- 是否启用（1启用，0禁用）
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 创建时间
+);
 
 -- 插入知识库数据
 INSERT INTO knowledge_base (question, keywords, answer) VALUES
@@ -121,4 +120,7 @@ INSERT INTO knowledge_base (question, keywords, answer) VALUES
 ('布达拉宫', '布达拉宫,potala', '布达拉宫位于西藏拉萨，建于公元7世纪，是藏传佛教的圣地。宫殿依山而建，高200余米，是世界上海拔最高的宫殿建筑群，也是世界文化遗产。'),
 ('金字塔', '金字塔,pyramid', '埃及金字塔是古埃及法老的陵墓，最著名的是吉萨金字塔群，其中胡夫金字塔高146.6米，建于公元前2560年左右，是古代世界七大奇迹之一。'),
 ('黄果树', '黄果树,huangguoshu', '黄果树瀑布位于中国贵州省，高77.8米，宽101米，是中国最大的瀑布，也是世界著名大瀑布之一。'),
-('雷峰塔', '雷峰塔,leifeng', '雷峰塔位于杭州西湖边，始建于公元977年，因《白蛇传》故事而闻名。现存塔为2002年重建，高71.7米，是西湖十景之一。');
+('雷峰塔', '雷峰塔,leifeng', '雷峰塔位于杭州西湖边，始建于公元977年，因《白蛇传》故事而闻名。现存塔为2002年重建，高71.7米，是西湖十景之一。'),
+('珠穆朗玛峰', '珠穆朗玛峰,珠峰,qomolangma,everest', '珠穆朗玛峰是世界海拔最高的山峰，位于中尼边境，海拔8848.86米，气候极端，1953年人类首次登顶，是国际登山运动圣地。'),
+('崇圣寺三塔', '崇圣寺三塔,三塔,threepagoda', '崇圣寺三塔位于云南大理，主塔千寻塔高69.6米（南诏），南北小塔（大理国），历经千年地震不倒，是全国重点文物保护单位。'),
+('天坛', '天坛,heaven', '天坛位于北京，是明清皇帝祭天场所（1420年），布局“天圆地方”，祈年殿不用大梁，是世界文化遗产。');
