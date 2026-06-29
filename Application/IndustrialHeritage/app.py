@@ -10,7 +10,6 @@ import traceback
 sys.dont_write_bytecode = True
 
 from flask import Flask, jsonify, render_template, request
-
 from image_recognizer import ImageRecognizer
 from qa_engine import QASystem
 

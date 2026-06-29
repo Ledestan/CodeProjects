@@ -77,7 +77,9 @@ def load_data(data_dir, augment=False, sliding_window=False):
         print(f"警告: 目录 {data_dir} 不存在")
         return np.array(X), np.array(y)
 
-    classes = [d for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
+    classes = [
+        d for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))
+    ]
 
     for class_name in classes:
         folder = os.path.join(data_dir, class_name)
@@ -94,19 +96,25 @@ def load_data(data_dir, augment=False, sliding_window=False):
             if augment:
                 feat = extract_features(img)
                 if feat is not None:
-                    X.append(feat); y.append(class_name); file_count += 1
+                    X.append(feat)
+                    y.append(class_name)
+                    file_count += 1
                 h, w = img.shape[:2]
                 for _ in range(2):
                     crop_ratio = np.random.uniform(0.40, 0.85)
-                    crop_h, crop_w = int(h*crop_ratio), int(w*crop_ratio)
-                    if crop_h<10 or crop_w<10: continue
-                    sx = np.random.randint(0, w-crop_w) if w>crop_w else 0
-                    sy = np.random.randint(0, h-crop_h) if h>crop_h else 0
-                    cropped = img[sy:sy+crop_h, sx:sx+crop_w]
-                    if cropped.size==0: continue
+                    crop_h, crop_w = int(h * crop_ratio), int(w * crop_ratio)
+                    if crop_h < 10 or crop_w < 10:
+                        continue
+                    sx = np.random.randint(0, w - crop_w) if w > crop_w else 0
+                    sy = np.random.randint(0, h - crop_h) if h > crop_h else 0
+                    cropped = img[sy : sy + crop_h, sx : sx + crop_w]
+                    if cropped.size == 0:
+                        continue
                     feat_crop = extract_features(cropped)
                     if feat_crop is not None:
-                        X.append(feat_crop); y.append(class_name); file_count += 1
+                        X.append(feat_crop)
+                        y.append(class_name)
+                        file_count += 1
 
             # 验证模式：随机采样固定数量的窗口
             elif sliding_window:
@@ -126,7 +134,7 @@ def load_data(data_dir, augment=False, sliding_window=False):
                     # 随机位置
                     sx = np.random.randint(0, w - win_w) if w > win_w else 0
                     sy = np.random.randint(0, h - win_h) if h > win_h else 0
-                    window = img[sy:sy+win_h, sx:sx+win_w]
+                    window = img[sy : sy + win_h, sx : sx + win_w]
                     if window.size == 0:
                         continue
                     feat = extract_features(window)
@@ -140,12 +148,15 @@ def load_data(data_dir, augment=False, sliding_window=False):
             else:
                 feat = extract_features(img)
                 if feat is not None:
-                    X.append(feat); y.append(class_name); file_count += 1
+                    X.append(feat)
+                    y.append(class_name)
+                    file_count += 1
 
         print(f"- 类别 '{class_name}' 成功加载 {file_count} 张图片样本")
 
     print(f"总计加载 {len(X)} 张图片样本")
     return np.array(X), np.array(y)
+
 
 def main():
     """训练主流程"""
@@ -198,7 +209,7 @@ def main():
     # ---------- PCA 降维 ----------
     print("\n" + "=" * 50)
     print("应用 PCA 降维...")
-    pca = PCA(n_components=0.95, svd_solver='randomized', random_state=42)
+    pca = PCA(n_components=0.95, svd_solver="randomized", random_state=42)
     X_train_pca = pca.fit_transform(X_train_scaled)
     X_valid_pca = pca.transform(X_valid_scaled)
 
