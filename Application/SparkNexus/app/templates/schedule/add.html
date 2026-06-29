@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>添加日程</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">{{ form.title.label }} {{ form.title(class="form-control") }}</div>
+    <div class="mb-3">{{ form.type.label }} {{ form.type(class="form-select") }}</div>
+    <div class="mb-3">{{ form.start_time.label }} {{ form.start_time(class="form-control", type="datetime-local") }}</div>
+    <div class="mb-3">{{ form.end_time.label }} {{ form.end_time(class="form-control", type="datetime-local") }}</div>
+    <div class="mb-3">{{ form.description.label }} {{ form.description(class="form-control", rows="3") }}</div>
+    <div class="mb-3">{{ form.visibility.label }} {{ form.visibility(class="form-select") }}</div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+{% endblock %}

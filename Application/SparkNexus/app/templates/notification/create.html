@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>发布通知</h2>
+<form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.type.label(class="form-label") }}
+        {{ form.type(class="form-select") }}
+    </div>
+    <div class="mb-3">
+        {{ form.content.label(class="form-label") }}
+        {{ form.content(class="form-control", rows="5") }}
+    </div>
+    {{ form.submit(class="btn btn-success") }}
+    <a href="{{ url_for('notification.list_all') }}" class="btn btn-secondary">取消</a>
+</form>
+{% endblock %}

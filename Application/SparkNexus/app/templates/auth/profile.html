@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <h2>个人中心</h2>
+        <hr>
+        <p><strong>用户名：</strong>{{ current_user.username }}</p>
+        <p><strong>角色：</strong>{{ current_user.role }}</p>
+        <hr>
+        <h4>修改密码</h4>
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.old_password.label(class="form-label") }}
+                {{ form.old_password(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.new_password.label(class="form-label") }}
+                {{ form.new_password(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.confirm.label(class="form-label") }}
+                {{ form.confirm(class="form-control") }}
+            </div>
+            {{ form.submit(class="btn btn-warning") }}
+        </form>
+    </div>
+</div>
+{% endblock %}

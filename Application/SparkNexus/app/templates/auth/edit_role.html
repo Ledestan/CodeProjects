@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>编辑用户角色 - {{ user.username }}</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.role.label(class="form-label") }}
+        {{ form.role(class="form-select") }}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+    <a href="{{ url_for('auth.manage_users') }}" class="btn btn-secondary">返回</a>
+</form>
+{% endblock %}

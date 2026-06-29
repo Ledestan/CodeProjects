@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2>{{ announcement.title }}</h2>
+        <p class="text-muted">
+            <i class="fas fa-user me-1"></i> {{ announcement.sender.username }}
+            <i class="far fa-clock ms-3 me-1"></i> {{ announcement.created_at.strftime('%Y-%m-%d %H:%M') }}
+            <span class="badge bg-primary ms-2">{{ announcement.type }}</span>
+        </p>
+        <hr>
+        <p class="lead">{{ announcement.content }}</p>
+        <a href="{{ url_for('notification.list_all') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> 返回列表</a>
+    </div>
+</div>
+{% endblock %}

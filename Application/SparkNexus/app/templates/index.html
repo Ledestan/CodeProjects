@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center mt-5">
+    <i class="fas fa-fire fa-5x text-warning mb-4"></i>
+    <h1 class="display-4 fw-bold">星火云枢</h1>
+    <p class="lead text-muted">Spark Nexus · 班级智能协同平台</p>
+    {% if not current_user.is_authenticated %}
+    <div class="mt-4">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg me-2"><i class="fas fa-sign-in-alt"></i> 登录</a>
+    {% else %}
+    <div class="row mt-5">
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 text-center">
+                <i class="fas fa-calendar-alt fa-3x text-primary mb-3"></i>
+                <h5>日程协同</h5>
+                <p class="text-muted">课表、活动、个人日程一目了然</p>
+                <a href="{{ url_for('schedule.view') }}" class="btn btn-outline-primary">进入</a>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 text-center">
+                <i class="fas fa-check-square fa-3x text-success mb-3"></i>
+                <h5>报名签到</h5>
+                <p class="text-muted">发起报名、签到，统计参与情况</p>
+                <a href="{{ url_for('registration.list') }}" class="btn btn-outline-success">进入</a>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 text-center">
+                <i class="fas fa-bell fa-3x text-info mb-3"></i>
+                <h5>通知中心</h5>
+                <p class="text-muted">日常、作业、活动通知及时送达</p>
+                <a href="{{ url_for('notification.list_all') }}" class="btn btn-outline-info">进入</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
