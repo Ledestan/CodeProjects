@@ -14,7 +14,7 @@ def main():
     clf = ImageClassifier()
 
     # 缓存文件路径
-    cache_file = "data/models/train_features_lbp.npz"
+    cache_file = "data/models/train_features.npz"
 
     # 尝试从缓存加载特征
     X_train, y_train = clf.load_features(cache_file)
