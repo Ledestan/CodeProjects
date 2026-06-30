@@ -14,7 +14,7 @@ class QASystem:
         self.db = LandmarkDB()
 
     def keyword_match(self, question):
-        """从 MySQL 查询匹配的答案"""
+        """从数据库查询匹配的答案"""
         # 获取所有启用的知识条目
         rows = self.db.get_all_knowledge()
         if not rows:
@@ -36,9 +36,9 @@ class QASystem:
 
         return None
 
-    def call_deepseek_api(self, question):
-        """调用 DeepSeek API（兜底方案）"""
-        url = "https://api.deepseek.com/v1/chat/completions"
+    def call_api(self, question):
+        """调用 API"""
+        url = ""
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
@@ -64,7 +64,7 @@ class QASystem:
             result = response.json()
             return result["choices"][0]["message"]["content"]
         except Exception as e:
-            print(f"DeepSeek API 调用失败: {e}")
+            print(f"API 调用失败: {e}")
             return "抱歉，我现在无法回答这个问题，请稍后再试。"
 
     def get_answer(self, question):
@@ -74,6 +74,6 @@ class QASystem:
         if local_answer:
             return {"answer": local_answer, "source": "local"}
 
-        # 兜底：调用 DeepSeek API
-        api_answer = self.call_deepseek_api(question)
+        # 调用 API
+        api_answer = self.call_api(question)
         return {"answer": api_answer, "source": "api"}

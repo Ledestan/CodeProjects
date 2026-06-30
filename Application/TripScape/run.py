@@ -8,9 +8,10 @@ import traceback
 
 sys.dont_write_bytecode = True
 
+from flask import Flask, jsonify, render_template, request
+
 # 导入自定义模块（后续会改造为从 MySQL 读取）
 from app import ImageRecognizer, QASystem
-from flask import Flask, jsonify, render_template, request
 
 # 初始化 Flask 应用
 app = Flask(__name__)
@@ -23,9 +24,15 @@ recognizer = ImageRecognizer()
 
 
 @app.route("/")
-def index():
-    """主页 - 行旅识景一体化交互界面"""
+def home():
+    """入口主页"""
     return render_template("index.html")
+
+
+@app.route("/app")
+def app_page():
+    """功能主页"""
+    return render_template("app.html")
 
 
 @app.route("/api/chat", methods=["POST"])

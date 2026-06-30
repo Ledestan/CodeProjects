@@ -1,7 +1,3 @@
-"""
-图像识别引擎 - 加载训练好的随机森林模型进行预测
-"""
-
 import os
 import sys
 
@@ -64,7 +60,7 @@ class ImageRecognizer:
         self.label_encoder = joblib.load(self.encoder_path)
 
     def _extract_features(self, image):
-        """提取单张图片的特征（与训练时一致）"""
+        """提取单张图片的特征"""
         image = cv2.resize(image, (224, 224))
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -88,6 +84,7 @@ class ImageRecognizer:
     def recognize(self, image_data):
         """
         识别主函数
+
         :param image_data: 图片二进制数据
         :return: 识别结果字典
         """
