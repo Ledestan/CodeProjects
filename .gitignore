@@ -19,3 +19,6 @@ __pycache__/            # Python 缓存文件
 # 数据集
 Application/TripScape/data/train
 Application/TripScape/data/valid
+
+# 模型
+Application/TripScape/models/svm_model.pkl
