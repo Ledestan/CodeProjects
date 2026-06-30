@@ -127,7 +127,13 @@ def extract_spm_hog(img):
 
     # ---------- 提取 HOG ----------
     gray = cv2.cvtColor(canvas, cv2.COLOR_BGR2GRAY)
-    hog = cv2.HOGDescriptor(_winSize=(target_size, target_size), _blockSize=(16, 16), _blockStride=(8, 8), _cellSize=(8, 8), _nbins=9)
+    hog = cv2.HOGDescriptor(
+        _winSize=(target_size, target_size),
+        _blockSize=(16, 16),
+        _blockStride=(8, 8),
+        _cellSize=(8, 8),
+        _nbins=9,
+    )
     hog_feat = hog.compute(gray).flatten()
     return hog_feat
 
@@ -284,7 +290,7 @@ if __name__ == "__main__":
     os.makedirs(MODEL_DIR, exist_ok=True)
 
     # ---------- 加载数据集 ----------
-    print("\n" + "=" * 50)
+    print("=" * 50)
     train_paths, train_names = load_data(TRAIN_DIR)
     val_paths, val_names = load_data(VALID_DIR)
 
@@ -303,42 +309,54 @@ if __name__ == "__main__":
 
     # ---------- 训练 VLAD 码本 ----------
     # 先收集所有训练图片的 SIFT 描述子，用于 KMeans 聚类
-    print("正在收集训练集的 SIFT 描述子以训练 VLAD 码本...")
-    all_des = []
+    print("\n" + "=" * 50)
+    print("正在使用流式 MiniBatchKMeans 训练 VLAD 码本...")
+
+    # 初始化聚类器
+    kmeans = MiniBatchKMeans(
+        n_clusters=64,
+        batch_size=10000,  # 每次迭代使用的内部子集大小
+        random_state=42,
+        n_init=3,
+        max_iter=100,
+    )
     sift = cv2.SIFT_create()
+
+    processed_images = 0  # 实际提取到特征并参与训练的图片数
+    total_des_used = 0  # 累计参与训练的描述子总数（用于观察）
+    max_des_per_image = 300  # 限制单张图片最多抽取关键点，加速训练并平衡样本
+
     for idx, path in enumerate(train_paths):
         img = cv2.imread(path)
         if img is None:
             continue
         _, des = sift.detectAndCompute(img, None)
-        if des is not None:
-            all_des.append(des)
-        # 每 100 张打印一次进度，方便监控
+        if des is not None and len(des) > 0:
+            # 对单张图片的描述子进行随机下采样，避免某张图特征过多影响码本均衡
+            if len(des) > max_des_per_image:
+                indices = np.random.choice(len(des), max_des_per_image, replace=False)
+                des = des[indices]
+            # 核心：增量更新，不存储任何历史描述子
+            kmeans.partial_fit(des)
+            processed_images += 1
+            total_des_used += len(des)
+
         if (idx + 1) % 100 == 0:
-            print(f"已处理 {idx + 1} 张图片的描述子")
-    print(f"已处理 {idx + 1} 张图片的描述子")
+            print(
+                f"已处理 {idx + 1} 张图片，其中 {processed_images} 张参与训练，累计增量训练 {total_des_used} 个描述子"
+            )
 
-    # 垂直堆叠所有描述子（维度：总特征点数 × 128）
-    all_des = np.vstack(all_des)
-    print(f"共收集 {len(all_des)} 个 SIFT 描述子")
+    print(
+        f"总计处理 {idx + 1} 张图片，其中 {processed_images} 张参与训练，累计使用 {total_des_used} 个描述子完成码本训练"
+    )
 
-    # ---------- 随机子采样 ----------
-    max_samples = 300000
-    if len(all_des) > max_samples:
-        print(f"描述子过多，随机下采样至 {max_samples} 个以加速聚类...")
-        # 随机选择索引
-        indices = np.random.choice(len(all_des), max_samples, replace=False)
-        all_des = all_des[indices]
-        print(f"实际用于训练码本的描述子数量: {len(all_des)}")
-
-    # 聚类数设为64，平衡特征维度与区分能力（可根据数据集调整）
-    kmeans = MiniBatchKMeans(n_clusters=64, batch_size=10000, random_state=42, n_init=3, max_iter=100)
-    kmeans.fit(all_des)
+    # 保存训练好的码本
     with open(os.path.join(MODEL_DIR, "kmeans_vlad.pkl"), "wb") as f:
         pickle.dump(kmeans, f)
     print("VLAD 码本训练完成")
 
     # ---------- 提取训练集特征 ----------
+    print("\n" + "=" * 50)
     print("开始提取训练集特征...")
     X_train = []
     for path in train_paths:
@@ -379,4 +397,4 @@ if __name__ == "__main__":
     report = classification_report(y_val, y_pred, target_names=encoder.classes_)
     print(report)
 
-    print("训练完成，所有模型已保存至 ./models")
+    print(f"训练完成，所有模型已保存至 {MODEL_DIR}")
