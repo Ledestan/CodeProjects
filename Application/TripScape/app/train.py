@@ -324,7 +324,7 @@ if __name__ == "__main__":
 
     processed_images = 0  # 实际提取到特征并参与训练的图片数
     total_des_used = 0  # 累计参与训练的描述子总数（用于观察）
-    max_des_per_image = 300  # 限制单张图片最多抽取关键点，加速训练并平衡样本
+    max_des_per_image = 100  # 限制单张图片最多抽取关键点，加速训练并平衡样本
 
     for idx, path in enumerate(train_paths):
         img = cv2.imread(path)
