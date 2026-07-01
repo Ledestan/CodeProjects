@@ -344,5 +344,5 @@ if __name__ == "__main__":
     # 打印结果
     print(f"\n预测结果 (Top-{top_k})：")
     for label, conf in results:
-        print(f"  {label}: {conf:.4f}")
+        print(f"- {label}: {conf:.4f}")
     print(f"\n推理耗时: {elapsed:.3f} 秒")
