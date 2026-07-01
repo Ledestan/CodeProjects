@@ -8,9 +8,10 @@ import traceback
 
 sys.dont_write_bytecode = True
 
+from flask import Flask, jsonify, render_template, request
+
 # 导入自定义模块（后续会改造为从 MySQL 读取）
 from app import ImageRecognizer, QASystem
-from flask import Flask, jsonify, render_template, request
 
 # 初始化 Flask 应用
 app = Flask(__name__)

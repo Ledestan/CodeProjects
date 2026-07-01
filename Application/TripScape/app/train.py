@@ -289,8 +289,6 @@ def extract_features(img_path, kmeans_model, vlad_max_kp=100):
 
 
 if __name__ == "__main__":
-    import time
-
     TRAIN_DIR = "./data/train"
     VALID_DIR = "./data/valid"
     MODEL_DIR = "./models"
@@ -300,97 +298,103 @@ if __name__ == "__main__":
 
     overall_start = time.time()  # 总运行时间计时开始
 
-    # ---------- 加载训练数据 ----------
+    # ========== 数据加载 ==========
+    print("========== 数据加载 ==========")
     t_start = time.time()
-    print("=" * 50)
     train_paths, train_names = load_data(TRAIN_DIR)
-    t_load_train = time.time() - t_start
-    print(f"[耗时] 加载训练数据: {t_load_train:.2f} 秒")
-
-    # ---------- 加载验证数据 ----------
-    t_start = time.time()
     val_paths, val_names = load_data(VALID_DIR)
-    t_load_val = time.time() - t_start
-    print(f"[耗时] 加载验证数据: {t_load_val:.2f} 秒")
+    print(f"[耗时] 加载数据: {time.time() - t_start:.2f} 秒")
 
-    # ---------- 标签编码 ----------
-    t_start = time.time()
-    encoder = LabelEncoder()
-    train_labels = encoder.fit_transform(train_names)
-    try:
+    # ========== 标签编码 ==========
+    encoder_path = os.path.join(MODEL_DIR, "label_encoder.pkl")
+    if os.path.exists(encoder_path):
+        print("\n" + "========== 加载标签编码器 ==========")
+        with open(encoder_path, "rb") as f:
+            encoder = pickle.load(f)
+        print(f"类别数: {len(encoder.classes_)}")
+        train_labels = encoder.transform(train_names)
         val_labels = encoder.transform(val_names)
-    except ValueError as e:
-        raise ValueError("验证集中存在训练集未包含的类别，请检查数据") from e
-    with open(os.path.join(MODEL_DIR, "label_encoder.pkl"), "wb") as f:
-        pickle.dump(encoder, f)
-    print(f"训练集类别数: {len(encoder.classes_)}")
-    t_encode = time.time() - t_start
-    print(f"[耗时] 标签编码及保存: {t_encode:.2f} 秒")
+    else:
+        print("\n" + "========== 训练标签编码器 ==========")
+        t_start = time.time()
+        encoder = LabelEncoder()
+        train_labels = encoder.fit_transform(train_names)
+        try:
+            val_labels = encoder.transform(val_names)
+        except ValueError as e:
+            raise ValueError("验证集中存在训练集未包含的类别，请检查数据") from e
+        with open(encoder_path, "wb") as f:
+            pickle.dump(encoder, f)
+        print(f"训练集类别数: {len(encoder.classes_)}")
+        print(f"[耗时] 标签编码: {time.time() - t_start:.2f} 秒")
 
-    # ---------- 使用 MiniBatchKMeans 训练 VLAD 码本 ----------
-    print("\n" + "=" * 50)
-    print("正在使用流式 MiniBatchKMeans 训练 VLAD 码本...")
-    t_start = time.time()
+    # ========== VLAD 码本 ==========
+    kmeans_path = os.path.join(MODEL_DIR, "kmeans_vlad.pkl")
+    if os.path.exists(kmeans_path):
+        print("\n" + "========== 加载 VLAD 码本 ==========")
+        with open(kmeans_path, "rb") as f:
+            kmeans = pickle.load(f)
+        print(f"聚类数: {kmeans.n_clusters}")
+    else:
+        print("\n" + "========== 训练 VLAD 码本 ==========")
+        t_start = time.time()
 
-    kmeans = MiniBatchKMeans(
-        n_clusters=32,  # 视觉单词数量，决定 VLAD 向量的维度
-        batch_size=10000,
-        random_state=42,
-        n_init=3,
-        max_iter=100,
-    )
-    sift = cv2.SIFT_create()
+        kmeans = MiniBatchKMeans(
+            n_clusters=64,  # 视觉单词数量，决定 VLAD 向量的维度
+            batch_size=10000,
+            random_state=42,
+            n_init=3,
+            max_iter=100,
+        )
+        sift = cv2.SIFT_create()
 
-    processed_images = 0
-    total_des_used = 0
-    max_des_per_image = 500  # 限制单张图片抽取的描述子数量，平衡各类别贡献
+        processed_images = 0
+        total_des_used = 0
+        max_des_per_image = 500  # 限制单张图片抽取的描述子数量，平衡各类别贡献
 
-    for idx, path in enumerate(train_paths):
-        img = cv2.imread(path)
-        if img is None:
-            continue
-        _, des = sift.detectAndCompute(img, None)
-        if des is not None and len(des) > 0:
-            # 随机下采样，避免某张图特征过多影响码本均衡
-            if len(des) > max_des_per_image:
-                indices = np.random.choice(len(des), max_des_per_image, replace=False)
-                des = des[indices]
-            # 增量更新聚类器，不存储历史描述子
-            kmeans.partial_fit(des)
-            processed_images += 1
-            total_des_used += len(des)
+        for idx, path in enumerate(train_paths):
+            img = cv2.imread(path)
+            if img is None:
+                continue
+            _, des = sift.detectAndCompute(img, None)
+            if des is not None and len(des) > 0:
+                # 随机下采样，避免某张图特征过多影响码本均衡
+                if len(des) > max_des_per_image:
+                    indices = np.random.choice(
+                        len(des), max_des_per_image, replace=False
+                    )
+                    des = des[indices]
+                # 增量更新聚类器，不存储历史描述子
+                kmeans.partial_fit(des)
+                processed_images += 1
+                total_des_used += len(des)
 
-        if (idx + 1) % 50 == 0 or (idx + 1) == len(train_paths):
-            print(
-                f"VLAD 码本训练进度: {idx + 1}/{len(train_paths)}，"
-                f"其中 {processed_images} 张参与训练，"
-                f"累计增量训练 {total_des_used} 个描述子"
-            )
+            if (idx + 1) % 50 == 0 or (idx + 1) == len(train_paths):
+                print(
+                    f"VLAD 码本训练进度: {idx + 1}/{len(train_paths)}，其中 {processed_images} 张参与训练，累计增量训练 {total_des_used} 个描述子"
+                )
 
-    print("VLAD 码本训练完成")
+        print("VLAD 码本训练完成")
 
-    with open(os.path.join(MODEL_DIR, "kmeans_vlad.pkl"), "wb") as f:
-        pickle.dump(kmeans, f)
-    t_vlad = time.time() - t_start
-    print(f"[耗时] VLAD 码本训练及保存: {t_vlad:.2f} 秒")
+        with open(kmeans_path, "wb") as f:
+            pickle.dump(kmeans, f)
+        t_vlad = time.time() - t_start
+        print(f"[耗时] VLAD 码本训练及保存: {t_vlad:.2f} 秒")
 
-    # ---------- 特征提取 ----------
+    # ========== 特征提取 ==========
     train_cache = os.path.join(CACHE_DIR, "X_train.npy")
     val_cache = os.path.join(CACHE_DIR, "X_val.npy")
 
     VLAD_MAX_KP = 500  # VLAD 编码时每张图使用的最大关键点数
 
     # 处理训练集特征
+    print("\n" + "========== 训练集特征提取 ==========")
     if os.path.exists(train_cache):
-        print("\n" + "=" * 50)
         print("发现训练集缓存特征，直接加载...")
-        t_start = time.time()
         X_train = np.load(train_cache)
         t_train_feat = time.time() - t_start
         print(f"训练集特征形状: {X_train.shape}")
-        print(f"[耗时] 加载训练集缓存: {t_train_feat:.2f} 秒")
     else:
-        print("\n" + "=" * 50)
         print("未找到训练集缓存，开始提取训练集特征...")
         t_start = time.time()
         X_train = []
@@ -398,26 +402,22 @@ if __name__ == "__main__":
         for idx, path in enumerate(train_paths):
             feat = extract_features(path, kmeans, vlad_max_kp=VLAD_MAX_KP)
             X_train.append(feat)
-            # 进度提示：每50张或最后一张时输出
+            # 进度提示：每 50 张或最后一张时输出
             if (idx + 1) % 50 == 0 or (idx + 1) == total_train:
                 print(f"训练集特征提取进度: {idx + 1}/{total_train}")
         X_train = np.array(X_train)
         np.save(train_cache, X_train)
-        t_train_feat = time.time() - t_start
         print(f"训练集特征已保存至 {train_cache}，形状: {X_train.shape}")
-        print(f"[耗时] 训练集特征提取及缓存: {t_train_feat:.2f} 秒")
+        print(f"[耗时] 训练集特征提取: {time.time() - t_start:.2f} 秒")
 
     # 处理验证集特征
+    print("\n" + "========== 验证集特征提取 ==========")
     if os.path.exists(val_cache):
-        print("\n" + "=" * 50)
         print("发现验证集缓存特征，直接加载...")
-        t_start = time.time()
         X_val = np.load(val_cache)
         t_val_feat = time.time() - t_start
         print(f"验证集特征形状: {X_val.shape}")
-        print(f"[耗时] 加载验证集缓存: {t_val_feat:.2f} 秒")
     else:
-        print("\n" + "=" * 50)
         print("未找到验证集缓存，开始提取验证集特征...")
         t_start = time.time()
         X_val = []
@@ -429,56 +429,64 @@ if __name__ == "__main__":
                 print(f"验证集特征提取进度: {idx + 1}/{total_val}")
         X_val = np.array(X_val)
         np.save(val_cache, X_val)
-        t_val_feat = time.time() - t_start
         print(f"验证集特征已保存至 {val_cache}，形状: {X_val.shape}")
-        print(f"[耗时] 验证集特征提取及缓存: {t_val_feat:.2f} 秒")
+        print(f"[耗时] 验证集特征提取: {time.time() - t_start:.2f} 秒")
 
     y_train = np.array(train_labels)
     y_val = np.array(val_labels)
 
-    # ---------- 特征标准化 ----------
-    print("\n" + "=" * 50)
-    print("正在进行特征标准化...")
-    t_start = time.time()
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    with open(os.path.join(MODEL_DIR, "scaler.pkl"), "wb") as f:
-        pickle.dump(scaler, f)
-    t_scale = time.time() - t_start
-    print(f"[耗时] 标准化及保存: {t_scale:.2f} 秒")
+    # ========== 特征标准化 ==========
+    scaler_path = os.path.join(MODEL_DIR, "scaler.pkl")
+    if os.path.exists(scaler_path):
+        print("\n" + "========== 加载标准化器 ==========")
+        with open(scaler_path, "rb") as f:
+            scaler = pickle.load(f)
+        X_train_scaled = scaler.transform(X_train)  # 只用 transform，不重新 fit
+        X_val_scaled = scaler.transform(X_val)
+        print("标准化器加载完成")
+    else:
+        print("\n" + "========== 特征标准化 ==========")
+        t_start = time.time()
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        with open(scaler_path, "wb") as f:
+            pickle.dump(scaler, f)
+        print(f"[耗时] 特征标准化: {time.time() - t_start:.2f} 秒")
 
-    # ---------- 训练 SVM 分类器 ----------
-    print("\n" + "=" * 50)
-    print("训练 SVM 分类器...")
-    t_start = time.time()
-    svm = SVC(kernel="rbf", C=1.0, gamma="scale", random_state=42, verbose=True)
-    svm.fit(X_train_scaled, y_train)
-    with open(os.path.join(MODEL_DIR, "svm_model.pkl"), "wb") as f:
-        pickle.dump(svm, f)
-    t_svm = time.time() - t_start
-    print(f"[耗时] SVM 训练及保存: {t_svm:.2f} 秒")
+    # ========== 训练 SVM 分类器 ==========
+    svm_path = os.path.join(MODEL_DIR, "svm_model.pkl")
+    if os.path.exists(svm_path):
+        print("\n" + "========== 加载 SVM 分类器 ==========")
+        with open(svm_path, "rb") as f:
+            svm = pickle.load(f)
+        print("SVM 加载完成")
+    else:
+        print("\n" + "========== 训练 SVM 分类器 ==========")
+        t_start = time.time()
+        svm = SVC(kernel="rbf", C=1.0, gamma="scale", random_state=42, verbose=True)
+        svm.fit(X_train_scaled, y_train)
+        with open(svm_path, "wb") as f:
+            pickle.dump(svm, f)
+        print(f"[耗时] SVM 训练及保存: {time.time() - t_start:.2f} 秒")
 
-    # ---------- 验证集预测 ----------
-    print("\n" + "=" * 50)
-    print("对验证集进行预测...")
+    # ========== 验证集预测 ==========
+    print("\n" + "========== 验证集预测 ==========")
     t_start = time.time()
     X_val_scaled = scaler.transform(X_val)
     y_pred = svm.predict(X_val_scaled)
-    t_pred = time.time() - t_start
-    print(f"[耗时] 验证集预测: {t_pred:.2f} 秒")
+    print(f"[耗时] 验证集预测: {time.time() - t_start:.2f} 秒")
 
-    # ---------- 评估 ----------
-    print("\n" + "=" * 50)
-    print("评估模型性能...")
+    # ========== 评估 ==========
+    print("\n" + "========== 评估模型性能 ==========")
     t_start = time.time()
     acc = accuracy_score(y_val, y_pred)
-    print(f"\n验证集准确率: {acc:.4f}")
+    print(f"验证集准确率: {acc:.4f}")
     report = classification_report(y_val, y_pred, target_names=encoder.classes_)
     print(report)
     t_eval = time.time() - t_start
     print(f"[耗时] 性能评估: {t_eval:.2f} 秒")
 
-    # ---------- 总运行时间 ----------
+    # ========== 总运行时间 ==========
     overall_time = time.time() - overall_start
     print("\n" + "=" * 50)
     print(f"所有步骤完成，总运行时间: {overall_time:.2f} 秒")
