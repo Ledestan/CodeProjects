@@ -128,7 +128,9 @@ def extract_glcm(img):
     return np.array(features, dtype=np.float32)
 
 
-def extract_raw_features(img, kmeans_model, vlad_max_kp, hog_target_size, profile_segments):
+def extract_raw_features(
+    img, kmeans_model, vlad_max_kp, hog_target_size, profile_segments
+):
     """
     提取原始特征（含完整 HOG），顺序：[VLAD, HOG, 轮廓, 颜色矩, GLCM]
     与训练代码中的 extract_features 完全一致。
@@ -224,13 +226,15 @@ class LandmarkPredictor:
         print("正在加载模型...")
         self.encoder = self._load_pickle("label_encoder.pkl")
         self.kmeans = self._load_pickle("kmeans_vlad.pkl")
-        self.pca = self._load_pickle("pca_hog.pkl")       # PCA 降维模型
+        self.pca = self._load_pickle("pca_hog.pkl")  # PCA 降维模型
         self.scaler = self._load_pickle("scaler.pkl")
-        self.svm = self._load_pickle("svm_model.pkl")     # 训练保存的线性SVM（已改为 svm_model.pkl）
+        self.svm = self._load_pickle(
+            "svm_model.pkl"
+        )  # 训练保存的线性SVM（已改为 svm_model.pkl）
 
         # 从模型中获取维度信息，用于特征切片
         self.vlad_dim = self.kmeans.n_clusters * 128
-        self.hog_dim = self.pca.n_features_in_           # PCA 训练时的输入维度（原始HOG长度）
+        self.hog_dim = self.pca.n_features_in_  # PCA 训练时的输入维度（原始HOG长度）
         print("模型加载完成。")
 
     def _load_pickle(self, filename):
@@ -247,7 +251,7 @@ class LandmarkPredictor:
         返回: 一维 numpy 数组，顺序为 [VLAD, PCA-HOG, 轮廓, 颜色, GLCM]
         """
         # 切片
-        vlad = raw_feat[:self.vlad_dim]
+        vlad = raw_feat[: self.vlad_dim]
         hog_start = self.vlad_dim
         hog_end = hog_start + self.hog_dim
         hog_raw = raw_feat[hog_start:hog_end]
@@ -284,8 +288,11 @@ class LandmarkPredictor:
         if not use_bayes:
             # 整图预测
             raw = extract_raw_features(
-                img, self.kmeans, self.vlad_max_kp,
-                self.hog_target_size, self.profile_segments
+                img,
+                self.kmeans,
+                self.vlad_max_kp,
+                self.hog_target_size,
+                self.profile_segments,
             )
             final = self._transform_features(raw)
             feat_scaled = self.scaler.transform(final.reshape(1, -1))
@@ -330,8 +337,11 @@ class LandmarkPredictor:
             group_prob_sum = None
             for win in group_windows:
                 raw = extract_raw_features(
-                    win, self.kmeans, self.vlad_max_kp,
-                    self.hog_target_size, self.profile_segments
+                    win,
+                    self.kmeans,
+                    self.vlad_max_kp,
+                    self.hog_target_size,
+                    self.profile_segments,
                 )
                 final = self._transform_features(raw)
                 feat_scaled = self.scaler.transform(final.reshape(1, -1))
@@ -372,7 +382,7 @@ if __name__ == "__main__":
     img_path = sys.argv[1]
     top_k = 3
     use_bayes = True
-    max_windows = 50
+    max_windows = 100
 
     i = 2
     while i < len(sys.argv):

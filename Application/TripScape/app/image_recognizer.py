@@ -1,40 +1,35 @@
 import os
 import sys
+import tempfile
 
 sys.dont_write_bytecode = True
 
 import cv2
-import joblib
 import numpy as np
-from skimage.feature import hog
 
 from .db import LandmarkDB
+from .test import LandmarkPredictor
 
 
 class ImageRecognizer:
     def __init__(self, model_dir="models"):
         self.db = LandmarkDB()
         self.model_dir = model_dir
-        self.model_path = os.path.join(model_dir, "landmark_model.pkl")
-        self.scaler_path = os.path.join(model_dir, "scaler.pkl")
-        self.encoder_path = os.path.join(model_dir, "label_encoder.pkl")
-
-        self.model = None
-        self.scaler = None
-        self.label_encoder = None
 
         # 加载地标信息（用于识别后返回详情）
         self.target_info = {}
         self._load_heritage_info()
 
-        # 加载训练好的模型
-        if self._check_files_exist():
-            self._load_model()
-        else:
-            print("警告: 模型文件不存在，请先运行 app/train.py 训练模型。")
+        # 初始化新的预测器（内部会自动加载所有模型文件）
+        try:
+            self.predictor = LandmarkPredictor(model_dir=model_dir)
+            print("ImageRecognizer: 新模型加载成功。")
+        except Exception as e:
+            print(f"ImageRecognizer: 模型加载失败: {e}")
+            self.predictor = None
 
     def _load_heritage_info(self):
-        """从数据库加载地标信息"""
+        """从数据库加载地标信息，键为小写的 target_id"""
         rows = self.db.get_heritage_info()
         if rows:
             for row in rows:
@@ -46,41 +41,6 @@ class ImageRecognizer:
                     "current_status": row["current_status"] or "",
                 }
 
-    def _check_files_exist(self):
-        """检查所有必要文件是否存在"""
-        return all(
-            os.path.exists(p)
-            for p in [self.model_path, self.scaler_path, self.encoder_path]
-        )
-
-    def _load_model(self):
-        """加载模型文件"""
-        self.model = joblib.load(self.model_path)
-        self.scaler = joblib.load(self.scaler_path)
-        self.label_encoder = joblib.load(self.encoder_path)
-
-    def _extract_features(self, image):
-        """提取单张图片的特征"""
-        image = cv2.resize(image, (224, 224))
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        hog_feat = hog(
-            gray,
-            orientations=9,
-            pixels_per_cell=(16, 16),
-            cells_per_block=(2, 2),
-            block_norm="L2-Hys",
-            feature_vector=True,
-        )
-
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        hist = cv2.calcHist(
-            [hsv], [0, 1, 2], None, [16, 16, 16], [0, 180, 0, 256, 0, 256]
-        )
-        hist = cv2.normalize(hist, hist).flatten()
-
-        return np.concatenate([hog_feat, hist])
-
     def recognize(self, image_data):
         """
         识别主函数
@@ -88,25 +48,35 @@ class ImageRecognizer:
         :param image_data: 图片二进制数据
         :return: 识别结果字典
         """
-        if self.model is None:
-            return {"success": False, "message": "模型未加载，请先训练模型。"}
+        if self.predictor is None:
+            return {"success": False, "message": "模型未加载，请检查模型文件是否存在。"}
 
         try:
-            # 解码图片
+            # 解码图片（验证是否有效）
             nparr = np.frombuffer(image_data, np.uint8)
             img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
             if img is None:
                 return {"success": False, "message": "无法解析图片"}
 
-            # 提取特征并标准化
-            features = self._extract_features(img).reshape(1, -1)
-            features_scaled = self.scaler.transform(features)
+            # 将图片写入临时文件（predictor 需要路径）
+            with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
+                tmp_path = tmp.name
+                cv2.imwrite(tmp_path, img)
 
-            # 预测
-            pred_idx = self.model.predict(features_scaled)[0]
-            target_id = self.label_encoder.inverse_transform([pred_idx])[0].lower()
-            probs = self.model.predict_proba(features_scaled)[0]
-            confidence = probs[pred_idx]
+            # 调用新预测器（默认使用贝叶斯滑动窗口，top_k=1 只取最佳结果）
+            results = self.predictor.predict(tmp_path, top_k=1, use_bayes=True)
+
+            # 删除临时文件
+            try:
+                os.unlink(tmp_path)
+            except:
+                pass
+
+            if not results:
+                return {"success": False, "message": "未能识别出地标"}
+
+            pred_label, confidence = results[0]
+            target_id = pred_label.lower()  # 数据库键是小写
 
             # 查询地标信息
             info = self.target_info.get(target_id)

@@ -47,10 +47,13 @@ def load_data(data_dir):
     )
     for class_name in classes:
         class_dir = os.path.join(data_dir, class_name)
+        count = 0
         for file_name in os.listdir(class_dir):
             if file_name.lower().endswith((".jpg", ".jpeg", ".png")):
                 image_paths.append(os.path.join(class_dir, file_name))
                 label_names.append(class_name)
+                count += 1
+        print(f"- {class_name}: {count}")
     print(f"从 {data_dir} 加载了 {len(image_paths)} 张图片")
     return image_paths, label_names
 
@@ -306,23 +309,27 @@ if __name__ == "__main__":
 
     # ========== 数据加载 ==========
     print("========== 数据加载 ==========")
-    t_start = time.time()
+    print("训练集数据加载：")
     train_paths, train_names = load_data("data/train")
+    print("\n验证集数据加载：")
     val_paths, val_names = load_data("data/valid")
-    print(f"[耗时] 加载数据: {time.time() - t_start:.2f} 秒")
 
     # ========== 标签编码 ==========
     # 将类别名称转换为整数标签，并持久化编码器以备后续使用
     encoder_path = os.path.join(MODEL_DIR, "label_encoder.pkl")
     if os.path.exists(encoder_path):
-        print("\n" + "========== 加载标签编码器 ==========")
+        print("\n========== 加载标签编码器 ==========")
         with open(encoder_path, "rb") as f:
             encoder = pickle.load(f)
         print(f"类别数: {len(encoder.classes_)}")
+        print(f"类别列表: {list(encoder.classes_)}")
+        print(
+            f"类别映射: {dict(zip(encoder.classes_, encoder.transform(encoder.classes_)))}"
+        )
         train_labels = encoder.transform(train_names)
         val_labels = encoder.transform(val_names)
     else:
-        print("\n" + "========== 训练标签编码器 ==========")
+        print("\n========== 训练标签编码器 ==========")
         t_start = time.time()
         encoder = LabelEncoder()
         train_labels = encoder.fit_transform(train_names)
@@ -334,18 +341,23 @@ if __name__ == "__main__":
         with open(encoder_path, "wb") as f:
             pickle.dump(encoder, f)
         print(f"训练集类别数: {len(encoder.classes_)}")
+        print(f"类别列表: {list(encoder.classes_)}")
+        print(
+            f"类别映射: {dict(zip(encoder.classes_, encoder.transform(encoder.classes_)))}"
+        )
         print(f"[耗时] 标签编码: {time.time() - t_start:.2f} 秒")
 
     # ========== VLAD 码本训练 ==========
     # 训练或加载 SIFT 描述子的聚类中心（码本），用于后续 VLAD 编码
     kmeans_path = os.path.join(MODEL_DIR, "kmeans_vlad.pkl")
     if os.path.exists(kmeans_path):
-        print("\n" + "========== 加载 VLAD 码本 ==========")
+        print("\n========== 加载 VLAD 码本 ==========")
         with open(kmeans_path, "rb") as f:
             kmeans = pickle.load(f)
         print(f"聚类数: {kmeans.n_clusters}")
+        print(f"VLAD特征维度: {kmeans.n_clusters * 128}")
     else:
-        print("\n" + "========== 训练 VLAD 码本 ==========")
+        print("\n========== 训练 VLAD 码本 ==========")
         t_start = time.time()
 
         # 使用 MiniBatchKMeans 进行增量聚类，适应大规模数据集
@@ -379,7 +391,7 @@ if __name__ == "__main__":
                 processed_images += 1
                 total_des_used += len(des)
 
-            if (idx + 1) % 50 == 0 or (idx + 1) == len(train_paths):
+            if (idx + 1) % 100 == 0 or (idx + 1) == len(train_paths):
                 print(
                     f"VLAD 码本训练进度: {idx + 1}/{len(train_paths)}，"
                     f"其中 {processed_images} 张参与训练，累计增量训练 {total_des_used} 个描述子"
@@ -388,24 +400,30 @@ if __name__ == "__main__":
         print("VLAD 码本训练完成")
         with open(kmeans_path, "wb") as f:
             pickle.dump(kmeans, f)
+        print(f"聚类数: {kmeans.n_clusters}")
+        print(f"VLAD特征维度: {kmeans.n_clusters * 128}")
         print(f"[耗时] VLAD 码本训练: {time.time() - t_start:.2f} 秒")
 
     # ========== 特征提取 ==========
     # 提取训练集和验证集的原始特征（含高维 HOG），并使用缓存避免重复计算
     train_cache = os.path.join(CACHE_DIR, "X_train.npy")
     val_cache = os.path.join(CACHE_DIR, "X_val.npy")
-    profile_segments = 20       # 轴向轮廓曲线的垂直分段数
-    
+    profile_segments = 20  # 轴向轮廓曲线的垂直分段数
+
     # ---------- 训练集特征提取 ----------
-    print("\n" + "========== 训练集特征提取 ==========")
+    print("\n========== 训练集特征提取 ==========")
     if os.path.exists(train_cache):
         print("发现训练集缓存特征，直接加载...")
         X_train = np.load(train_cache)
         # 校验缓存维度是否与当前特征配置一致，防止特征代码变更后误用旧缓存
         sample_img = cv2.imread(train_paths[0])
-        total_feat_dim = (kmeans.n_clusters * 128
-                          + extract_spm_hog(sample_img).shape[0]
-                          + profile_segments + 9 + 4)
+        total_feat_dim = (
+            kmeans.n_clusters * 128
+            + extract_spm_hog(sample_img).shape[0]
+            + profile_segments
+            + 9
+            + 4
+        )
         if X_train.shape[1] != total_feat_dim:
             raise ValueError(
                 f"训练集缓存特征维度 ({X_train.shape[1]}) 与当前特征维度 ({total_feat_dim}) 不匹配，"
@@ -420,7 +438,7 @@ if __name__ == "__main__":
         for idx, path in enumerate(train_paths):
             feat = extract_features(path, kmeans)
             X_train.append(feat)
-            if (idx + 1) % 50 == 0 or (idx + 1) == total_train:
+            if (idx + 1) % 100 == 0 or (idx + 1) == total_train:
                 print(f"训练集特征提取进度: {idx + 1}/{total_train}")
         X_train = np.array(X_train)
         np.save(train_cache, X_train)
@@ -428,15 +446,19 @@ if __name__ == "__main__":
         print(f"[耗时] 训练集特征提取: {time.time() - t_start:.2f} 秒")
 
     # ---------- 验证集特征提取 ----------
-    print("\n" + "========== 验证集特征提取 ==========")
+    print("\n========== 验证集特征提取 ==========")
     if os.path.exists(val_cache):
         print("发现验证集缓存特征，直接加载...")
         X_val = np.load(val_cache)
         # 校验维度一致性
         sample_img = cv2.imread(train_paths[0])
-        total_feat_dim = (kmeans.n_clusters * 128
-                          + extract_spm_hog(sample_img).shape[0]
-                          + profile_segments + 9 + 4)
+        total_feat_dim = (
+            kmeans.n_clusters * 128
+            + extract_spm_hog(sample_img).shape[0]
+            + profile_segments
+            + 9
+            + 4
+        )
         if X_val.shape[1] != total_feat_dim:
             raise ValueError(
                 f"验证集缓存特征维度 ({X_val.shape[1]}) 与当前特征维度 ({total_feat_dim}) 不匹配，"
@@ -451,7 +473,7 @@ if __name__ == "__main__":
         for idx, path in enumerate(val_paths):
             feat = extract_features(path, kmeans)
             X_val.append(feat)
-            if (idx + 1) % 50 == 0 or (idx + 1) == total_val:
+            if (idx + 1) % 100 == 0 or (idx + 1) == total_val:
                 print(f"验证集特征提取进度: {idx + 1}/{total_val}")
         X_val = np.array(X_val)
         np.save(val_cache, X_val)
@@ -463,7 +485,7 @@ if __name__ == "__main__":
 
     # ========== HOG 特征主成分分析（PCA）降维 ==========
     # 对高维 HOG 特征进行 PCA 降维，解决维度灾难并平衡各特征贡献
-    print("\n" + "========== HOG 特征降维 (PCA) ==========")
+    print("\n========== HOG 特征降维 (PCA) ==========")
     # 计算 VLAD 和 HOG 的维度，用于从完整特征中切分
     vlad_dim = kmeans.n_clusters * 128
     sample_img = cv2.imread(train_paths[0])
@@ -520,11 +542,11 @@ if __name__ == "__main__":
 
     X_train = np.concatenate(
         [
-            X_train[:, :hog_start],          # VLAD 部分
-            hog_pca_train,                   # 降维后的 HOG
+            X_train[:, :hog_start],  # VLAD 部分
+            hog_pca_train,  # 降维后的 HOG
             X_train[:, profile_start:profile_end],  # 轮廓曲线
-            X_train[:, color_start:color_end],      # 颜色矩
-            X_train[:, glcm_start:glcm_end],        # GLCM
+            X_train[:, color_start:color_end],  # 颜色矩
+            X_train[:, glcm_start:glcm_end],  # GLCM
         ],
         axis=1,
     )
@@ -546,14 +568,14 @@ if __name__ == "__main__":
     # 对特征进行 Z-score 标准化，使各维度均值为0、标准差为1，消除量纲影响
     scaler_path = os.path.join(MODEL_DIR, "scaler.pkl")
     if os.path.exists(scaler_path):
-        print("\n" + "========== 加载标准化器 ==========")
+        print("\n========== 加载标准化器 ==========")
         with open(scaler_path, "rb") as f:
             scaler = pickle.load(f)
         X_train_scaled = scaler.transform(X_train)
         X_val_scaled = scaler.transform(X_val)
         print("标准化器加载完成")
     else:
-        print("\n" + "========== 特征标准化 ==========")
+        print("\n========== 特征标准化 ==========")
         t_start = time.time()
         scaler = StandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)
@@ -566,12 +588,12 @@ if __name__ == "__main__":
     # 使用线性支持向量机进行多类别分类（一对多策略）
     svm_path = os.path.join(MODEL_DIR, "svm_model.pkl")
     if os.path.exists(svm_path):
-        print("\n" + "========== 加载 SVM 分类器 ==========")
+        print("\n========== 加载 SVM 分类器 ==========")
         with open(svm_path, "rb") as f:
             svm = pickle.load(f)
         print("SVM 加载完成")
     else:
-        print("\n" + "========== 训练线性 SVM 分类器 ==========")
+        print("\n========== 训练线性 SVM 分类器 ==========")
         t_start = time.time()
         # LinearSVC 在高维特征空间中效率较高，dual='auto' 自动选择求解方式
         svm = LinearSVC(C=1.0, random_state=42, dual="auto", verbose=1, max_iter=5000)
@@ -581,13 +603,13 @@ if __name__ == "__main__":
         print(f"[耗时] SVM 训练: {time.time() - t_start:.2f} 秒")
 
     # ========== 验证集预测 ==========
-    print("\n" + "========== 验证集预测 ==========")
+    print("\n========== 验证集预测 ==========")
     t_start = time.time()
     y_pred = svm.predict(X_val_scaled)
     print(f"[耗时] 验证集预测: {time.time() - t_start:.2f} 秒")
 
     # ========== 评估模型性能 ==========
-    print("\n" + "========== 评估模型性能 ==========")
+    print("\n========== 评估模型性能 ==========")
     t_start = time.time()
     acc = accuracy_score(y_val, y_pred)
     print(f"验证集准确率: {acc:.4f}")
