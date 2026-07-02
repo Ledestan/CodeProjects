@@ -388,7 +388,7 @@ if __name__ == "__main__":
         print("VLAD 码本训练完成")
         with open(kmeans_path, "wb") as f:
             pickle.dump(kmeans, f)
-        print(f"[耗时] VLAD 码本训练及保存: {time.time() - t_start:.2f} 秒")
+        print(f"[耗时] VLAD 码本训练: {time.time() - t_start:.2f} 秒")
 
     # ========== 特征提取 ==========
     # 提取训练集和验证集的原始特征（含高维 HOG），并使用缓存避免重复计算
@@ -501,7 +501,7 @@ if __name__ == "__main__":
         hog_pca_train = pca.fit_transform(hog_train)
         with open(pca_path, "wb") as f:
             pickle.dump(pca, f)
-        print(f"[耗时] PCA 训练及保存: {time.time() - t_start:.2f} 秒")
+        print(f"[耗时] PCA 训练: {time.time() - t_start:.2f} 秒")
         hog_pca_val = pca.transform(hog_val)
 
     print(f"HOG 降维后维度: {hog_pca_train.shape[1]}")
@@ -564,7 +564,7 @@ if __name__ == "__main__":
 
     # ========== 训练线性 SVM 分类器 ==========
     # 使用线性支持向量机进行多类别分类（一对多策略）
-    svm_path = os.path.join(MODEL_DIR, "svm_linear.pkl")
+    svm_path = os.path.join(MODEL_DIR, "svm_model.pkl")
     if os.path.exists(svm_path):
         print("\n" + "========== 加载 SVM 分类器 ==========")
         with open(svm_path, "rb") as f:
@@ -578,7 +578,7 @@ if __name__ == "__main__":
         svm.fit(X_train_scaled, y_train)
         with open(svm_path, "wb") as f:
             pickle.dump(svm, f)
-        print(f"[耗时] SVM 训练及保存: {time.time() - t_start:.2f} 秒")
+        print(f"[耗时] SVM 训练: {time.time() - t_start:.2f} 秒")
 
     # ========== 验证集预测 ==========
     print("\n" + "========== 验证集预测 ==========")

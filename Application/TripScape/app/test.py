@@ -13,7 +13,7 @@ from sklearn.exceptions import InconsistentVersionWarning
 warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 
-def extract_sift_vlad(img, kmeans_model, max_kp=100):
+def extract_sift_vlad(img, kmeans_model, max_kp):
     """
     提取 SIFT 关键点并计算 VLAD 向量。
     """
@@ -35,17 +35,14 @@ def extract_sift_vlad(img, kmeans_model, max_kp=100):
     return vlad
 
 
-def extract_spm_hog(img):
+def extract_spm_hog(img, target_size):
     """
-    提取 HOG 特征，输入图像先经 Letterbox 等比例缩放+填充到 256x256。
+    提取 HOG 特征，输入图像先经 Letterbox 等比例缩放+填充到 target_size x target_size。
     """
-    target_size = 256
     h, w = img.shape[:2]
     scale = target_size / max(h, w)
-    new_w = int(w * scale)
-    new_h = int(h * scale)
-    new_w = max(1, new_w)
-    new_h = max(1, new_h)
+    new_w = max(1, int(w * scale))
+    new_h = max(1, int(h * scale))
     resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
     canvas = np.full((target_size, target_size, 3), 0, dtype=np.uint8)
     dx = (target_size - new_w) // 2
@@ -63,39 +60,40 @@ def extract_spm_hog(img):
     return hog_feat
 
 
-def extract_geometry(img):
+def extract_profile(img, segments):
     """
-    提取两个几何形状描述子：长宽比和凸包面积比。
+    提取轴向宽度轮廓曲线特征，用于刻画建筑（尤其是塔类）的纵向形状变化。
 
-    长宽比（高度/宽度）用于区分高塔（细长）与宽体建筑（扁平）。
-    凸包面积比（轮廓面积 / 凸包面积）反映形状的紧凑程度，
-    规整建筑物（如金字塔）该值接近1，而不规则自然物（如山脉）则较小。
+    该特征将二值化前景沿垂直方向均匀分为多个水平段，统计每段的最大宽度，形成轮廓曲线。
+    不同建筑具有独特曲线模式：金字塔呈线性递增，天坛呈蘑菇状（顶部突宽），
+    崇圣寺塔呈平滑弧线收分，雷峰塔近似矩形带飞檐，埃菲尔铁塔呈指数级下宽上窄。
 
     参数:
         img : numpy.ndarray, BGR 图像
+        segments : int, 垂直分段数
 
     返回:
-        numpy.ndarray, 长度为2的数组 [aspect, area_ratio]
+        numpy.ndarray, 长度为 segments 的归一化宽度曲线，数值范围 [0, 1]
     """
-    h, w = img.shape[:2]
-    aspect = h / (w + 1e-6)  # 避免除以零
-
-    # 二值化获取前景区域，阈值 30 可过滤掉极暗的噪声像素
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(gray, 30, 255, cv2.THRESH_BINARY)
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    # 如果没有轮廓，则无法计算面积比，直接返回默认值
-    if not contours:
-        return np.array([aspect, 1.0], dtype=np.float32)
-
-    # 取面积最大的轮廓作为图像主体（假设地标占主要部分）
-    cnt = max(contours, key=cv2.contourArea)
-    area = cv2.contourArea(cnt)
-    hull = cv2.convexHull(cnt)
-    hull_area = cv2.contourArea(hull)
-    area_ratio = area / (hull_area + 1e-6)
-    return np.array([aspect, area_ratio], dtype=np.float32)
+    h, w = thresh.shape
+    split_points = np.linspace(0, h, segments + 1, dtype=int)
+    widths = []
+    for i in range(segments):
+        roi = thresh[split_points[i] : split_points[i + 1], :]
+        if roi.size == 0:
+            widths.append(0)
+            continue
+        row_sums = np.sum(roi > 0, axis=1)
+        if np.max(row_sums) == 0:
+            widths.append(0)
+        else:
+            widths.append(np.max(row_sums))
+    widths = np.array(widths, dtype=np.float32)
+    if np.max(widths) > 0:
+        widths = widths / np.max(widths)
+    return widths
 
 
 def extract_color_moments(img):
@@ -130,17 +128,17 @@ def extract_glcm(img):
     return np.array(features, dtype=np.float32)
 
 
-def extract_features(img, kmeans_model, vlad_max_kp=100):
+def extract_raw_features(img, kmeans_model, vlad_max_kp, hog_target_size, profile_segments):
     """
-    从单张图像提取完整的特征向量。
-    现在特征长度为：VLAD(32*128=4096) + HOG(34596) + 几何(3) + 颜色矩(9) + GLCM(4) = 38708 维
+    提取原始特征（含完整 HOG），顺序：[VLAD, HOG, 轮廓, 颜色矩, GLCM]
+    与训练代码中的 extract_features 完全一致。
     """
-    vlad = extract_sift_vlad(img, kmeans_model, max_kp=vlad_max_kp)
-    hog = extract_spm_hog(img)
-    geom = extract_geometry(img)  # 现在返回 3 维
+    vlad = extract_sift_vlad(img, kmeans_model, vlad_max_kp)
+    hog = extract_spm_hog(img, hog_target_size)
+    profile = extract_profile(img, profile_segments)
     color = extract_color_moments(img)
     glcm = extract_glcm(img)
-    feat = np.concatenate([vlad, hog, geom, color, glcm])
+    feat = np.concatenate([vlad, hog, profile, color, glcm])
     return feat.astype(np.float32)
 
 
@@ -216,14 +214,23 @@ class LandmarkPredictor:
     地标识别预测器，默认启用多尺度贝叶斯滑动窗口。
     """
 
-    def __init__(self, model_dir="./models", vlad_max_kp=500):
+    def __init__(self, model_dir="./models"):
         self.model_dir = model_dir
-        self.vlad_max_kp = vlad_max_kp
+        # 特征提取参数（与训练时保持一致）
+        self.vlad_max_kp = 500
+        self.hog_target_size = 256
+        self.profile_segments = 20
+
         print("正在加载模型...")
         self.encoder = self._load_pickle("label_encoder.pkl")
         self.kmeans = self._load_pickle("kmeans_vlad.pkl")
+        self.pca = self._load_pickle("pca_hog.pkl")       # PCA 降维模型
         self.scaler = self._load_pickle("scaler.pkl")
-        self.svm = self._load_pickle("svm_model.pkl")
+        self.svm = self._load_pickle("svm_model.pkl")     # 训练保存的线性SVM（已改为 svm_model.pkl）
+
+        # 从模型中获取维度信息，用于特征切片
+        self.vlad_dim = self.kmeans.n_clusters * 128
+        self.hog_dim = self.pca.n_features_in_           # PCA 训练时的输入维度（原始HOG长度）
         print("模型加载完成。")
 
     def _load_pickle(self, filename):
@@ -232,6 +239,35 @@ class LandmarkPredictor:
             raise FileNotFoundError(f"模型文件不存在: {path}")
         with open(path, "rb") as f:
             return pickle.load(f)
+
+    def _transform_features(self, raw_feat):
+        """
+        对原始特征进行 PCA 降维并拼接，得到最终特征（与训练时完全一致）。
+        raw_feat: 一维 numpy 数组，顺序为 [VLAD, HOG, 轮廓, 颜色, GLCM]
+        返回: 一维 numpy 数组，顺序为 [VLAD, PCA-HOG, 轮廓, 颜色, GLCM]
+        """
+        # 切片
+        vlad = raw_feat[:self.vlad_dim]
+        hog_start = self.vlad_dim
+        hog_end = hog_start + self.hog_dim
+        hog_raw = raw_feat[hog_start:hog_end]
+        profile_start = hog_end
+        profile_end = profile_start + self.profile_segments
+        color_start = profile_end
+        color_end = color_start + 9
+        glcm_start = color_end
+        glcm_end = glcm_start + 4
+
+        profile = raw_feat[profile_start:profile_end]
+        color = raw_feat[color_start:color_end]
+        glcm = raw_feat[glcm_start:glcm_end]
+
+        # PCA 降维 HOG
+        hog_pca = self.pca.transform(hog_raw.reshape(1, -1)).flatten()
+
+        # 重新拼接
+        final_feat = np.concatenate([vlad, hog_pca, profile, color, glcm])
+        return final_feat
 
     def predict(
         self,
@@ -246,9 +282,13 @@ class LandmarkPredictor:
             raise ValueError(f"无法读取图片: {img_path}")
 
         if not use_bayes:
-            feat = extract_features(img, self.kmeans, vlad_max_kp=self.vlad_max_kp)
-            feat = feat.reshape(1, -1)
-            feat_scaled = self.scaler.transform(feat)
+            # 整图预测
+            raw = extract_raw_features(
+                img, self.kmeans, self.vlad_max_kp,
+                self.hog_target_size, self.profile_segments
+            )
+            final = self._transform_features(raw)
+            feat_scaled = self.scaler.transform(final.reshape(1, -1))
             if hasattr(self.svm, "predict_proba"):
                 probas = self.svm.predict_proba(feat_scaled)[0]
             else:
@@ -274,28 +314,27 @@ class LandmarkPredictor:
             key = round(s / 10) * 10
             scale_groups.setdefault(key, []).append(win)
 
-        # 定义不同尺度的权重（强调大尺度全局轮廓）
-        # 权重顺序与 scale_ratios 对应：[1.0, 0.7, 0.5, 0.3]
-        scale_weights = {1.0: 1.2, 0.7: 1.2, 0.5: 0.8, 0.3: 0.8}
-        # 若用户自定义了 scale_ratios，则自动生成权重（按比例）
-        if scale_ratios is not None:
-            sorted_ratios = sorted(scale_ratios, reverse=True)
-            max_ratio = sorted_ratios[0]
-            scale_weights = {r: (r / max_ratio) for r in scale_ratios}
+        # 尺度权重（按比例）
+        if scale_ratios is None:
+            scale_ratios = [1.0, 0.7, 0.5, 0.3]
+        sorted_ratios = sorted(scale_ratios, reverse=True)
+        max_ratio = sorted_ratios[0]
+        scale_weights = {r: (r / max_ratio) for r in scale_ratios}
 
         log_evidences = []
         for group_key, group_windows in scale_groups.items():
-            # 估算该组对应的尺度（取组内窗口尺寸 / 短边）
             ratio_est = group_key / min(img.shape[:2])
-            # 找到最近的尺度
             closest_ratio = min(scale_weights.keys(), key=lambda r: abs(r - ratio_est))
             weight = scale_weights.get(closest_ratio, 1.0)
 
             group_prob_sum = None
             for win in group_windows:
-                feat = extract_features(win, self.kmeans, vlad_max_kp=self.vlad_max_kp)
-                feat = feat.reshape(1, -1)
-                feat_scaled = self.scaler.transform(feat)
+                raw = extract_raw_features(
+                    win, self.kmeans, self.vlad_max_kp,
+                    self.hog_target_size, self.profile_segments
+                )
+                final = self._transform_features(raw)
+                feat_scaled = self.scaler.transform(final.reshape(1, -1))
                 if hasattr(self.svm, "predict_proba"):
                     prob = self.svm.predict_proba(feat_scaled)[0]
                 else:
@@ -308,7 +347,6 @@ class LandmarkPredictor:
                     group_prob_sum += prob
             group_prob_avg = group_prob_sum / len(group_windows)
             group_prob_avg = np.clip(group_prob_avg, 1e-12, 1.0)
-            # 加入尺度权重
             log_evidences.append(np.log(group_prob_avg) * weight)
 
         total_log = np.sum(log_evidences, axis=0)
@@ -324,7 +362,7 @@ class LandmarkPredictor:
 
 
 if __name__ == "__main__":
-    # 用法: python test.py <图片路径> [top_k] [--no-bayes] [--windows N]
+    # 用法: python app/test.py <图片路径> [top_k] [--no-bayes] [--windows N]
     if len(sys.argv) < 2:
         print("用法: python app/test.py <图片路径> [top_k] [--no-bayes] [--windows N]")
         print("默认启用贝叶斯滑动窗口，禁用: --no-bayes")
@@ -348,7 +386,7 @@ if __name__ == "__main__":
             i += 1
         i += 1
 
-    predictor = LandmarkPredictor(model_dir="./models", vlad_max_kp=500)
+    predictor = LandmarkPredictor(model_dir="./models")
 
     start_time = time.time()
     results = predictor.predict(
