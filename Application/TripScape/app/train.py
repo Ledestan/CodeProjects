@@ -1,15 +1,19 @@
 import os
 import pickle
 import time
+import warnings
 
 import cv2
 import numpy as np
 from scipy.cluster.vq import vq
 from skimage.feature import graycomatrix, graycoprops
 from sklearn.cluster import MiniBatchKMeans
+from sklearn.exceptions import InconsistentVersionWarning
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.svm import SVC
+
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 
 def load_data(data_dir):
@@ -265,6 +269,9 @@ def extract_features(img_path, kmeans_model, vlad_max_kp=100):
         已训练的 VLAD 码本。
     vlad_max_kp : int
         传递给 extract_sift_vlad 的 max_kp 参数。
+    is_training : bool
+        是否为训练模式。若为 True，则对图像进行随机裁剪（70%~90%），
+        用于增强模型对局部特征的鲁棒性。
 
     返回
     -------

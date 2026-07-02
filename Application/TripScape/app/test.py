@@ -2,11 +2,15 @@ import os
 import pickle
 import sys
 import time
+import warnings
 
 import cv2
 import numpy as np
 from scipy.cluster.vq import vq
 from skimage.feature import graycomatrix, graycoprops
+from sklearn.exceptions import InconsistentVersionWarning
+
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 
 def extract_sift_vlad(img, kmeans_model, max_kp=100):
@@ -234,17 +238,97 @@ def extract_features(img, kmeans_model, vlad_max_kp=100):
     return feat.astype(np.float32)
 
 
+def generate_multi_scale_windows(img, scale_ratios=None, max_windows_total=100):
+    """
+    根据原图短边生成多种尺度的随机滑动窗口，采样数量与尺度平方成反比。
+    当某尺度可采样的位置总数少于分配数时，自动切换为密集采样（取尽所有位置）。
+
+    参数:
+        img : numpy.ndarray, 原图 (BGR)
+        scale_ratios : list, 窗口边长占短边的比例，默认 [1.0, 0.7, 0.5, 0.3]
+        max_windows_total : int, 所有尺度生成的窗口总数上限
+
+    返回:
+        list of numpy.ndarray, 所有窗口图像（BGR）
+    """
+    if scale_ratios is None:
+        scale_ratios = [1.0, 0.7, 0.5, 0.3]
+
+    h, w = img.shape[:2]
+    short_side = min(h, w)
+    all_windows = []
+
+    # 按面积反比计算权重，面积越小权重越大
+    weights = [1.0 / (r * r) for r in scale_ratios]
+    total_weight = sum(weights)
+
+    # 按权重分配窗口数量，确保每个尺度至少1个
+    samples_per_scale = []
+    for wgt in weights:
+        n = int(max_windows_total * (wgt / total_weight))
+        n = max(1, n)
+        samples_per_scale.append(n)
+
+    # 补足或削减至总数正好为 max_windows_total
+    while sum(samples_per_scale) < max_windows_total:
+        max_idx = weights.index(max(weights))
+        samples_per_scale[max_idx] += 1
+    while sum(samples_per_scale) > max_windows_total:
+        min_idx = weights.index(min(weights))
+        if samples_per_scale[min_idx] > 1:
+            samples_per_scale[min_idx] -= 1
+        else:
+            # 若最小尺度只有1个，从次小尺度削减
+            for i in sorted(range(len(weights)), key=lambda i: weights[i]):
+                if samples_per_scale[i] > 1:
+                    samples_per_scale[i] -= 1
+                    break
+
+    # 生成窗口
+    for ratio, n_samples in zip(scale_ratios, samples_per_scale):
+        win_size = int(short_side * ratio)
+        win_size = max(win_size, 64)  # 确保最小尺寸，避免特征提取失败
+        if win_size > h or win_size > w:
+            continue
+
+        max_x = w - win_size
+        max_y = h - win_size
+
+        # 若图像极小，无法滑动，直接添加原图
+        if max_x == 0 and max_y == 0:
+            all_windows.append(img)
+            continue
+
+        total_positions = (max_x + 1) * (max_y + 1)
+        actual_samples = min(n_samples, total_positions)
+
+        # 如果可采位置总数少于计划采样数，进行密集采样（覆盖全部可能位置）
+        if actual_samples == total_positions:
+            for y in range(max_y + 1):
+                for x in range(max_x + 1):
+                    win = img[y : y + win_size, x : x + win_size]
+                    all_windows.append(win)
+        else:
+            # 否则随机采样
+            for _ in range(actual_samples):
+                x = np.random.randint(0, max_x + 1)
+                y = np.random.randint(0, max_y + 1)
+                win = img[y : y + win_size, x : x + win_size]
+                all_windows.append(win)
+
+    return all_windows
+
+
 class LandmarkPredictor:
     """
-    地标识别预测器。
+    地标识别预测器，支持整图推理和多尺度贝叶斯滑动窗口投票。
 
     用法:
-        predictor = LandmarkPredictor(model_dir="./models", vlad_max_kp=100)
+        predictor = LandmarkPredictor(model_dir="./models", vlad_max_kp=500)
         results = predictor.predict("path/to/image.jpg", top_k=3)
         # results = [('Eiffel', 0.85), ('Leifeng', 0.10), ...]
 
-    内部会加载训练阶段保存的 label_encoder, kmeans_vlad, scaler, svm_model，
-    并确保特征提取参数与训练时一致。
+    默认启用贝叶斯滑动窗口，可通过 use_bayes=False 关闭。
     """
 
     def __init__(self, model_dir="./models", vlad_max_kp=500):
@@ -279,70 +363,131 @@ class LandmarkPredictor:
         with open(path, "rb") as f:
             return pickle.load(f)
 
-    def predict(self, img_path, top_k=3):
+    def predict(
+        self,
+        img_path,
+        top_k=3,
+        use_bayes=True,
+        scale_ratios=None,
+        max_windows_total=100,
+    ):
         """
         对单张图片进行地标识别，返回 Top-K 结果。
 
         参数:
             img_path : str, 图片文件路径
             top_k : int, 返回前 k 个最可能的类别
+            use_bayes : bool, 是否启用多尺度滑动窗口贝叶斯投票，默认 True
+            scale_ratios : list, 窗口边长占短边的比例，默认 [1.0, 0.7, 0.5, 0.3]
+            max_windows_total : int, 贝叶斯模式下的最大窗口总数
 
         返回:
             list of (label, confidence)
-                label : str, 地标名称（如 'Eiffel'）
-                confidence : float, 置信度（0~1），
-                             来自 SVM 的概率估计或决策函数映射。
+                label : str, 地标名称
+                confidence : float, 置信度（0~1）
         """
-        # 读取图片，若失败则抛出异常
         img = cv2.imread(img_path)
         if img is None:
             raise ValueError(f"无法读取图片: {img_path}")
 
-        # 提取特征，使用与训练时相同的 max_kp 参数
-        feat = extract_features(img, self.kmeans, vlad_max_kp=self.vlad_max_kp)
-        feat = feat.reshape(1, -1)  # 转为行向量
+        # 整图推理模式（快速，但可能牺牲偏移/尺度鲁棒性）
+        if not use_bayes:
+            feat = extract_features(img, self.kmeans, vlad_max_kp=self.vlad_max_kp)
+            feat = feat.reshape(1, -1)
+            feat_scaled = self.scaler.transform(feat)
+            if hasattr(self.svm, "predict_proba"):
+                probas = self.svm.predict_proba(feat_scaled)[0]
+            else:
+                scores = self.svm.decision_function(feat_scaled)[0]
+                exp_scores = np.exp(scores - np.max(scores))
+                probas = exp_scores / np.sum(exp_scores)
+            top_indices = np.argsort(probas)[::-1][:top_k]
+            results = [(self.encoder.classes_[idx], probas[idx]) for idx in top_indices]
+            return results
 
-        # 标准化：使用训练时拟合的 scaler，保证分布对齐
-        feat_scaled = self.scaler.transform(feat)
+        # ---------- 多尺度贝叶斯滑动窗口 ----------
+        # 生成所有尺度的随机窗口（总数受 max_windows_total 限制）
+        windows = generate_multi_scale_windows(
+            img, scale_ratios=scale_ratios, max_windows_total=max_windows_total
+        )
 
-        # 获取分类置信度：
-        # 若 SVM 训练时开启了 probability=True，则使用 predict_proba 获得真实概率。
-        # 否则，使用 decision_function 的得分并通过 softmax 映射到 [0,1]，
-        # 作为近似置信度（虽然不严格是概率，但排序效果一致）。
-        if hasattr(self.svm, "predict_proba"):
-            probas = self.svm.predict_proba(feat_scaled)[0]
-        else:
-            scores = self.svm.decision_function(feat_scaled)[0]
-            # 通过减去最大值再 exp，避免数值溢出，然后归一化得到软概率
-            exp_scores = np.exp(scores - np.max(scores))
-            probas = exp_scores / np.sum(exp_scores)
+        if not windows:
+            # 极端情况（如图片极小无法滑动），回退整图
+            return self.predict(img_path, top_k, use_bayes=False)
 
-        # 按概率降序排序，取前 top_k 个索引
-        top_indices = np.argsort(probas)[::-1][:top_k]
-        results = []
-        for idx in top_indices:
-            label = self.encoder.classes_[idx]
-            confidence = probas[idx]
-            results.append((label, confidence))
+        # 按窗口尺寸分组（同一尺度的窗口尺寸相同）
+        scale_groups = {}
+        for win in windows:
+            s = win.shape[0]  # 正方形窗口，宽高相等
+            key = round(s / 10) * 10  # 四舍五入到最近的10像素作为组键
+            scale_groups.setdefault(key, []).append(win)
 
+        log_evidences = []
+        for group_key, group_windows in scale_groups.items():
+            group_prob_sum = None
+            for win in group_windows:
+                # 提取窗口特征
+                feat = extract_features(win, self.kmeans, vlad_max_kp=self.vlad_max_kp)
+                feat = feat.reshape(1, -1)
+                feat_scaled = self.scaler.transform(feat)
+                if hasattr(self.svm, "predict_proba"):
+                    prob = self.svm.predict_proba(feat_scaled)[0]
+                else:
+                    scores = self.svm.decision_function(feat_scaled)[0]
+                    exp_scores = np.exp(scores - np.max(scores))
+                    prob = exp_scores / np.sum(exp_scores)
+                if group_prob_sum is None:
+                    group_prob_sum = prob
+                else:
+                    group_prob_sum += prob
+            # 组内概率取平均，作为该尺度的证据
+            group_prob_avg = group_prob_sum / len(group_windows)
+            # 截断防止 log 取到负无穷
+            group_prob_avg = np.clip(group_prob_avg, 1e-12, 1.0)
+            log_evidences.append(np.log(group_prob_avg))
+
+        # 跨尺度累加 log 证据（每个尺度等权）
+        total_log = np.sum(log_evidences, axis=0)
+        # 归一化为概率分布（减去最大值防溢出）
+        max_log = np.max(total_log)
+        exp_log = np.exp(total_log - max_log)
+        final_probas = exp_log / np.sum(exp_log)
+
+        top_indices = np.argsort(final_probas)[::-1][:top_k]
+        results = [
+            (self.encoder.classes_[idx], final_probas[idx]) for idx in top_indices
+        ]
         return results
 
 
 if __name__ == "__main__":
-    # 用法: python app/test.py <图片路径> [top_k]
-    img_path = sys.argv[1]
-    top_k = int(sys.argv[2]) if len(sys.argv) > 2 else 3
+    # 用法: python test.py <图片路径> [top_k] [--no-bayes]
+    # 默认启用贝叶斯滑动窗口，禁用添加 --no-bayes 参数
+    if len(sys.argv) < 2:
+        print("用法: python app/test.py <图片路径> [top_k] [--no-bayes]")
+        print("默认启用贝叶斯滑动窗口，禁用添加 --no-bayes 参数")
+        sys.exit(1)
 
-    # 创建预测器实例，可根据需要调整 vlad_max_kp
+    img_path = sys.argv[1]
+    top_k = 3
+    use_bayes = True
+
+    # 解析命令行参数
+    for arg in sys.argv[2:]:
+        if arg.isdigit():
+            top_k = int(arg)
+        elif arg == "--no-bayes":
+            use_bayes = False
+
+    # 创建预测器实例，vlad_max_kp 可在此调整（200~500）
     predictor = LandmarkPredictor(model_dir="./models", vlad_max_kp=500)
 
-    # 执行预测并计时
     start_time = time.time()
-    results = predictor.predict(img_path, top_k=top_k)
+    results = predictor.predict(img_path, top_k=top_k, use_bayes=use_bayes)
     elapsed = time.time() - start_time
 
-    # 打印结果
     print(f"\n预测结果 (Top-{top_k})：")
     for label, conf in results:
         print(f"- {label}: {conf:.4f}")
-    print(f"\n推理耗时: {elapsed:.3f} 秒")
+    print(f"模式: {'贝叶斯多尺度滑动窗口' if use_bayes else '整图'}")
+    print(f"推理耗时: {elapsed:.3f} 秒")
