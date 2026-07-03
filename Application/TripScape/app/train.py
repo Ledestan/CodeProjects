@@ -618,7 +618,6 @@ if __name__ == "__main__":
     print(f"[耗时] 性能评估: {time.time() - t_start:.2f} 秒")
 
     # ========== 总运行时间 ==========
-    overall_time = time.time() - overall_start
     print("\n" + "=" * 50)
-    print(f"所有步骤完成，总运行时间: {overall_time:.2f} 秒")
+    print(f"所有步骤完成，总运行时间: {time.time() - overall_start:.2f} 秒")
     print(f"模型文件保存在: {MODEL_DIR}")
