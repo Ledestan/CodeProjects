@@ -12,7 +12,7 @@ from sklearn.decomposition import PCA
 from sklearn.exceptions import InconsistentVersionWarning
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 
 warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
@@ -150,7 +150,7 @@ def extract_spm_hog(img):
         _blockSize=(16, 16),
         _blockStride=(8, 8),
         _cellSize=(8, 8),
-        _nbins=9
+        _nbins=9,
     )
     hog_feat = hog.compute(gray).flatten()
     return hog_feat
@@ -584,8 +584,7 @@ if __name__ == "__main__":
             pickle.dump(scaler, f)
         print(f"[耗时] 特征标准化: {time.time() - t_start:.2f} 秒")
 
-    # ========== 训练线性 SVM 分类器 ==========
-    # 使用线性支持向量机进行多类别分类（一对多策略）
+    # ========== 训练 RBF SVM 分类器 ==========
     svm_path = os.path.join(MODEL_DIR, "svm_model.pkl")
     if os.path.exists(svm_path):
         print("\n========== 加载 SVM 分类器 ==========")
@@ -593,10 +592,17 @@ if __name__ == "__main__":
             svm = pickle.load(f)
         print("SVM 加载完成")
     else:
-        print("\n========== 训练线性 SVM 分类器 ==========")
+        print("\n========== 训练 RBF SVM 分类器 ==========")
         t_start = time.time()
-        # LinearSVC 在高维特征空间中效率较高，dual='auto' 自动选择求解方式
-        svm = LinearSVC(C=1.0, random_state=42, dual="auto", verbose=1, max_iter=5000)
+        # RBF 核，gamma='scale' 是 sklearn 默认推荐值
+        svm = SVC(
+            kernel="rbf",
+            gamma="scale",
+            C=1.0,
+            random_state=42,
+            max_iter=10000,  # 防止无限迭代
+            verbose=True,  # 显示进度条
+        )
         svm.fit(X_train_scaled, y_train)
         with open(svm_path, "wb") as f:
             pickle.dump(svm, f)

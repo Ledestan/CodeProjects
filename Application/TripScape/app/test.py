@@ -54,7 +54,7 @@ def extract_spm_hog(img, target_size):
         _blockSize=(16, 16),
         _blockStride=(8, 8),
         _cellSize=(8, 8),
-        _nbins=9
+        _nbins=9,
     )
     hog_feat = hog.compute(gray).flatten()
     return hog_feat
