@@ -197,7 +197,9 @@ def extract_glcm(img):
     return np.array(features, dtype=np.float32)
 
 
-def extract_raw_features(img, kmeans_model, vlad_max_kp, hog_target_size, profile_segments):
+def extract_raw_features(
+    img, kmeans_model, vlad_max_kp, hog_target_size, profile_segments
+):
     """
     提取原始特征（含完整 HOG），顺序：[VLAD, HOG, 轮廓, 颜色矩, GLCM]
 
@@ -385,7 +387,9 @@ class LandmarkPredictor:
         final_feat = np.concatenate([vlad, hog_pca, profile, color, glcm])
         return final_feat
 
-    def predict(self, img_path, top_k=3, use_bayes=True, scale_ratios=None, max_windows_total=50):
+    def predict(
+        self, img_path, top_k=3, use_bayes=True, scale_ratios=None, max_windows_total=50
+    ):
         """
         对图片进行地标识别预测。
 
@@ -492,7 +496,9 @@ class LandmarkPredictor:
         final_probas = exp_log / np.sum(exp_log)
 
         top_indices = np.argsort(final_probas)[::-1][:top_k]
-        results = [(self.encoder.classes_[idx], final_probas[idx]) for idx in top_indices]
+        results = [
+            (self.encoder.classes_[idx], final_probas[idx]) for idx in top_indices
+        ]
         return results
 
 
@@ -592,7 +598,9 @@ if __name__ == "__main__":
     用法: python image_recognizer.py <图片路径> [top_k] [--no-bayes] [--windows N]
     """
     if len(sys.argv) < 2:
-        print("用法: python image_recognizer.py <图片路径> [top_k] [--no-bayes] [--windows N]")
+        print(
+            "用法: python image_recognizer.py <图片路径> [top_k] [--no-bayes] [--windows N]"
+        )
         print("默认启用贝叶斯滑动窗口，禁用: --no-bayes")
         print("自定义窗口数: --windows N")
         sys.exit(1)

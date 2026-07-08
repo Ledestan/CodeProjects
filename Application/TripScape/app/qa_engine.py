@@ -1,7 +1,7 @@
-import sys
 import math
 import re
 import sqlite3
+import sys
 import traceback
 from collections import Counter
 
@@ -142,7 +142,11 @@ def load_documents(db_path, enabled_only=True):
         raise ValueError(f"缺少列：{missing}")
 
     # 构建查询语句
-    select_columns = [col for col in all_columns if col in required or col in ["enabled", "created_at"]]
+    select_columns = [
+        col
+        for col in all_columns
+        if col in required or col in ["enabled", "created_at"]
+    ]
     sql = f"SELECT {', '.join(select_columns)} FROM knowledge_base"
     if "enabled" in all_columns and enabled_only:
         sql += " WHERE enabled = 1"
@@ -162,7 +166,9 @@ def load_documents(db_path, enabled_only=True):
             "answer": row_dict.get("answer") or "",
         }
         # 构建用于检索的全文，将问题、关键词、答案合并为一个文本
-        full_text = f"问题：{doc['question']}\n关键词：{doc['keywords']}\n答案：{doc['answer']}"
+        full_text = (
+            f"问题：{doc['question']}\n关键词：{doc['keywords']}\n答案：{doc['answer']}"
+        )
         if doc["keywords"]:
             full_text += f"\n{doc['keywords']}"
         doc["full_text"] = full_text
@@ -223,7 +229,9 @@ def min_max_normalize(scores):
     return {k: (v - min_v) / (max_v - min_v) for k, v in scores.items()}
 
 
-def hybrid_search(query, documents, vector_index, encoder, bm25_model, top_k, vector_weight):
+def hybrid_search(
+    query, documents, vector_index, encoder, bm25_model, top_k, vector_weight
+):
     """
     混合检索：向量检索 + BM25 关键词检索
 
@@ -274,21 +282,27 @@ def hybrid_search(query, documents, vector_index, encoder, bm25_model, top_k, ve
     # 加权融合
     final_scores = {}
     for idx in all_indices:
-        final_scores[idx] = vector_weight * norm_vec.get(idx, 0.0) + (1 - vector_weight) * norm_bm25.get(idx, 0.0)
+        final_scores[idx] = vector_weight * norm_vec.get(idx, 0.0) + (
+            1 - vector_weight
+        ) * norm_bm25.get(idx, 0.0)
 
     # 排序取 Top-K
-    sorted_items = sorted(final_scores.items(), key=lambda x: x[1], reverse=True)[:top_k]
+    sorted_items = sorted(final_scores.items(), key=lambda x: x[1], reverse=True)[
+        :top_k
+    ]
 
     results = []
     for idx, score in sorted_items:
-        results.append({
-            "document": documents[idx],
-            "score": score,
-            "detail": {
-                "vec_score": norm_vec.get(idx, 0.0),
-                "bm25_score": norm_bm25.get(idx, 0.0),
-            },
-        })
+        results.append(
+            {
+                "document": documents[idx],
+                "score": score,
+                "detail": {
+                    "vec_score": norm_vec.get(idx, 0.0),
+                    "bm25_score": norm_bm25.get(idx, 0.0),
+                },
+            }
+        )
     return results
 
 
@@ -310,10 +324,24 @@ def format_answer(query, retrieved_results, threshold=0.2):
     """
     # 检查是否有有效结果
     if not retrieved_results or retrieved_results[0]["score"] < threshold:
-        return "抱歉，本地知识库中暂时没有找到与您问题匹配的信息。请尝试更具体的关键词。"
+        return (
+            "抱歉，本地知识库中暂时没有找到与您问题匹配的信息。请尝试更具体的关键词。"
+        )
 
     # 纯地名查询（不含疑问词）优先展示"介绍"类记录
-    question_words = ["多少", "哪里", "什么", "怎么", "如何", "哪", "几", "多", "吗", "呢", "吧"]
+    question_words = [
+        "多少",
+        "哪里",
+        "什么",
+        "怎么",
+        "如何",
+        "哪",
+        "几",
+        "多",
+        "吗",
+        "呢",
+        "吧",
+    ]
     if not any(w in query for w in question_words):
         for res in retrieved_results:
             if "介绍" in res["document"].get("question", ""):
@@ -387,7 +415,9 @@ class AIGuideRAG:
 
         full_texts = [doc["full_text"] for doc in self.documents]
         self.bm25 = BM25(full_texts)
-        self.vector_index, self.encoder = build_vector_index(self.documents, embedding_model)
+        self.vector_index, self.encoder = build_vector_index(
+            self.documents, embedding_model
+        )
         print("初始化完成")
 
     def _single_ask(self, query):
@@ -444,9 +474,36 @@ class AIGuideRAG:
             sentences.append(buffer.strip())
 
         # 判断是否为完整问题
-        question_markers = ["吗", "呢", "怎么", "如何", "什么", "哪", "几", "多", "多少",
-                            "哪里", "何时", "为啥", "为什么", "是否", "有", "干啥", "干嘛", "啥"]
-        noun_questions = ["用途", "门票", "地址", "历史", "简介", "开放时间", "交通", "怎么去"]
+        question_markers = [
+            "吗",
+            "呢",
+            "怎么",
+            "如何",
+            "什么",
+            "哪",
+            "几",
+            "多",
+            "多少",
+            "哪里",
+            "何时",
+            "为啥",
+            "为什么",
+            "是否",
+            "有",
+            "干啥",
+            "干嘛",
+            "啥",
+        ]
+        noun_questions = [
+            "用途",
+            "门票",
+            "地址",
+            "历史",
+            "简介",
+            "开放时间",
+            "交通",
+            "怎么去",
+        ]
 
         valid = []
         for s in sentences:
@@ -548,12 +605,17 @@ class AIGuideRAG:
             for i in range(1, len(raw_answers)):
                 ans = raw_answers[i]
                 if ans.startswith(scenic_name):
-                    raw_answers[i] = ans[len(scenic_name):].lstrip("，,、的")
+                    raw_answers[i] = ans[len(scenic_name) :].lstrip("，,、的")
                 else:
-                    for pat in (rf"^{scenic_name}是", rf"^{scenic_name}位于", rf"^{scenic_name}在", rf"^{scenic_name}的"):
+                    for pat in (
+                        rf"^{scenic_name}是",
+                        rf"^{scenic_name}位于",
+                        rf"^{scenic_name}在",
+                        rf"^{scenic_name}的",
+                    ):
                         m = re.match(pat, ans)
                         if m:
-                            raw_answers[i] = ans[m.end():].lstrip("，,、")
+                            raw_answers[i] = ans[m.end() :].lstrip("，,、")
                             break
 
         # 去除第一个答案末尾的标点
@@ -562,7 +624,9 @@ class AIGuideRAG:
         # 根据答案数量选择连接方式
         if len(raw_answers) == 2:
             if ("位于" in raw_answers[0] or "在" in raw_answers[0]) and (
-                "用途" in sub_questions[1] or "做什么" in sub_questions[1] or "干啥" in sub_questions[1]
+                "用途" in sub_questions[1]
+                or "做什么" in sub_questions[1]
+                or "干啥" in sub_questions[1]
             ):
                 merged = f"{raw_answers[0]}，主要用于{raw_answers[1]}"
             else:
@@ -583,7 +647,7 @@ class AIGuideRAG:
             merged += "。"
 
         return merged
-    
+
     def _ask_multiple(self, query):
         """
         处理复合问题（包含多个子句）
@@ -603,7 +667,7 @@ class AIGuideRAG:
             return self._single_ask(query)
 
         scenic_name = self._extract_scenic_name(sub_questions[0])
-        formatted_answers = []   # 存储每个子问题的完整格式化结果
+        formatted_answers = []  # 存储每个子问题的完整格式化结果
 
         for idx, sub_q in enumerate(sub_questions):
             if idx > 0 and scenic_name:
@@ -620,7 +684,7 @@ class AIGuideRAG:
             return formatted_answers[0]
 
         # 合并多个完整答案
-        merged = "\n\n".join(formatted_answers)   # HTML 水平分隔线
+        merged = "\n\n".join(formatted_answers)  # HTML 水平分隔线
         return merged
 
     def ask(self, query):

@@ -10,9 +10,9 @@ from skimage.feature import graycomatrix, graycoprops
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.decomposition import PCA
 from sklearn.exceptions import InconsistentVersionWarning
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.svm import SVC
 
 warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
@@ -581,35 +581,34 @@ if __name__ == "__main__":
             pickle.dump(scaler, f)
         print(f"[耗时] 特征标准化: {time.time() - t_start:.2f} 秒")
 
-    # ========== 训练 RBF SVM 分类器 ==========
-    svm_path = os.path.join(MODEL_DIR, "svm_model.pkl")
-    if os.path.exists(svm_path):
-        print("\n========== 加载 SVM 分类器 ==========")
-        with open(svm_path, "rb") as f:
-            svm = pickle.load(f)
-        print("SVM 加载完成")
+    # ========== 训练逻辑回归分类器 ==========
+    model_path = os.path.join(MODEL_DIR, "lr_model.pkl")  # 改名
+    if os.path.exists(model_path):
+        print("\n========== 加载逻辑回归模型 ==========")
+        with open(model_path, "rb") as f:
+            model = pickle.load(f)
+        print("模型加载完成")
     else:
-        print("\n========== 训练 RBF SVM 分类器 ==========")
+        print("\n========== 训练逻辑回归 ==========")
         t_start = time.time()
-        # RBF 核，gamma='scale' 是 sklearn 默认推荐值
-        svm = SVC(
-            kernel="rbf",
-            gamma="scale",
+        model = LogisticRegression(
+            C=0.1,
             class_weight="balanced",
-            C=1.0,
+            max_iter=3000,
             random_state=42,
-            max_iter=10000,  # 防止无限迭代
-            verbose=False,  # 显示进度条
+            solver="saga",
+            n_jobs=-1,
+            verbose=1,
         )
-        svm.fit(X_train_scaled, y_train)
-        with open(svm_path, "wb") as f:
-            pickle.dump(svm, f)
-        print(f"[耗时] SVM 训练: {time.time() - t_start:.2f} 秒")
+        model.fit(X_train_scaled, y_train)
+        with open(model_path, "wb") as f:
+            pickle.dump(model, f)
+        print(f"[耗时] 逻辑回归训练: {time.time() - t_start:.2f} 秒")
 
     # ========== 验证集预测 ==========
     print("\n========== 验证集预测 ==========")
     t_start = time.time()
-    y_pred = svm.predict(X_val_scaled)
+    y_pred = model.predict(X_val_scaled)
     print(f"[耗时] 验证集预测: {time.time() - t_start:.2f} 秒")
 
     # ========== 评估模型性能 ==========
