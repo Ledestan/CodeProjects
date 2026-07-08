@@ -595,7 +595,7 @@ if __name__ == "__main__":
         svm = SVC(
             kernel="rbf",
             gamma="scale",
-            class_weight='balanced',
+            class_weight="balanced",
             C=1.0,
             random_state=42,
             max_iter=10000,  # 防止无限迭代

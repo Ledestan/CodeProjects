@@ -380,6 +380,9 @@
 
             const div = document.createElement('div');
             div.className = `message ${type}`;
+            div.innerHTML = content.replace(/\n/g, '<br>');
+            messageFlow.appendChild(div);
+            messageFlow.scrollTop = messageFlow.scrollHeight;
 
             if (type === 'bot' && extra && extra.confidence !== undefined) {
                 const percent = Math.round(extra.confidence * 100);
@@ -394,7 +397,7 @@
                     </div>
                 `;
             } else {
-                div.innerHTML = content;
+                div.innerHTML = content.replace(/\n/g, '<br>');
             }
 
             messageFlow.appendChild(div);

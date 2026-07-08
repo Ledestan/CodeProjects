@@ -5,8 +5,10 @@
 
 import sys
 import traceback
+import warnings
 
 sys.dont_write_bytecode = True
+warnings.filterwarnings("ignore", category=UserWarning, module="jieba")
 
 from flask import Flask, jsonify, render_template, request
 
