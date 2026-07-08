@@ -16,7 +16,7 @@ class ImageRecognizer:
         self.db = LandmarkDB()
         self.model_dir = model_dir
 
-        # 加载地标信息（用于识别后返回详情）
+        # 加载地标信息（仅名称）
         self.target_info = {}
         self._load_heritage_info()
 
@@ -29,16 +29,12 @@ class ImageRecognizer:
             self.predictor = None
 
     def _load_heritage_info(self):
-        """从数据库加载地标信息，键为小写的 target_id"""
+        """从数据库加载地标信息，键为小写的 target_id，值仅包含 name"""
         rows = self.db.get_heritage_info()
         if rows:
             for row in rows:
                 self.target_info[row["target_id"].lower()] = {
-                    "name": row["name"],
-                    "year": row["year"] or "",
-                    "description": row["description"] or "",
-                    "location": row["location"] or "",
-                    "current_status": row["current_status"] or "",
+                    "name": row["name"]
                 }
 
     def recognize(self, image_data):
@@ -87,12 +83,9 @@ class ImageRecognizer:
                 "success": True,
                 "target_id": target_id,
                 "name": info["name"],
-                "year": info["year"],
-                "description": info["description"],
-                "location": info["location"],
                 "confidence": float(confidence),
                 "confidence_percent": f"{confidence * 100:.1f}%",
-                "annotated_image": None,
+                "annotated_image": None,          # 可保留以备将来扩展
             }
 
         except Exception as e:

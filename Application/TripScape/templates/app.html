@@ -47,21 +47,15 @@
             color: #6a7a8e;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            font-size: 14px;
-            color: #5a6a7e;
-        }
-
         .nav-links a {
             text-decoration: none;
-            color: inherit;
-            transition: color 0.2s;
+            font-size: 14px;
+            color: #0066ff;
+            font-weight: 500;
         }
 
         .nav-links a:hover {
-            color: #0066ff;
+            color: #0052cc;
         }
 
         .main-container {
@@ -127,41 +121,12 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
-        .message .source-tag {
-            display: inline-block;
-            font-size: 11px;
-            margin-top: 8px;
-            padding: 2px 10px;
-            border-radius: 12px;
-            background: #f0f2f5;
-            color: #6a7a8e;
-        }
-
-        .message .source-tag.local {
-            background: #e6f0ff;
-            color: #0066ff;
-        }
-
-        .message .source-tag.api {
-            background: #f0f2f5;
-            color: #6a7a8e;
-        }
-
-        .message img.result-img {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 10px;
-            margin-top: 10px;
-            border: 1px solid #e9edf4;
-        }
-
         .confidence-wrap {
-            margin-top: 12px;
+            margin-top: 10px;
             background: #f0f2f5;
             border-radius: 8px;
             height: 8px;
             width: 100%;
-            position: relative;
             overflow: hidden;
         }
 
@@ -309,10 +274,6 @@
             color: #e74c3c;
         }
 
-        .hidden {
-            display: none !important;
-        }
-
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -338,10 +299,6 @@
                 font-size: 12px;
                 display: block;
                 margin-left: 0;
-            }
-            .nav-links {
-                font-size: 13px;
-                gap: 14px;
             }
             .message {
                 max-width: 96%;
@@ -373,7 +330,7 @@
             <span class="sub">世界著名地标智能识别</span>
         </div>
         <div class="nav-links">
-            <a href="#" style="font-weight:500; color:#0066ff;">主页</a>
+            <a href="/">主页</a>
         </div>
     </header>
 
@@ -396,10 +353,8 @@
                             <span id="fileName">image.jpg</span>
                             <span class="remove-file" id="removeFileBtn">×</span>
                         </span>
-
                         <label for="fileUpload">图片</label>
                         <input type="file" id="fileUpload" accept="image/png,image/jpeg,image/jpg" style="display:none;">
-
                         <button class="send-btn" id="sendBtn">发送</button>
                     </div>
                 </div>
@@ -420,47 +375,24 @@
 
         let selectedFile = null;
 
-        function addMessage(content, type, extra = null) {
-            if (welcomePlaceholder) {
-                welcomePlaceholder.style.display = 'none';
-            }
+        function addMessage(content, type, extra) {
+            if (welcomePlaceholder) welcomePlaceholder.style.display = 'none';
 
             const div = document.createElement('div');
             div.className = `message ${type}`;
 
-            if (type === 'bot' && extra) {
-                div.innerHTML = content;
-
-                if (extra.annotated_image) {
-                    const img = document.createElement('img');
-                    img.className = 'result-img';
-                    img.src = `data:image/jpeg;base64,${extra.annotated_image}`;
-                    img.alt = '识别结果标注图';
-                    div.appendChild(img);
-                }
-
-                if (extra.confidence !== undefined && extra.confidence !== null) {
-                    const percent = Math.round(extra.confidence * 100);
-                    const wrap = document.createElement('div');
-                    wrap.className = 'confidence-wrap';
-                    const fill = document.createElement('div');
-                    fill.className = 'confidence-fill';
-                    fill.style.width = `${Math.min(percent, 100)}%`;
-                    wrap.appendChild(fill);
-                    div.appendChild(wrap);
-
-                    const label = document.createElement('div');
-                    label.className = 'confidence-label';
-                    label.innerHTML = `<span>识别可信度</span><span>${percent}%</span>`;
-                    div.appendChild(label);
-                }
-
-                if (extra.source) {
-                    const tag = document.createElement('div');
-                    tag.className = `source-tag ${extra.source}`;
-                    tag.textContent = extra.source === 'local' ? '本地知识库' : 'AI 生成';
-                    div.appendChild(tag);
-                }
+            if (type === 'bot' && extra && extra.confidence !== undefined) {
+                const percent = Math.round(extra.confidence * 100);
+                div.innerHTML = `
+                    ${content}
+                    <div class="confidence-wrap">
+                        <div class="confidence-fill" style="width:${Math.min(percent, 100)}%"></div>
+                    </div>
+                    <div class="confidence-label">
+                        <span>识别可信度</span>
+                        <span>${percent}%</span>
+                    </div>
+                `;
             } else {
                 div.innerHTML = content;
             }
@@ -469,111 +401,69 @@
             messageFlow.scrollTop = messageFlow.scrollHeight;
         }
 
-        // ---------- 真实后端 API 调用 ----------
         function callChatAPI(question) {
             return fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question })
+                body: JSON.stringify({ question })
             })
-            .then(response => response.json())
-            .then(data => ({
-                answer: data.answer || '未收到有效回答',
-                source: data.source || 'api'
-            }))
-            .catch(error => {
-                console.error('问答请求失败:', error);
-                return {
-                    answer: '网络请求失败，请检查后端服务是否运行。',
-                    source: 'api'
-                };
-            });
+            .then(res => res.json())
+            .then(data => ({ answer: data.answer || '未收到有效回答' }))
+            .catch(() => ({ answer: '网络请求失败，请检查后端服务是否运行。' }));
         }
 
         function callRecognizeAPI(file) {
             const formData = new FormData();
             formData.append('image', file);
 
-            return fetch('/api/recognize', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    return {
-                        success: true,
-                        name: data.name,
-                        year: data.year,
-                        location: data.location,
-                        description: data.description,
-                        confidence: data.confidence,
-                        annotated_image: data.annotated_image
-                    };
-                } else {
-                    return {
-                        success: false,
-                        message: data.message || '识别失败'
-                    };
-                }
-            })
-            .catch(error => {
-                console.error('识别请求失败:', error);
-                return {
-                    success: false,
-                    message: '网络请求失败，请检查后端服务。'
-                };
-            });
+            return fetch('/api/recognize', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        return { success: true, name: data.name, confidence: data.confidence };
+                    }
+                    return { success: false, message: data.message || '识别失败' };
+                })
+                .catch(() => ({ success: false, message: '网络请求失败，请检查后端服务。' }));
         }
 
-        // ---------- 核心发送逻辑 ----------
         async function handleSend() {
             const text = textInput.value.trim();
             const file = selectedFile;
 
             if (!text && !file) return;
 
-            let displayContent = '';
-            if (text) displayContent += text;
-            if (file) {
-                if (displayContent) displayContent += ` [图片 ${file.name}]`;
-                else displayContent = `[图片] ${file.name}`;
-            }
-            addMessage(displayContent, 'user');
+            let display = '';
+            if (text) display += text;
+            if (file) display += display ? ` [图片 ${file.name}]` : `[图片] ${file.name}`;
+            addMessage(display, 'user');
 
             textInput.value = '';
             textInput.style.height = 'auto';
             clearSelectedFile();
-
             sendBtn.disabled = true;
 
             try {
-                let botReply = '';
-                let extraData = {};
+                let reply = '';
+                let extra = {};
 
                 if (file) {
                     const result = await callRecognizeAPI(file);
                     if (result.success) {
-                        botReply = `识别成功：${result.name}\n\n${result.year}\n${result.location}\n\n${result.description}`;
-                        extraData = {
-                            annotated_image: result.annotated_image || null,
-                            confidence: result.confidence || null,
-                            source: 'local'
-                        };
+                        reply = `识别成功：${result.name}`;
+                        extra.confidence = result.confidence;
                     } else {
-                        botReply = `识别失败：${result.message || '请重试。'}`;
-                        extraData = { source: 'local' };
+                        reply = `识别失败：${result.message || '请重试。'}`;
                     }
                 } else if (text) {
                     const result = await callChatAPI(text);
-                    botReply = result.answer;
-                    extraData = { source: result.source };
+                    reply = result.answer;
                 }
 
-                addMessage(botReply, 'bot', extraData);
+                addMessage(reply, 'bot', extra);
 
             } catch (err) {
-                addMessage(`请求出错：${err.message || '请检查网络连接'}`, 'bot', { source: 'local' });
+                addMessage(`请求出错：${err.message || '请检查网络连接'}`, 'bot');
             } finally {
                 sendBtn.disabled = false;
                 textInput.focus();
@@ -587,7 +477,7 @@
             fileName.textContent = '';
         }
 
-        // ---------- 事件绑定 ----------
+        // 事件绑定
         sendBtn.addEventListener('click', handleSend);
 
         textInput.addEventListener('keydown', (e) => {
@@ -658,9 +548,7 @@
             textInput.style.height = textInput.scrollHeight + 'px';
         });
 
-        window.addEventListener('load', () => {
-            textInput.focus();
-        });
+        window.addEventListener('load', () => textInput.focus());
     </script>
 
 </body>

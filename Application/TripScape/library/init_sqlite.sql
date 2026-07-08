@@ -6,12 +6,7 @@ DROP TABLE IF EXISTS knowledge_base;
 CREATE TABLE heritage_items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,  -- 主键，自增
     target_id VARCHAR(50) UNIQUE NOT NULL, -- 地标唯一标识
-    name VARCHAR(100) NOT NULL,            -- 地标中文名称
-    year VARCHAR(50),                      -- 建造年代或时期
-    description TEXT,                      -- 详细描述
-    location VARCHAR(200),                 -- 地理位置
-    current_status VARCHAR(200),           -- 当前保护状态或用途
-    image_path VARCHAR(255)                -- 模板图片文件名
+    name VARCHAR(100) NOT NULL             -- 地标中文名称
 );
 
 -- 创建问答知识库表
