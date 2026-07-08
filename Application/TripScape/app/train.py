@@ -158,11 +158,8 @@ def extract_spm_hog(img):
 
 def extract_profile(img, profile_segments):
     """
-    提取轴向宽度轮廓曲线特征，用于刻画建筑（尤其是塔类）的纵向形状变化。
-
+    提取轴向宽度轮廓曲线特征，用于刻画建筑的纵向形状变化。
     该特征将二值化前景沿垂直方向均匀分为多个水平段，统计每段的最大宽度，形成轮廓曲线。
-    不同建筑具有独特曲线模式：金字塔呈线性递增，天坛呈蘑菇状（顶部突宽），
-    崇圣寺塔呈平滑弧线收分，雷峰塔近似矩形带飞檐，埃菲尔铁塔呈指数级下宽上窄。
 
     参数
     ----------
@@ -602,7 +599,7 @@ if __name__ == "__main__":
             C=1.0,
             random_state=42,
             max_iter=10000,  # 防止无限迭代
-            verbose=True,  # 显示进度条
+            verbose=False,  # 显示进度条
         )
         svm.fit(X_train_scaled, y_train)
         with open(svm_path, "wb") as f:

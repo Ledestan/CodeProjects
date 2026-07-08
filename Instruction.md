@@ -200,3 +200,21 @@
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
   ```
+
+## PowerShell 批量重命名
+- 重命名（有前导零）
+  ```PowerShell
+  $i=1; Get-ChildItem *.jpg | Sort-Object LastWriteTime | ForEach-Object { Rename-Item $_ -NewName ("Name_{0:D3}{1}" -f $i, $_.Extension); $i++ }
+  ```
+
+- 重命名（无前导零）
+  ```PowerShell
+  $i=1; Get-ChildItem *.jpg | Sort-Object LastWriteTime | ForEach-Object { Rename-Item $_ -NewName ("Name_{0:D3}{1}" -f $i, $_.Extension); $i++ }
+  ```
+
+- 在原文件名前面统一加上前缀
+  ```PowerShell
+  Get-ChildItem *.* | ForEach-Object { Rename-Item $_ -NewName ("Name_" + $_.Name) }
+  ```
+
+> 注：`$i=1` 中，1 为起始序号，可替换；`Name_` 为替换名称前缀，可替换。
