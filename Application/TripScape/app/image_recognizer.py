@@ -317,7 +317,7 @@ class LandmarkPredictor:
     """
     地标识别预测器，默认启用多尺度贝叶斯滑动窗口。
 
-    使用预训练的 SVM 模型对图像或滑动窗口进行分类，
+    使用预训练的模型对图像或滑动窗口进行分类，
     支持整图预测和多尺度贝叶斯滑动窗口两种模式。
     """
 
@@ -339,7 +339,7 @@ class LandmarkPredictor:
         self.kmeans = self._load_pickle("kmeans_vlad.pkl")
         self.pca = self._load_pickle("pca_hog.pkl")
         self.scaler = self._load_pickle("scaler.pkl")
-        self.svm = self._load_pickle("svm_model.pkl")
+        self.model = self._load_pickle("lr_model.pkl")
 
         self.vlad_dim = self.kmeans.n_clusters * 128
         self.hog_dim = self.pca.n_features_in_
@@ -425,10 +425,10 @@ class LandmarkPredictor:
             final = self._transform_features(raw)
             feat_scaled = self.scaler.transform(final.reshape(1, -1))
 
-            if hasattr(self.svm, "predict_proba"):
-                probas = self.svm.predict_proba(feat_scaled)[0]
+            if hasattr(self.model, "predict_proba"):
+                probas = self.model.predict_proba(feat_scaled)[0]
             else:
-                scores = self.svm.decision_function(feat_scaled)[0]
+                scores = self.model.decision_function(feat_scaled)[0]
                 exp_scores = np.exp(scores - np.max(scores))
                 probas = exp_scores / np.sum(exp_scores)
 
@@ -474,10 +474,10 @@ class LandmarkPredictor:
                 final = self._transform_features(raw)
                 feat_scaled = self.scaler.transform(final.reshape(1, -1))
 
-                if hasattr(self.svm, "predict_proba"):
-                    prob = self.svm.predict_proba(feat_scaled)[0]
+                if hasattr(self.model, "predict_proba"):
+                    prob = self.model.predict_proba(feat_scaled)[0]
                 else:
-                    scores = self.svm.decision_function(feat_scaled)[0]
+                    scores = self.model.decision_function(feat_scaled)[0]
                     exp_scores = np.exp(scores - np.max(scores))
                     prob = exp_scores / np.sum(exp_scores)
 
