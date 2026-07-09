@@ -6,7 +6,7 @@ import warnings
 import cv2
 import numpy as np
 from scipy.cluster.vq import vq
-from skimage.feature import graycomatrix, graycoprops
+from skimage.feature import graycomatrix, graycoprops, hog
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.decomposition import PCA
 from sklearn.exceptions import InconsistentVersionWarning
@@ -145,14 +145,14 @@ def extract_spm_hog(img):
 
     # 转为灰度图并计算 HOG 描述子
     gray = cv2.cvtColor(canvas, cv2.COLOR_BGR2GRAY)
-    hog = cv2.HOGDescriptor(
-        _winSize=(target_size, target_size),
-        _blockSize=(16, 16),
-        _blockStride=(8, 8),
-        _cellSize=(8, 8),
-        _nbins=9,
+    hog_feat = hog(
+        gray,
+        orientations=9,
+        pixels_per_cell=(8, 8),
+        cells_per_block=(2, 2),
+        block_norm="L2-Hys",
+        visualize=False,
     )
-    hog_feat = hog.compute(gray).flatten()
     return hog_feat
 
 
@@ -592,13 +592,12 @@ if __name__ == "__main__":
         print("\n========== 训练逻辑回归 ==========")
         t_start = time.time()
         model = LogisticRegression(
-            C=0.1,
-            class_weight="balanced",
+            C=0.1,  # 强正则化，让决策边界更平滑开放
+            class_weight="balanced",  # 自动处理类别不平衡
             max_iter=3000,
             random_state=42,
-            solver="saga",
-            n_jobs=-1,
-            verbose=1,
+            solver="saga",  # 适合多分类 + L2 惩罚
+            verbose=True
         )
         model.fit(X_train_scaled, y_train)
         with open(model_path, "wb") as f:

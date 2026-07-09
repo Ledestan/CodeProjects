@@ -10,7 +10,7 @@ sys.dont_write_bytecode = True
 import cv2
 import numpy as np
 from scipy.cluster.vq import vq
-from skimage.feature import graycomatrix, graycoprops
+from skimage.feature import graycomatrix, graycoprops, hog
 from sklearn.exceptions import InconsistentVersionWarning
 
 from .db import LandmarkDB
@@ -91,14 +91,14 @@ def extract_spm_hog(img, target_size=256):
     canvas[dy : dy + new_h, dx : dx + new_w] = resized
 
     gray = cv2.cvtColor(canvas, cv2.COLOR_BGR2GRAY)
-    hog = cv2.HOGDescriptor(
-        _winSize=(target_size, target_size),
-        _blockSize=(16, 16),
-        _blockStride=(8, 8),
-        _cellSize=(8, 8),
-        _nbins=9,
+    hog_feat = hog(
+        gray,
+        orientations=9,
+        pixels_per_cell=(8, 8),
+        cells_per_block=(2, 2),
+        block_norm="L2-Hys",
+        visualize=False,
     )
-    hog_feat = hog.compute(gray).flatten()
     return hog_feat
 
 
