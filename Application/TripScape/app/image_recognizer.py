@@ -595,11 +595,13 @@ class ImageRecognizer:
 
 if __name__ == "__main__":
     """
-    用法: python image_recognizer.py <图片路径> [top_k] [--no-bayes] [--windows N]
+    用法: python app/image_recognizer.py <图片路径> [top_k] [--no-bayes] [--windows N]
+    默认启用贝叶斯滑动窗口，禁用: --no-bayes
+    自定义窗口数: --windows N
     """
     if len(sys.argv) < 2:
         print(
-            "用法: python image_recognizer.py <图片路径> [top_k] [--no-bayes] [--windows N]"
+            "用法: python app/image_recognizer.py <图片路径> [top_k] [--no-bayes] [--windows N]"
         )
         print("默认启用贝叶斯滑动窗口，禁用: --no-bayes")
         print("自定义窗口数: --windows N")

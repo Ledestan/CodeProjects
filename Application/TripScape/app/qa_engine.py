@@ -824,8 +824,11 @@ class QASystem:
 
 
 if __name__ == "__main__":
+    """
+    用法: python app/qa_engine.py <问题>
+    """
     if len(sys.argv) < 2:
-        print("用法: python qa_engine.py <问题>")
+        print("用法: python app/qa_engine.py <问题>")
         sys.exit(1)
 
     query = " ".join(sys.argv[1:])

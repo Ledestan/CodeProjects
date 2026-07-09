@@ -597,6 +597,7 @@ if __name__ == "__main__":
             max_iter=3000,
             random_state=42,
             solver="saga",  # 适合多分类 + L2 惩罚
+            tol=1e-3,
             verbose=True
         )
         model.fit(X_train_scaled, y_train)
