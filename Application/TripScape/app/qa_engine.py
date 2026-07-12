@@ -11,9 +11,6 @@ import faiss
 import jieba
 from sentence_transformers import SentenceTransformer
 
-# 不再需要 LandmarkDB
-# from .db import LandmarkDB
-
 
 class BM25:
     """
