@@ -11,7 +11,8 @@ import faiss
 import jieba
 from sentence_transformers import SentenceTransformer
 
-from .db import LandmarkDB
+# 不再需要 LandmarkDB
+# from .db import LandmarkDB
 
 
 class BM25:
@@ -711,10 +712,7 @@ class AIGuideRAG:
 
 class QASystem:
     """
-    问答系统主接口
-
-    提供 RAG 检索问答和关键词匹配两种模式。
-    优先使用 RAG 检索，若 RAG 未启用或加载失败，则降级为关键词匹配。
+    问答系统主接口（仅使用 RAG 检索）
     """
 
     def __init__(self, use_rag=True):
@@ -723,74 +721,32 @@ class QASystem:
 
         参数：
             use_rag : bool, optional
-                是否启用 RAG 检索（默认 True）
+                是否启用 RAG 检索（默认 True），若为 False 则直接报错
         """
-        self.db = LandmarkDB()
         self.use_rag = use_rag
         self.rag_engine = None
 
-        if use_rag:
-            try:
-                self.rag_engine = AIGuideRAG(
-                    db_path="data/landmark.db",
-                    enabled_only=True,
-                    top_k=3,
-                    vector_weight=0.6,
-                    score_threshold=0.2,
-                )
-                print("RAG 检索引擎加载成功")
-            except Exception as e:
-                print(f"RAG 引擎加载失败，将降级为关键词匹配: {e}")
-                self.rag_engine = None
+        if not use_rag:
+            raise ValueError("本系统仅支持 RAG 检索模式，请设置 use_rag=True")
 
-    def keyword_match(self, question):
-        """
-        关键词匹配（降级方案）
-
-        从数据库加载所有知识条目，计算问题中包含的关键词数量，
-        选择命中关键词最多的条目返回。
-
-        参数：
-            question : str
-                用户问题
-
-        返回：
-            str or None
-                匹配到的答案，若未匹配到则返回 None
-        """
-        rows = self.db.get_all_knowledge()
-        if not rows:
-            return None
-
-        question_lower = question.lower()
-        best_match = None
-        best_score = 0
-
-        for row in rows:
-            keywords = row["keywords"]
-            if not keywords:
-                continue
-            kw_list = [kw.strip().lower() for kw in keywords.split(",")]
-            hit_count = sum(1 for kw in kw_list if kw and kw in question_lower)
-            if hit_count > best_score:
-                best_score = hit_count
-                best_match = row["answer"]
-
-        if best_score > 0:
-            return best_match
-
-        # 若关键词未命中，尝试完整问题匹配
-        for row in rows:
-            if row["question"] and row["question"] in question:
-                return row["answer"]
-
-        return None
+        try:
+            self.rag_engine = AIGuideRAG(
+                db_path="data/landmark.db",
+                enabled_only=True,
+                top_k=3,
+                vector_weight=0.6,
+                score_threshold=0.2,
+            )
+            print("RAG 检索引擎加载成功")
+        except Exception as e:
+            print(f"RAG 引擎加载失败: {e}")
+            self.rag_engine = None
 
     def get_answer(self, question):
         """
         主入口：获取问题答案
 
-        优先使用 RAG 检索，若 RAG 未启用或检索失败，则降级为关键词匹配。
+        仅使用 RAG 检索，若 RAG 未启用或检索失败则返回错误信息。
 
         参数：
             question : str
@@ -800,27 +756,22 @@ class QASystem:
             dict
                 包含 answer 和 source 字段
                 - answer: 答案文本
-                - source: 答案来源（"rag" 或 "local"）
+                - source: 答案来源（固定为 "rag"）
         """
-        # 尝试 RAG
-        if self.rag_engine is not None:
-            try:
-                answer = self.rag_engine.ask(question)
-                # 检查是否返回了兜底回复（未找到匹配）
-                if (
-                    "本地知识库中暂时没有找到" not in answer
-                    and "未找到相关问题的答案" not in answer
-                ):
-                    return {"answer": answer, "source": "rag"}
-            except Exception as e:
-                print(f"RAG 检索失败: {e}")
+        if self.rag_engine is None:
+            return {"answer": "RAG 引擎未初始化，请检查配置或日志。", "source": "rag"}
 
-        # 降级到关键词匹配
-        local_answer = self.keyword_match(question)
-        if local_answer:
-            return {"answer": local_answer, "source": "local"}
-
-        return {"answer": "抱歉，当前知识库中未找到相关问题的答案。", "source": "local"}
+        try:
+            answer = self.rag_engine.ask(question)
+            # 检查是否返回了兜底回复（未找到匹配）
+            if "本地知识库中暂时没有找到" not in answer:
+                return {"answer": answer, "source": "rag"}
+            else:
+                # 兜底信息也直接返回，但来源仍为 rag
+                return {"answer": answer, "source": "rag"}
+        except Exception as e:
+            print(f"RAG 检索失败: {e}")
+            return {"answer": f"RAG 检索出错: {e}", "source": "rag"}
 
 
 if __name__ == "__main__":
