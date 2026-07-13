@@ -1,88 +1,79 @@
 # 项目列表
 
-本仓库汇总了在机器学习、程序基础、数学处理等领域的实践代码，主要用于学习记录与技术复盘，包含以下主要子项目，按功能模块组织：
+本仓库汇总了在学习中的实践代码，基于 Python 与 C++ 编写，主要用于学习记录与技术复盘。
 
-## FoP（编程基础）
+---
 
-### ChessGame（中国象棋游戏）
+## Application（应用实践）
 
-- **入口文件**：`FoP/ChessGame/ChessGame.py`
-- **功能描述**：实现了完整的中国象棋游戏，包含将、士、相、车、马、炮、兵等棋子的走法规则。通过 `ChessBoard.py` 管理棋盘绘制，`ChessPiece.py` 封装棋子策略。
+### IndustrialHeritage（工业遗产数字活化）
+
+- **入口文件**：`Application/IndustrialHeritage/app.py`
+- **功能描述**：集成图像识别模块与知识问答引擎，用于工业遗产信息查询与保护。
 - **运行方法**：
   ```bash
-  cd FoP/ChessGame
-  python ChessGame.py
+  cd Application/IndustrialHeritage
+  python app.py
   ```
 
-### RollCall（点名系统）
+### SparkNexus（星火云枢：班级智能协同平台）
 
-- **入口文件**：`FoP/RollCall/RollCall.py`
-- **功能描述**：数字点名系统，用于随机抽取学生进行课堂签到。
+- **入口文件**：`Application/SparkNexus/run.py`
+- **功能描述**：班级管理 Web 应用，支持日程协同、报名签到、通知发布及多角色权限控制（管理员、教师、班委、学生）。
 - **运行方法**：
   ```bash
-  cd FoP/RollCall
-  python RollCall.py
+  cd Application/SparkNexus
+  python run.py
   ```
 
-### SurveyAnalysis（问卷分析）
-
-- **入口文件**：`FoP/SurveyAnalysis/SurveyAnalysis.py`
-- **功能描述**：问卷调查数据分析工具。
+### TripScape（行旅识景：世界著名地标智能识别）
+- **入口文件**：`Application/TripScape/run.py`
+- **功能描述**：集地标图像识别、AI智能问答、足迹打卡图鉴、动态热力图和成就激励于一体的交互平台。用户上传照片即可识别地标并获取百科信息，输入问题可获得流式AI回答，打卡收集地标卡牌，并在地图上可视化旅行足迹。
 - **运行方法**：
   ```bash
-  cd FoP/SurveyAnalysis
-  python SurveyAnalysis.py
+  cd Application/TripScape
+  python run.py
   ```
 
-## Math（数学处理）
-
-### ImageClassifier（图像分类器）
-
-- **入口文件**：`Math/ImageClassifier/train.py`, `Math/ImageClassifier/test.py`
-- **功能描述**：基于 LBP 特征提取与神经网络，实现猫狗图像分类功能。
-- **运行方法**：
-  ```bash
-  cd Math/ImageClassifier
-  python train.py   # 训练
-  python test.py    # 测试
-  ```
-
-### ImageProcessing（图像处理）
-
-- **入口文件**：`Math/ImageProcessing/ImageProcessing.py`
-- **功能描述**：提供图像变换、SVD 压缩等图像处理工具。
-- **运行方法**：
-  ```bash
-  cd Math/ImageProcessing
-  python ImageProcessing.py
-  ```
+---
 
 ## PRML（模式识别与机器学习）
 
+### ClassificationModels（分类模型）
+
+- **入口文件**：`PRML/ClassificationModels/ClassificationModels.py`
+- **功能描述**：基于 Kaggle 医疗预约数据集，使用随机森林、逻辑回归预测患者是否按时赴约。
+- **运行方法**：
+  ```bash
+  cd PRML/ClassificationModels
+  python ClassificationModels.py
+  ```
+
 ### ClusterAnalysis（聚类分析）
 
-- **入口文件**：`PRML/ClusterAnalysis/ClusterAnalysis.py`, `PRML/ClusterAnalysis/CustomerAnalysis.py`
-- **功能描述**：支持 K-Means、GMM、DBSCAN 等多种聚类算法，包含肘部法则和轮廓系数评估，用于客户分析与数据分组。
+- **入口文件**：`PRML/ClusterAnalysis/ClusterAnalysis.py`（主程序）
+- **附属文件**：`CustomerAnalysis.py`、`UniversityAnalysis.py`
+- **功能描述**：支持 K-Means、GMM、DBSCAN 等聚类算法，包含肘部法则和轮廓系数评估。
 - **运行方法**：
   ```bash
   cd PRML/ClusterAnalysis
   python ClusterAnalysis.py
   ```
 
-### DataAnalysis（数据分析）
+### DataExploration（数据探索）
 
-- **入口文件**：`PRML/DataAnalysis/DataAnalysis.py`
-- **功能描述**：薪资数据分析，涵盖数据预览、重复值/缺失值处理、特征提取及互信息分析。
+- **入口文件**：`PRML/DataExploration/DataExploration.py`
+- **功能描述**：薪资数据分析，涵盖数据预览、缺失值处理、特征提取及互信息分析。
 - **运行方法**：
   ```bash
-  cd PRML/DataAnalysis
-  python DataAnalysis.py
+  cd PRML/DataExploration
+  python DataExploration.py
   ```
 
 ### DecisionTree（决策树）
 
 - **入口文件**：`PRML/DecisionTree/DecisionTree.py`
-- **功能描述**：基于周志华《机器学习》西瓜数据集，使用基尼系数（CART）构建决策树，对好瓜/坏瓜进行分类，并输出树结构与准确率。
+- **功能描述**：基于西瓜数据集，使用基尼系数（CART）构建决策树，输出树结构与准确率。
 - **运行方法**：
   ```bash
   cd PRML/DecisionTree
@@ -91,14 +82,17 @@
 
 ### DimReduction（降维分析）
 
-- **入口文件**：`PRML/DimReduction/PCA_Iris.py`, `PRML/DimReduction/PCA_Face.py`, `PRML/DimReduction/FaceRecAnalysis.py`
-- **功能描述**：实现了 PCA、LDA 等降维算法，应用于 Iris 数据集分析及人脸识别场景。
+- **入口文件**：
+  - `PRML/DimReduction/IrisDimReduction.py`（鸢尾花 PCA）
+  - `PRML/DimReduction/FaceDimReduction.py`（ORL 人脸 PCA）
+  - `PRML/DimReduction/FaceRecAnalysis.py`（人脸识别综合分析）
+- **功能描述**：实现 PCA、LDA 等降维算法，应用于 Iris 数据集及人脸识别场景。
 - **运行方法**：
   ```bash
   cd PRML/DimReduction
-  python PCA_Iris.py         # 鸢尾花数据集
-  python PCA_Face.py         # ORL 数据集
-  python FaceRecAnalysis.py  # 人脸识别分析
+  python IrisDimReduction.py
+  python FaceDimReduction.py
+  python FaceRecAnalysis.py
   ```
 
 ### ImageRecognition（图像识别）
@@ -114,88 +108,113 @@
 ### LinearRegression（线性回归）
 
 - **入口文件**：`PRML/LinearRegression/LinearRegression.py`
-- **功能描述**：提供基于梯度下降和 scikit-learn 的线性回归实现，包含数据探索、模型评估、损失曲线可视化等工具。
+- **附属文件**：`RegressionPrediction.py`
+- **功能描述**：提供基于梯度下降和 scikit-learn 的线性回归实现，含损失曲线可视化。
 - **运行方法**：
   ```bash
   cd PRML/LinearRegression
-  python LinearRegression.py      # 线性回归
-  python RegressionPrediction.py  # 回归预测
-  ```
-
-### RandomForest（随机森林）
-
-- **入口文件**：`PRML/RandomForest/RandomForest.py`
-- **功能描述**：基于 Kaggle 医疗预约数据集，预测患者是否按时赴约，分析人口统计与健康状况特征。
-- **运行方法**：
-  ```bash
-  cd PRML/RandomForest
-  python RandomForest.py
-  ```
-
-## Practice（实践应用）
-
-### IndustrialHeritage（工业遗产保护系统）
-
-- **入口文件**：`Practice/IndustrialHeritage/app.py`
-- **功能描述**：基于 Flask 的 Web 系统，集成图像识别模块与知识问答引擎，用于工业遗产保护与查询。
-- **运行方法**：
-  ```bash
-  cd Practice/IndustrialHeritage
-  python app.py
-  ```
-
-### SparkNexus（星火云枢 - 班级智能协同平台）
-
-- **入口文件**：`Practice/SparkNexus/run.py`
-- **功能描述**：班级管理 Web 应用，支持日程协同、报名签到、通知发布、多角色权限控制（管理员、教师、班委、学生等）。基于 Flask 开发。
-- **运行方法**：
-  ```bash
-  cd Practice/SparkNexus
-  python run.py
+  python LinearRegression.py
+  python RegressionPrediction.py
   ```
 
 ---
 
-# 环境与依赖
+## Programming（程序设计）
 
-## 运行环境
+### ChessGame（中国象棋游戏）
 
-- Python 3.11
+- **入口文件**：`Programming/ChessGame/ChessGame.py`
+- **功能描述**：实现了完整的中国象棋游戏，包含将、士、相、车、马、炮、兵等棋子的走法规则。通过 `ChessBoard.py` 管理棋盘绘制，`ChessPiece.py` 封装棋子策略。
+- **运行方法**：
+  ```bash
+  cd Programming/ChessGame
+  python ChessGame.py
+  ```
 
-## 核心依赖库
+### RollCall（点名系统）
 
-```
-Flask>=3.1.2
-Flask-Login>=0.6.3
-Flask-Migrate>=4.1.0
-Flask-SQLAlchemy>=3.1.1
-Flask-WTF>=1.3.0
-graphviz>=0.21
-kmodes>=0.12.2
-matplotlib>=3.10.9
-numpy>=2.4.6
-opencv_python>=4.12.0.88
-pandas>=3.0.3
-Pillow>=12.2.0
-pygame>=2.6.1
-python-dotenv>=1.2.2
-Requests>=2.34.2
-scikit_learn>=1.8.0
-scipy>=1.17.1
-seaborn>=0.13.2
-```
+- **入口文件**：`Programming/RollCall/RollCall.py`
+- **功能描述**：数字点名系统，用于随机抽取学生进行课堂签到。
+- **运行方法**：
+  ```bash
+  cd Programming/RollCall
+  python RollCall.py
+  ```
 
-## 安装命令
+### SurveyAnalysis（问卷分析）
 
-使用 `requirements.txt` 一键安装：
+- **入口文件**：`Programming/SurveyAnalysis/SurveyAnalysis.py`
+- **功能描述**：问卷调查数据分析工具。
+- **运行方法**：
+  ```bash
+  cd Programming/SurveyAnalysis
+  python SurveyAnalysis.py
+  ```
 
-```bash
-pip install -r requirements.txt
-```
+### ImageClassifier（图像分类器）
+
+- **入口文件**：`Programming/ImageClassifier/ImageClassifier.py`
+- **功能描述**：基于 LBP 特征提取与神经网络，实现猫狗图像分类功能（训练与测试脚本分别为 `train.py` / `test.py`）。
+- **运行方法**：
+  ```bash
+  cd Programming/ImageClassifier
+  python ImageClassifier.py      # 主程序入口
+  python train.py                # 单独训练模型
+  python test.py                 # 单独测试模型
+  ```
+
+### ImageProcessing（图像处理）
+
+- **入口文件**：`Programming/ImageProcessing/ImageProcessing.py`
+- **功能描述**：提供图像变换、SVD 压缩等图像处理工具。
+- **运行方法**：
+  ```bash
+  cd Programming/ImageProcessing
+  python ImageProcessing.py
+  ```
+
+### 15-Puzzle（数字华容道）
+
+- **入口文件**：`Programming/15-Puzzle/15-Puzzle.cpp`
+- **功能描述**：经典 15 数码（滑动拼图）问题求解，基于 C++ 实现。
+- **运行方法**：
+  ```bash
+  cd Programming/15-Puzzle
+  g++ 15-Puzzle.cpp -o puzzle
+  ./puzzle
+  ```
+
+### CampusNavigation（校园导航系统）
+
+- **入口文件**：`Programming/CampusNavigation/CampusNavigation.cpp`
+- **功能描述**：基于校园地图数据的路径规划与导航工具。
+- **运行方法**：
+  ```bash
+  cd Programming/CampusNavigation
+  g++ CampusNavigation.cpp -o nav
+  ./nav
+  ```
+
+### QueueManagement（队列管理系统）
+
+- **入口文件**：`Programming/QueueManagement/QueueManagement.cpp`
+- **功能描述**：队列数据结构与任务调度管理模拟。
+- **运行方法**：
+  ```bash
+  cd Programming/QueueManagement
+  g++ QueueManagement.cpp -o queue
+  ./queue
+  ```
+
+### Template（数据结构模板库）
+
+- **入口文件**：`Programming/Template/DoublyLinkedList.py` 与 `LinkedList.py`
+- **功能描述**：手写链表（单链表/双链表）模板，供其他项目复用或参考。
+- **运行方法**：无独立运行入口，作为模块导入使用。
 
 ---
 
-# 许可证与作者
+## 许可证与作者
 
 本项目采用 **MIT 许可证** 开源。
 
@@ -203,6 +222,7 @@ pip install -r requirements.txt
 你可以自由地使用、复制、修改和分发本项目的代码。无论是用于个人学习、学术研究还是商业用途，我都表示欢迎。
 
 **使用要求与免责声明**
+
 - **保留声明**：在分发软件副本时，请务必保留原始的版权声明和许可声明。
 - **责任限制**：代码按“原样”提供，不提供任何形式的明示或暗示担保。作者不对因使用本软件而产生的任何索赔、损害或其他责任负责。请在使用前自行评估风险。
 
