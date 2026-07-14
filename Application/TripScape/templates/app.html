@@ -557,7 +557,7 @@
         const globe = new THREE.Mesh(new THREE.SphereGeometry(5, 80, 80), earthMat);
         scene.add(globe);
         textureLoader.load(
-            'data/earth.png',
+            'static/earth.png',
             (tex) => {
                 tex.colorSpace = THREE.SRGBColorSpace;
                 earthMat.map = tex;
@@ -719,7 +719,7 @@
         // ===== 加载 CSV =====
         async function loadCSV() {
             try {
-                const response = await fetch('data/spots.csv');
+                const response = await fetch('static/spots.csv');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const text = await response.text();
                 const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
