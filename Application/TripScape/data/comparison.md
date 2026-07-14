@@ -1,3 +1,5 @@
+# 对照表
+
 1. AbuSimbelTemples → 阿布辛贝神庙
 2. AngelFalls → 安赫尔瀑布
 3. BentPyramid → 弯曲金字塔
