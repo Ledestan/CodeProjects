@@ -87,7 +87,7 @@ def extract_sift_vlad(img, kmeans_model, max_kp):
 
     # 若无关键点，返回同维度零向量，确保所有图片特征维度一致
     if des is None or len(des) == 0:
-        return np.zeros(kmeans_model.cluster_centers_.shape[0] * 128, dtype=np.float32)
+        return np.zeros(kmeans_model.cluster_centers_.shape[0] * 128, dtype=np.float32) 
 
     # 随机采样关键点，控制参与 VLAD 编码的数量，降低计算开销
     if len(des) > max_kp:
