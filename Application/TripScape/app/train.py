@@ -211,7 +211,7 @@ def extract_color_moments(img):
     返回
     -------
     numpy.ndarray
-        长度为9的颜色矩特征向量（L均值、L标准差、L偏度、a均值、a标准差、a偏度、b均值、b标准差、b偏度）。
+        长度为 9 的颜色矩特征向量（L均值、L标准差、L偏度、a均值、a标准差、a偏度、b均值、b标准差、b偏度）。
     """
     # 转换至 Lab 颜色空间
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
@@ -242,7 +242,7 @@ def extract_glcm(img):
     返回
     -------
     numpy.ndarray
-        长度为4的 GLCM 特征向量 [energy, contrast, homogeneity, correlation]。
+        长度为 4 的 GLCM 特征向量 [energy, contrast, homogeneity, correlation]。
     """
     # 灰度化并缩放到 128x128 以加速计算
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
