@@ -42,7 +42,7 @@ def chat():
     """
     问答 API 接口
     接收 JSON: {"question": "用户问题"}
-    返回: {"answer": "回答内容", "source": "local" 或 "api"}
+    返回: {"answer": "回答内容"}
     """
     data = request.json
     question = data.get("question", "").strip()
@@ -63,7 +63,7 @@ def recognize_image():
     """
     图像识别 API 接口
     接收: multipart/form-data 中的 'image' 文件
-    返回: 识别结果（包括名称、年代、地点、描述、置信度、标注图等）
+    返回: 识别结果（包括名称）
     """
     try:
         if "image" not in request.files:
