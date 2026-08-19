@@ -26,7 +26,7 @@
 
   > Windows 用户 (PowerShell)
   >
-  
+
   设置执行策略（仅首次需要）
 
   ```PowerShell
@@ -34,11 +34,13 @@
   ```
 
   切换到项目目录执行激活命令
+
   ```PowerShell
   .\.venv\Scripts\Activate.ps1
   ```
 
   直接用绝对路径执行激活命令
+
   ```PowerShell
   . "<项目根目录>\.venv\Scripts\Activate.ps1"
   ```
