@@ -1,9 +1,14 @@
 import sys
+
 sys.dont_write_bytecode = True
-import streamlit as st
-import plotly.express as px
+
 import time
-from db_helper import count_by_status, count_by_category, get_recent_tickets, get_all_tickets
+
+import plotly.express as px
+import streamlit as st
+
+from db_helper import (count_by_category, count_by_status, get_all_tickets,
+                       get_recent_tickets)
 
 st.set_page_config(layout="wide")  # 大屏全屏
 st.title("村民生诉求实时看板")
@@ -41,11 +46,14 @@ with col2:
     recent = get_recent_tickets(5)
     if not recent.empty:
         for _, row in recent.iterrows():
-            st.markdown(f"""
+            st.markdown(
+                f"""
                 **{row['ticket_no']}**  {row['status']}  
                 {row['category']} · {row['reporter']}  
                 <span style="color:gray;font-size:12px;">{row['created_at'][5:16]}</span>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
             st.divider()
     else:
         st.info("暂无工单")
@@ -55,7 +63,9 @@ st.divider()
 st.subheader("全部工单状态一览")
 df_all = get_all_tickets()
 if not df_all.empty:
-    df_display = df_all[["ticket_no", "category", "description", "status", "updated_at"]].head(10)
+    df_display = df_all[
+        ["ticket_no", "category", "description", "status", "updated_at"]
+    ].head(10)
     df_display.columns = ["工单编号", "类别", "描述", "状态", "更新时间"]
     st.dataframe(df_display, use_container_width=True, hide_index=True)
 else:

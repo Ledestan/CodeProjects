@@ -1,9 +1,11 @@
 import sys
+
 sys.dont_write_bytecode = True
+
 import streamlit as st
-from db_helper import (
-    get_all_tickets, update_status, delete_ticket, count_by_status
-)
+
+from db_helper import (count_by_status, delete_ticket, get_all_tickets,
+                       update_status)
 
 # 登录验证
 if "admin_logged_in" not in st.session_state:
@@ -31,7 +33,9 @@ col1, col2 = st.columns(2)
 with col1:
     status_filter = st.selectbox("按状态筛选", ["全部", "待处理", "处理中", "已办结"])
 with col2:
-    category_filter = st.selectbox("按类别筛选", ["全部", "道路", "水利", "网络", "医疗", "其他"])
+    category_filter = st.selectbox(
+        "按类别筛选", ["全部", "道路", "水利", "网络", "医疗", "其他"]
+    )
 
 df = get_all_tickets(status_filter, category_filter)
 
