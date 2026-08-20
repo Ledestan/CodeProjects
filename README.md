@@ -16,6 +16,16 @@
   python app.py
   ```
 
+### SmartVillage（数治乡音：村级民生诉求分流系统）
+
+- **入口文件**：`Application/SmartVillage/app.py`
+- **功能描述**：面向乡村基层治理的轻量级民生诉求闭环管理系统，实现“村民提交、干部分流、大屏公示”全流程数字化。
+- **运行方法**：
+  ```bash
+  cd Application/SmartVillage
+  streamlit run app.py
+  ```
+
 ### SparkNexus（星火云枢：班级智能协同平台）
 
 - **入口文件**：`Application/SparkNexus/run.py`
