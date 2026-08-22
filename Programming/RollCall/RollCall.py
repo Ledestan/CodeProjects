@@ -50,5 +50,5 @@ class Classmates:
 
 
 if __name__ == "__main__":
-    classmate = Classmates("Data/Students_List.txt")
+    classmate = Classmates("data/StudentsList.txt")
     classmate.start()
