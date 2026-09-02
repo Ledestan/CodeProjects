@@ -13,7 +13,7 @@
 - 创建 Python 隔离虚拟环境
 
   ```bash
-  python -m venv .venv
+  python -m venv .venv1
   ```
 - 激活虚拟环境
 
@@ -77,6 +77,11 @@
 
   ```bash
   python -m pip freeze > requirements.txt
+  ```
+- 退出环境
+
+  ```bash
+  deactivate
   ```
 
 > **提示**：若安装过程中遇到依赖冲突，可调整 `requirements.txt` 中的版本范围后重试安装。
