@@ -13,7 +13,7 @@
 - 创建 Python 隔离虚拟环境
 
   ```bash
-  python -m venv .venv1
+  python -m venv .venv
   ```
 - 激活虚拟环境
 
@@ -39,7 +39,7 @@
   .\.venv\Scripts\Activate.ps1
   ```
 
-  直接用绝对路径执行激活命令
+  直接用绝对路径执行激活命
 
   ```PowerShell
   . "<项目根目录>\.venv\Scripts\Activate.ps1"
