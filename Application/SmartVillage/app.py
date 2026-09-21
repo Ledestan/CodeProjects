@@ -3,7 +3,6 @@ import sys
 sys.dont_write_bytecode = True
 
 import streamlit as st
-
 from db_helper import init_db
 
 st.set_page_config(

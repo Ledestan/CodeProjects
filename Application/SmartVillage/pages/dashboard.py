@@ -6,7 +6,6 @@ import time
 
 import plotly.express as px
 import streamlit as st
-
 from db_helper import (count_by_category, count_by_status, get_all_tickets,
                        get_recent_tickets)
 

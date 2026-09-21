@@ -46,34 +46,37 @@ for epoch in range(epoch_num):
     c = w2 * a
     d = w3 * b + w4 * c
     L = 10 - d
-    
+
     # 梯度手动清零
     if w1.grad is not None:
         w1.grad.zero_()
         w2.grad.zero_()
         w3.grad.zero_()
         w4.grad.zero_()
-        
+
     L.backward()
-    
+
     # 禁用计算图追踪，原地更新权重
     with torch.no_grad():
         w1 -= lr * w1.grad
         w2 -= lr * w2.grad
         w3 -= lr * w3.grad
         w4 -= lr * w4.grad
-        
+
     if epoch % 3 == 0:
         print(f"迭代 {epoch}: Loss L = {L.item():.4f}")
 print("训练结束")
 
 # 绘制计算图
-dot = make_dot(L, params={
+dot = make_dot(
+    L,
+    params={
         "w1": w1,
         "w2": w2,
         "w3": w3,
         "w4": w4,
-    })
+    },
+)
 
 # 展示计算图
 dot.view()

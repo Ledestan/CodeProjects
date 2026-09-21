@@ -3,7 +3,6 @@ import sys
 sys.dont_write_bytecode = True
 
 import streamlit as st
-
 from db_helper import (count_by_status, delete_ticket, get_all_tickets,
                        update_status)
 
