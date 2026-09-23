@@ -2,13 +2,26 @@
 项目名称: 图像识别分类器
 创建日期: 2026-04-22
 
-需求文件: data
+包含:
+- ImageClassifier: LBP 分块直方图 + Sigmoid 非线性分类器
+- Window: 图形界面应用程序 (GUI)
+
+需求文件: data/train, data/test
+
+依赖库:
+numpy>=2.2.6
+Pillow>=11.0.0
 """
 
 import os
+import sys
+import tkinter as tk
+from tkinter import filedialog, messagebox
 
 import numpy as np
 from PIL import Image
+
+sys.dont_write_bytecode = True
 
 
 class ImageClassifier:
@@ -444,3 +457,181 @@ class ImageClassifier:
         # 重新推断特征维度
         self.feature_dim = self.w.shape[0]
         print(f"参数已从 {filepath} 加载: w 维度 {self.w.shape}, b={self.b:.6f}")
+
+
+class Window:
+    """图形界面应用程序"""
+
+    def __init__(self, root, classifier):
+        self.root = root
+        self.clf = classifier
+        self.image_path = None
+
+        root.title("图片分类器")
+        root.geometry("500x300")
+        root.resizable(False, False)
+
+        # 标题
+        title_label = tk.Label(root, text="图片分类器", font=("Arial", 16, "bold"))
+        title_label.pack(pady=10)
+
+        # 图片选择按钮
+        self.btn_select = tk.Button(
+            root, text="选择图片", command=self.select_image, width=15
+        )
+        self.btn_select.pack(pady=5)
+
+        # 显示选中的文件名
+        self.lbl_path = tk.Label(root, text="尚未选择图片", fg="gray", wraplength=400)
+        self.lbl_path.pack(pady=5)
+
+        # 预测按钮
+        self.btn_predict = tk.Button(
+            root, text="预测", command=self.predict, width=15, state=tk.DISABLED
+        )
+        self.btn_predict.pack(pady=5)
+
+        # 结果显示区域
+        self.lbl_result = tk.Label(root, text="", font=("Arial", 12))
+        self.lbl_result.pack(pady=10)
+
+        # 提示信息
+        info_label = tk.Label(
+            root, text="模型已加载，请选择一张图片进行预测。", fg="green"
+        )
+        info_label.pack(pady=10)
+
+    def select_image(self):
+        """打开文件对话框选择图片"""
+        file_path = filedialog.askopenfilename(
+            title="选择一张图片",
+            filetypes=[("图片文件", "*.jpg *.jpeg *.png"), ("所有文件", "*.*")],
+        )
+        if file_path:
+            self.image_path = file_path
+            # 只显示文件名，避免路径过长
+            self.lbl_path.config(text=os.path.basename(file_path), fg="black")
+            self.btn_predict.config(state=tk.NORMAL)
+            # 清空上次结果
+            self.lbl_result.config(text="")
+
+    def predict(self):
+        """调用分类器预测选中图片"""
+        if not self.image_path:
+            return
+
+        result = self.clf.predict_single(self.image_path)
+
+        if not result["success"]:
+            messagebox.showerror("错误", result.get("error", "预测失败"))
+            return
+
+        prob = result["probability"]
+        class_name = result["class_name"]
+
+        # 格式化显示结果
+        self.lbl_result.config(
+            text=f"预测结果: {class_name}\n概率 (猫=1, 狗=0): {prob:.4f}", fg="blue"
+        )
+
+
+def train_main():
+    """分类器训练脚本"""
+    # 初始化分类器
+    clf = ImageClassifier()
+
+    # 缓存文件路径
+    cache_file = "models/train_features.npz"
+
+    # 尝试从缓存加载特征
+    X_train, y_train = clf.load_features(cache_file)
+
+    if X_train is None:
+        # 缓存不存在，需要加载图片并提取特征
+        train_dir = "data/train"
+        if not os.path.isdir(train_dir):
+            print(f"错误：训练目录 '{train_dir}' 不存在。")
+            return
+
+        print("正在加载训练图片...")
+        train_imgs, train_labels = clf.load_images(train_dir)
+        if len(train_imgs) == 0:
+            print("错误：训练集中未找到图片。")
+            return
+
+        print("正在提取 LBP 特征（首次较慢，后续将使用缓存）...")
+        X_train = clf.prepare_dataset(train_imgs)
+        y_train = np.array(train_labels)
+
+        # 保存特征缓存
+        clf.save_features(cache_file, X_train, y_train)
+    else:
+        print("已从缓存加载特征，跳过图片读取和特征提取。")
+
+    # 训练模型
+    print("开始训练...")
+    w_opt, b_opt, final_loss = clf.train(
+        X_train,
+        y_train,
+        learning_rate=0.1,
+        tolerance=1e-5,
+        max_iters=20000,
+        verbose=True,
+    )
+
+    # 保存最优参数
+    param_path = "models/params.npz"
+    clf.save_params(param_path)
+
+    # 输出总结
+    print("\n" + "=" * 50)
+    print(f"训练样本数: {len(y_train)}")
+    print(f"最终损失: {final_loss:.6f}")
+    print(f"参数已保存至: {param_path}")
+
+
+def test_main():
+    """分类器图形测试界面"""
+    # 加载模型参数
+    param_path = "models/params.npz"
+    if not os.path.exists(param_path):
+        root = tk.Tk()
+        root.withdraw()
+        messagebox.showerror(
+            "错误", f"未找到参数文件 '{param_path}'。\n请先运行 train.py 进行训练。"
+        )
+        return
+
+    # 创建分类器实例并加载参数
+    clf = ImageClassifier()
+    clf.load_params(param_path)
+
+    # 创建 GUI 窗口
+    root = tk.Tk()
+    app = Window(root, clf)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    task_map = {
+        "0": "Train",
+        "1": "Test",
+    }
+
+    print("请选择要运行的任务：")
+    print("  0 - Train (训练分类器)")
+    print("  1 - Test  (图形界面测试)")
+
+    choice = input("请输入编号: ").strip()
+
+    if choice not in task_map:
+        print(f"无效输入: {choice}")
+        raise SystemExit(1)
+
+    task = task_map[choice]
+
+    if task == "Train":
+        train_main()
+
+    elif task == "Test":
+        test_main()

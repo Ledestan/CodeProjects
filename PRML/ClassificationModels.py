@@ -1,7 +1,24 @@
 """
 项目名称: 分类模型
 创建日期: 2026-05-28
-需求文件: data/healthcare_noshows.csv
+
+需求文件: data/HealthcareAppointment.csv
+字段说明:
+- PatientId：患者 ID
+- AppointmentID：预约 ID
+- Gender：性别
+- ScheduledDay：预约日期
+- AppointmentDay：就诊日期
+- Age：年龄
+- Neighbourhood：医院位置
+- Scholarship：是否参加巴西福利项目/家庭津贴
+- Hipertension：是否高血压
+- Diabetes：是否糖尿病
+- Alcoholism：是否酗酒
+- Handcap：是否残障
+- SMS_received：患者是否收到短信通知
+- Date.diff：就诊日期与预约日期的时间差
+- Showed_up：目标变量：FLASE 表示病人如约就诊，TRUE 表示病人没有前往就诊
 
 依赖库:
 matplotlib>=3.10.9
@@ -574,7 +591,7 @@ class LogisticRegressionModel:
 
 
 if __name__ == "__main__":
-    path = "data/healthcare_noshows.csv"
+    path = "data/HealthcareAppointment.csv"
 
     rf = RandomForest(path)
     rf.data_explore()  # 探索数据

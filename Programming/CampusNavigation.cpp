@@ -1,7 +1,7 @@
 /*
 项目名称: 校园导航
 创建日期: 2026-06-12
-需求文件: CampusMap.csv
+数据来源: 内嵌 CSV 字符串 CAMPUS_MAP_CSV
 */
 
 #include <iostream>
@@ -10,12 +10,35 @@
 #include <unordered_map>
 #include <utility>
 #include <sstream>
-#include <fstream>
 #include <queue>
 #include <limits>
 #include <algorithm>
+#include <tuple>
 
 using namespace std;
+
+// 校园地图数据（内嵌 CSV），格式: 起点,终点,距离（米）
+static const char *CAMPUS_MAP_CSV = R"CSV(start,end,distance  
+0,1,350
+0,2,230
+0,9,300
+1,2,180
+1,3,150
+1,6,340
+2,4,90
+2,7,310
+3,4,120
+3,5,400
+3,7,280
+4,5,200
+4,8,190
+5,6,180
+5,8,270
+6,7,210
+6,9,220
+7,8,160
+8,9,250
+)CSV";
 
 class Edge
 {
@@ -92,29 +115,35 @@ public:
     const vector<int> &getAllPopularity() const { return popularity; }
 };
 
-// 读取 csv 文件, 初始化地图
-void initCampusMap(Graph &g, const string &filename)
+// 去掉字符串首尾空白(含 Windows 换行留下的 \r)
+static string trim(const string &s)
 {
-    ifstream file(filename);
-    if (!file.is_open())
-    {
-        cerr << "Error: Cannot open file " << filename << endl;
-        return;
-    }
+    size_t b = s.find_first_not_of(" \t\r\n");
+    if (b == string::npos)
+        return "";
+    size_t e = s.find_last_not_of(" \t\r\n");
+    return s.substr(b, e - b + 1);
+}
 
+// 从内嵌 CSV 字符串初始化地图 (取代原来的读文件)
+void initCampusMap(Graph &g)
+{
+    istringstream in(CAMPUS_MAP_CSV);
     string line;
     bool firstLine = true; // 跳过表头
 
-    while (getline(file, line))
+    while (getline(in, line))
     {
+        line = trim(line);
         if (line.empty())
             continue;
 
-        // 跳过表头
+        // 跳过表头 (以 "start" 开头的那一行)
         if (firstLine)
         {
             firstLine = false;
-            continue;
+            if (line.rfind("start", 0) == 0)
+                continue;
         }
 
         stringstream ss(line);
@@ -125,11 +154,16 @@ void initCampusMap(Graph &g, const string &filename)
             getline(ss, v, ',') &&
             getline(ss, wStr, ','))
         {
+            u = trim(u);
+            v = trim(v);
+            wStr = trim(wStr);
+            if (u.empty() || v.empty() || wStr.empty())
+                continue;
+
             int weight = stoi(wStr);
             g.addEdge(u, v, weight);
         }
     }
-    file.close();
 }
 
 void printGraph(const Graph &g)
@@ -411,7 +445,7 @@ void showLocationDetail(const Graph &g, const string &name)
 int main()
 {
     Graph campus;
-    initCampusMap(campus, "data/CampusMap.csv");
+    initCampusMap(campus); // 直接从内嵌字符串加载, 不再需要文件
     cout << "节点数: " << campus.getNodeCount() << endl;
     printGraph(campus);
 

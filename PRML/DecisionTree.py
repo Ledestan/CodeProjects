@@ -1,7 +1,10 @@
 """
 项目名称: 决策树
 创建日期: 2026-05-21
-需求文件: data/watermelon2.csv, data/watermelon3.csv
+
+需求文件:
+- data/watermelon2.csv
+- data/watermelon3.csv
 
 依赖库:
 matplotlib>=3.10.9
@@ -534,11 +537,25 @@ def plot_sklearn_tree_in_memory(
 
 
 if __name__ == "__main__":
-    # 加载数据并预处理
-    if input("Input not null: watermelon2.csv, if null: watermelon3.csv\n"):
-        tree = DecisionTree("data/watermelon2.csv")
-    else:
-        tree = DecisionTree("data/watermelon3.csv")
+    task_map = {
+        "0": "data/watermelon2.csv",
+        "1": "data/watermelon3.csv",
+    }
+
+    print("请选择要运行的任务：")
+    print("  0 - DecisionTree (watermelon2.csv)")
+    print("  1 - DecisionTree (watermelon3.csv)")
+
+    choice = input("请输入编号: ").strip()
+
+    if choice not in task_map:
+        print(f"无效输入: {choice}")
+        raise SystemExit(1)
+
+    path = task_map[choice]
+
+    # ==================== 加载数据并预处理 ====================
+    tree = DecisionTree(path)
     tree.data_processing()
 
     # 划分训练集和测试集 (12 : 5), 使用分层抽样

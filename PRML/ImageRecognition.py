@@ -1,7 +1,7 @@
 """
 项目名称: 图像识别
 创建日期: 2026-03-06
-需求文件: data
+数据目录: data/FaceVariants
 
 依赖库:
 opencv-python>=4.12.0.88
@@ -135,7 +135,7 @@ class ImageRecognition:
 
 
 if __name__ == "__main__":
-    recog = ImageRecognition("data")
+    recog = ImageRecognition("data/FaceVariants")
     recog.read()
     recog.transform()
     recog.show()

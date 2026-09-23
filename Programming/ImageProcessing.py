@@ -3,6 +3,10 @@
 
 创建日期: 2026-03-30
 需求文件: data/image.png
+
+依赖库:
+matplotlib>=3.10.8
+numpy>=2.2.6
 """
 
 import tkinter as tk

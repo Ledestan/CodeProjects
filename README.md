@@ -1,6 +1,6 @@
 # 项目列表
 
-本仓库汇总了在学习中的实践代码，基于 Python 与 C++ 编写，主要用于学习记录与技术复盘。
+本仓库汇总了在学习中的实践代码，基于 Python 与 C++ 等语言编写，主要用于学习记录与技术复盘。
 
 ---
 
@@ -43,6 +43,40 @@
   ```bash
   cd Application/TripScape
   python run.py
+  ```
+
+---
+
+## DeepLearning（深度学习）
+
+### AD（自动微分）
+
+- **入口文件**：`DeepLearning/AD/AD.py`
+- **功能描述**：实现自动微分基础机制，演示前向计算、反向传播与梯度求解流程，用于理解深度学习框架中的自动求导原理。
+- **运行方法**：
+  ```bash
+  cd DeepLearning/AD
+  python AD.py
+  ```
+
+### DiabetesPrediction（糖尿病预测）
+
+- **入口文件**：`DeepLearning/DiabetesPrediction/train.py`
+- **功能描述**：基于糖尿病相关数据集，完成数据加载、特征处理、模型构建、训练与评估，实现糖尿病预测任务。
+- **运行方法**：
+  ```bash
+  cd DeepLearning/DiabetesPrediction
+  python train.py
+  ```
+
+### Tensor（张量）
+
+- **入口文件**：`DeepLearning/Tensor/Tensor.py`
+- **功能描述**：实现张量基础数据结构与常见运算，并结合示例图像数据进行张量读取、转换或操作演示，帮助理解张量在深度学习中的使用方式。
+- **运行方法**：
+  ```bash
+  cd DeepLearning/Tensor
+  python Tensor.py
   ```
 
 ---
