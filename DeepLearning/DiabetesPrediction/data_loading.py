@@ -9,7 +9,7 @@ plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
 
 
-def load_data(path):
+def load_data(path: str = "data/diabetes.csv"):
     """从 Sklearn 加载糖尿病数据集，失败则回退到本地 CSV"""
     try:
         print("尝试从 Sklearn 加载数据...")
@@ -20,7 +20,7 @@ def load_data(path):
     except Exception as e1:
         print(f"从 Sklearn 加载失败: {e1}")
         try:
-            print(f"尝试从本地文件加载...")
+            print("尝试从本地文件加载...")
             # 获取本文件所在路径
             base_dir = os.path.dirname(os.path.abspath(__file__))
             file_path = os.path.join(base_dir, path)
@@ -52,6 +52,7 @@ def plot_correlation(df):
 
 
 if __name__ == "__main__":
-    df = load_data(path="data/diabetes.csv")
-    explore_data(df)
-    plot_correlation(df)
+    df = load_data()
+    if df is not None:
+        explore_data(df)
+        plot_correlation(df)
