@@ -1,3 +1,8 @@
+"""
+项目名称: 自动微分
+创建时间: 2026/09/16
+"""
+
 import torch
 from torchviz import make_dot
 

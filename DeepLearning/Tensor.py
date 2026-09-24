@@ -1,3 +1,8 @@
+"""
+项目名称: 张量运算
+创建时间: 2026/09/07
+"""
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
